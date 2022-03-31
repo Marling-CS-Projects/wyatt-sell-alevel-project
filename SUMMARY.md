@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Some Generic Project](README.md)
+* [Hunted: The Game](README.md)
 
 ## 1 Analysis <a href="#analysis" id="analysis"></a>
 
