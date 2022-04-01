@@ -1,7 +1,5 @@
 # Reference List
 
-Reference list
-
 Adachi, P.J.C. and Willoughby, T. (2013). _More Than Just Fun and Games: The Longitudinal Relationships Between Strategic Video Games, Self-Reported..._ \[online] ResearchGate. Available at: https://www.researchgate.net/publication/235367249\_More\_Than\_Just\_Fun\_and\_Games\_The\_Longitudinal\_Relationships\_Between\_Strategic\_Video\_Games\_Self-Reported\_Problem\_Solving\_Skills\_and\_Academic\_Grades.
 
 BARB (2018). _BARB | Broadcasters Audience Research Board_. \[online] Barb.co.uk. Available at: https://www.barb.co.uk/.
@@ -29,6 +27,8 @@ Matamales, M., Skrbis, Z., Hatch, Robert J., Balleine, Bernard W., Götz, J. and
 NIH (2017). _How the Aging Brain Affects Thinking_. \[online] National Institute on Aging. Available at: https://www.nia.nih.gov/health/how-aging-brain-affects-thinking \[Accessed 31 Mar. 2022].
 
 Pearce, C. (2008). The Truth About Baby Boomer Gamers. _Games and Culture_, \[online] 3(2), pp.142–174. Available at: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.1575\&rep=rep1\&type=pdf \[Accessed 31 Mar. 2022].
+
+Perrin, A. (2018). _5 facts about Americans and video games_. \[online] Pew Research Center. Available at: https://www.pewresearch.org/fact-tank/2018/09/17/5-facts-about-americans-and-video-games/ \[Accessed 1 Apr. 2022].
 
 Perse, E.M. and Rubin, A.M. (1990). Chronic loneliness and television use. _Journal of Broadcasting & Electronic Media_, \[online] 34(1), pp.37–53. Available at: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.1575\&rep=rep1\&type=pdf \[Accessed 31 Mar. 2022].
 
