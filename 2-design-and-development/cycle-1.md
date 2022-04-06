@@ -8,7 +8,8 @@ In this cycle, I aim to setup and configure my project, in the form of a monorep
 
 * [x] Configure a \`yarn\` monorepo with a server and a client configured
 * [x] Create a shared "package" which can be imported and used in both the server and the client
-*
+* [x] Install and setup [Prisma](https://www.prisma.io) to allow for interaction with a database within Typescript.
+* [x] Configure build flow, using [Preconstruct](https://preconstruct.tools), [Prisma deployments](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy) and [Heroku Procfiles](https://devcenter.heroku.com/articles/procfile)
 
 ### Usability Features
 
