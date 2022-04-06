@@ -1,3 +1,8 @@
-# I . O . U
+# Monorepo Template
+This monorepo includes:
+- Prisma
+- Next.js
+- Fastify
+- Some helper functions
 
-Your project code will go on `main`
+Maybe I'll make this README better at some point, but feel free to use or PR.
