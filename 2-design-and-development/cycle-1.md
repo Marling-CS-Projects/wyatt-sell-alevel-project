@@ -100,6 +100,7 @@ void start();
 
 // This is a function to send test data to the client
 socket.on('connection', socket => {
+	console.log('Client connected');
 	socket.send('Hello world');
 	let i = 0;
 	setInterval(() => {
@@ -167,10 +168,10 @@ Evidence for testing
 
 ### Tests
 
-| Test | Instructions                         | What I expect                                                             | What actually happens | Pass/Fail |
-| ---- | ------------------------------------ | ------------------------------------------------------------------------- | --------------------- | --------- |
-| 1    | Go to client at http://locahost:3000 | A simple UI is displayed with a list of messages received from the server | As expected           | Pass      |
-| 2    | Press buttons                        | Something happens                                                         | As expected           | Pass      |
+| Test | Instructions                                  | What I expect                                                              | What actually happens | Pass/Fail |
+| ---- | --------------------------------------------- | -------------------------------------------------------------------------- | --------------------- | --------- |
+| 1    | Visit http://locahost:3000                    | A simple UI is displayed with a list of messages received from the server. | As expected           | Pass      |
+| 2    | Visit localhost:3000, and observe server logs | A "Client connected message" is logged to the console.                     | As expected           | Pass      |
 
 ### Evidence
 
