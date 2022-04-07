@@ -9,7 +9,7 @@ In this cycle, I aim to setup and configure my project, in the form of a monorep
 * [x] Configure a \`yarn\` monorepo with a [Socket.IO](https://socket.io) server and a [Next.js](https://nextjs.org) (with API authentication routes) client configured
 * [x] Create a shared "package" which can be imported and used in both the server and the client
 * [x] Install and setup [Prisma](https://www.prisma.io) to allow for interaction with a database within Typescript.
-* [x] Configure a build flow, using [TSC](https://www.typescriptlang.org), [Preconstruct](https://preconstruct.tools), [Prisma deployments](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy) and [Heroku Procfiles](https://devcenter.heroku.com/articles/procfile)
+* [x] Configure a build flow, using [TSC](https://www.typescriptlang.org), [Preconstruct](https://preconstruct.tools) and [Prisma deployments](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy)
 * [x] Created a docker-compose file that contains [PostgreSQL](https://www.postgresql.org) and [Redis](https://redis.io) Docker containers
 
 ### Usability Features
@@ -58,4 +58,4 @@ Evidence for testing
 
 ### Evidence
 
-![](<../.gitbook/assets/image (1).png>)
+![](<../.gitbook/assets/image (1).png>)![](<../.gitbook/assets/image (5).png>)
