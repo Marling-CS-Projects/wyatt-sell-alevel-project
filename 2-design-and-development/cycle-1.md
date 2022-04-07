@@ -6,7 +6,7 @@
 
 In this cycle, I aim to setup and configure my project, in the form of a monorepo. A monorepo is a codebase structure where the code for multiple elements of a project are stored in the same repository. I chose to use a monorepo configuration, as it allows for sharing of types and schemas between the client and the server. This would ensure two way validation of requests, and ensuring continuity between all modules within my project.
 
-* [x] Configure a \`yarn\` monorepo with a server and a client configured
+* [x] Configure a \`yarn\` monorepo with a [Socket.IO](https://socket.io) server and a [Next.js](https://nextjs.org) (with API authentication routes) client configured
 * [x] Create a shared "package" which can be imported and used in both the server and the client
 * [x] Install and setup [Prisma](https://www.prisma.io) to allow for interaction with a database within Typescript.
 * [x] Configure a build flow, using [TSC](https://www.typescriptlang.org), [Preconstruct](https://preconstruct.tools), [Prisma deployments](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy) and [Heroku Procfiles](https://devcenter.heroku.com/articles/procfile)
