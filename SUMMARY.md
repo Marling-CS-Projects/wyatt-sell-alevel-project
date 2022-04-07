@@ -33,6 +33,6 @@
 
 * [Reference List](reference-list.md)
 
-## Group 1
+## Server Code
 
-* [index.ts](group-1/index.ts.md)
+* [index.ts](server-code/index.ts.md)
