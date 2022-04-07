@@ -57,3 +57,5 @@ Evidence for testing
 | 2    | Press buttons | Something happens | As expected           | Pass      |
 
 ### Evidence
+
+![](<../.gitbook/assets/image (1).png>)
