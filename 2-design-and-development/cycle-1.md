@@ -10,14 +10,16 @@ In this cycle, I aim to setup and configure my project, in the form of a monorep
 * [x] Create a shared "package" which can be imported and used in both the server and the client
 * [x] Install and setup [Prisma](https://www.prisma.io) to allow for interaction with a database within Typescript.
 * [x] Configure a build flow, using [TSC](https://www.typescriptlang.org), [Preconstruct](https://preconstruct.tools), [Prisma deployments](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy) and [Heroku Procfiles](https://devcenter.heroku.com/articles/procfile)
+* [x] Created a docker-compose file that contains [PostgreSQL](https://www.postgresql.org) and [Redis](https://redis.io) Docker containers
 
 ### Usability Features
 
 ### Key Variables
 
-| Variable Name | Use                   |
-| ------------- | --------------------- |
-| foo           | does something useful |
+| Variable Name | Use                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------- |
+| redis         | Initialises a connection to Redis                                                      |
+| env           | An object which contains validated environment variables (i.e. PORT, REDIS\_URL, etc.) |
 
 ### Pseudocode
 
