@@ -51,8 +51,8 @@ In \`index.ts\` in the server directory, I configured a websocket server, using 
 At this stage of the project, I'm not making use of these resources, however I configured them now, as I will likely need to to use them later
 
 {% tabs %}
-{% tab title="First Tab" %}
-```
+{% tab title="index.ts" %}
+```typescript
 import 'dotenv/config';
 import {prisma} from './prisma';
 import {redis} from './utils/redis';
@@ -100,8 +100,40 @@ socket.on('connection', socket => {
 ```
 {% endtab %}
 
-{% tab title="Second Tab" %}
+{% tab title="index.tsx" %}
+```jsx
+import {Heading} from '@chakra-ui/react';
+import {useEffect, useState} from 'react';
+import {io, Socket} from 'socket.io-client';
 
+export default function () {
+	const [socket, setSocket] = useState<Socket | null>(null);
+	const [messages, setMessages] = useState<string[]>([]);
+
+	useEffect(() => {
+		if (!socket) {
+			const newSocket = io(`http://localhost:8888`);
+			setSocket(newSocket);
+			return;
+		}
+		socket.on('message', (message: string) => {
+			setMessages(messages => [...messages, message]);
+		});
+	}, [socket, setSocket, setMessages]);
+
+	return (
+		<>
+			<Heading>Hello world!</Heading>
+			<p>Socket messages:</p>
+			<ul>
+				{messages.map(message => (
+					<li key={message}>{message}</li>
+				))}
+			</ul>
+		</>
+	);
+}
+```
 {% endtab %}
 {% endtabs %}
 
