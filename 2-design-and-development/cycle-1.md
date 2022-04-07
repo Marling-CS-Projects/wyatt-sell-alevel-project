@@ -50,6 +50,15 @@ In \`index.ts\` in the server directory, I configured a websocket server, using 
 
 At this stage of the project, I'm not making use of these resources, however I configured them now, as I will likely need to to use them later
 
+#### Client
+
+I created a new Next.js project, installing a few libraries that I've found useful before:
+
+* Chakra UI: A UI framework that closely follows React principles
+* SWR: A reactive request handler that allows for simple data fetching and mutation
+
+I also installed `socket-io.client`, a frontend library that allows me to create connections to my websocket server. With reference to _some_ of the elements of [an excellent tutorial by Holger Schmitz](https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial#implement-the-socketio-client-using-react), I was able to connect to my websocket server, and display received messages (see [#evidence](cycle-1.md#evidence "mention")). This code is contained within `index.tsx`
+
 {% tabs %}
 {% tab title="index.ts" %}
 ```typescript
@@ -136,15 +145,6 @@ export default function () {
 ```
 {% endtab %}
 {% endtabs %}
-
-#### Client
-
-I created a new Next.js project, installing a few libraries that I've found useful before:
-
-* Chakra UI: A UI framework that closely follows React principles
-* SWR: A reactive request handler that allows for simple data fetching and mutation
-
-I also installed `socket-io.client`, a frontend library that allows me to create connections to my websocket server. With reference to _some_ of the elements of [an excellent tutorial by Holger Schmitz](https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial#implement-the-socketio-client-using-react), I was able to connect to my websocket server, and display received messages (see [#evidence](cycle-1.md#evidence "mention")). This code is contained within `index.tsx`
 
 ### Challenges
 
