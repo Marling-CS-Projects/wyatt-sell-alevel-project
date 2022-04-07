@@ -167,10 +167,10 @@ Evidence for testing
 
 ### Tests
 
-| Test | Instructions  | What I expect     | What actually happens | Pass/Fail |
-| ---- | ------------- | ----------------- | --------------------- | --------- |
-| 1    | Run code      | Thing happens     | As expected           | Pass      |
-| 2    | Press buttons | Something happens | As expected           | Pass      |
+| Test | Instructions                         | What I expect                                                             | What actually happens | Pass/Fail |
+| ---- | ------------------------------------ | ------------------------------------------------------------------------- | --------------------- | --------- |
+| 1    | Go to client at http://locahost:3000 | A simple UI is displayed with a list of messages received from the server | As expected           | Pass      |
+| 2    | Press buttons                        | Something happens                                                         | As expected           | Pass      |
 
 ### Evidence
 
