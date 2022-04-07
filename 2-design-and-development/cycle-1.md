@@ -148,7 +148,18 @@ export default function () {
 
 ### Challenges
 
-Description of challenges
+The initial setup went fairly smoothly overall, with some minor configuration tweaks required in order to get my `shared` package properly imported and configured.
+
+The only other significant issue I encountered was forgetting to correctly configure [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), a security mechanism that is designed to ensure that the server only processes requests from recognised domains. This resulted in my client being unable to connect to my server, and an error being logged to the browser console. Fortunately, I was familiar with CORS issues (however, not with websockets), and I quickly resolved the issue by passing a configuration object to my websocket server object:
+
+```typescript
+{
+	cors: {
+		origin: env.CLIENT_ORIGIN,
+		methods: ['GET', 'POST'],
+	},
+}
+```
 
 ## Testing
 
