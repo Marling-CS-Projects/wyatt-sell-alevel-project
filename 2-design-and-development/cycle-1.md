@@ -20,13 +20,21 @@ In this cycle, I aim to setup and configure my project, in the form of a monorep
 | ------------- | -------------------------------------------------------------------------------------- |
 | redis         | Initialises a connection to Redis                                                      |
 | env           | An object which contains validated environment variables (i.e. PORT, REDIS\_URL, etc.) |
+| server        | The base http web server that allows a Socket.io websocket to mount on it              |
+| socket        | Initialises a websocket server                                                         |
 
 ### Pseudocode
 
 ```
-procedure do_something
-    
-end procedure
+procedure start_server
+    connect_to_prisma()
+    connect_to_redis()
+    server_listen(port)
+end start_server
+
+procedure socket_on_connect
+    // Implement authentication and message flows
+end socket_on_connect
 ```
 
 ## Development
