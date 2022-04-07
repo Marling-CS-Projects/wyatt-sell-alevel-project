@@ -41,6 +41,24 @@ end socket_on_connect
 
 ### Outcome
 
+#### Server
+
+In \`index.ts\` in the server directory, I configured a websocket server, using [Socket.IO](https://socket.io), with an [Express.js](https://expressjs.com) server object as the mount point. Additionally, I made sure to initialise connections to:
+
+* Redis: A caching solution that avoids costly I/O operations on a database, when unnecessary.
+* Prisma: A typed ORM that enables easy interaction with my PostgreSQL database from within Typescript
+
+At this stage of the project, I'm not making use of these resources, however I configured them now, as I will likely need to to use them later
+
+#### Client
+
+I created a new Next.js project, installing a few libraries that I've found useful before:
+
+* Chakra UI: A UI framework that closely follows React principles
+* SWR: A reactive request handler that allows for simple data fetching and mutation
+
+I also installed \`socket-io.client\`, a frontend library that allows me to create connections to my websocket server. With reference to \_some\_ of the elements of [an excellent tutorial by Holger Schmitz](https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial#implement-the-socketio-client-using-react), I was able to connect to my websocket server, and display received messages (see [#evidence](cycle-1.md#evidence "mention"))
+
 ### Challenges
 
 Description of challenges
