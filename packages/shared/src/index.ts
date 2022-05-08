@@ -1,1 +1,3 @@
-export type MySuperCoolSharedType = string
+export type MySuperCoolSharedType = string;
+
+export * from './utils';

@@ -7,16 +7,20 @@
 		"start": "next start"
 	},
 	"dependencies": {
-		"@monorepo/shared": "workspace:^",
+		"@auth0/auth0-react": "^1.10.1",
 		"@chakra-ui/react": "1.4.2",
 		"@emotion/react": "11",
 		"@emotion/styled": "11",
+		"@monorepo/shared": "workspace:^",
 		"@preconstruct/next": "^3.0.1",
+		"@thream/socketio-jwt": "2.2.1",
+		"framer-motion": "^6.2.9",
 		"next": "12",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"sharp": "^0.30.0",
-		"swr": "^0.5.5"
+		"socket.io-client": "^4.4.1",
+		"swr": "^1.3.0"
 	},
 	"devDependencies": {
 		"@types/node": "^17.0.18",

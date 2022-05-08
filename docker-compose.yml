@@ -8,8 +8,8 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: my_username
-      POSTGRES_PASSWORD: my_password
-      POSTGRES_DB: monorepo
+      POSTGRES_USER: hunted_user
+      POSTGRES_PASSWORD: hunted123
+      POSTGRES_DB: hunted
     ports:
       - '5432:5432'
