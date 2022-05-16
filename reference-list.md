@@ -1,7 +1,5 @@
 # Reference List
 
-Reference list
-
 Adachi, P.J.C. and Willoughby, T. (2013). _More Than Just Fun and Games: The Longitudinal Relationships Between Strategic Video Games, Self-Reported..._ \[online] ResearchGate. Available at: https://www.researchgate.net/publication/235367249\_More\_Than\_Just\_Fun\_and\_Games\_The\_Longitudinal\_Relationships\_Between\_Strategic\_Video\_Games\_Self-Reported\_Problem\_Solving\_Skills\_and\_Academic\_Grades.
 
 BARB (2018). _BARB | Broadcasters Audience Research Board_. \[online] Barb.co.uk. Available at: https://www.barb.co.uk/.
@@ -9,6 +7,8 @@ BARB (2018). _BARB | Broadcasters Audience Research Board_. \[online] Barb.co.uk
 Basak, C., Boot, W.R., Voss, M.W. and Kramer, A.F. (2008). Can training in a real-time strategy video game attenuate cognitive decline in older adults? _Psychology and Aging_, \[online] 23(4), pp.765–777. doi:10.1037/a0013494.
 
 Fancourt, D. and Steptoe, A. (2019). Television viewing and cognitive decline in older age: findings from the English Longitudinal Study of Ageing. _Scientific Reports_, \[online] 9(1). doi:10.1038/s41598-019-39354-4.
+
+Fox, K.R. (1999). The influence of physical activity on mental well-being. _Public Health Nutrition_, \[online] 2(3a). doi:10.1017/s1368980099000567.
 
 Fredrickson, J. (2011). _Prosocial Behavior and Teamwork in Online Computer Games Prosocial Behavior and Teamwork in Online Computer Games_. \[online] Available at: https://ecommons.luc.edu/cgi/viewcontent.cgi?article=1541\&context=luc\_theses \[Accessed 19 Nov. 2020].
 
@@ -18,15 +18,27 @@ Grajczyk, A. and Zöllner, O. (1998). How Older People Watch Television. _Geront
 
 Granic, I., Lobel, A. and Rutger C. M. E. Engels (2014). The benefits of playing video games. _American Psychologist_, \[online] 69(1), pp.66–78. doi:10.1037/a0034857.
 
+Guralnik, J.M., LaCroix, A.Z., Abbott, R.D., Berkman, L.F., Satterfield, S., Evans, D.A. and Wallace, R.B. (1993). Maintaining mobility in late life. I. Demographic characteristics and chronic conditions. _American Journal of Epidemiology_, \[online] 137(8), pp.845–857. doi:10.1093/oxfordjournals.aje.a116746.
+
+Hancox, R.J., Milne, B.J. and Poulton, R. (2004). Association between child and adolescent television viewing and adult health: a longitudinal birth cohort study. _The Lancet_, \[online] 364(9430), pp.257–262. doi:10.1016/s0140-6736(04)16675-0.
+
 IMDb (2015). _Hunted_. \[online] IMDb. Available at: https://www.imdb.com/title/tt5038678/ \[Accessed 1 Apr. 2022].
 
 ISFE (2020). _PEGI – The European content rating system_. \[online] ISFE. Available at: https://www.isfe.eu/responsible-gameplay/pegi-the-european-content-rating-system/.
+
+Iwaniuk, P. (2019). _American Fugitive review – homage to old-school Grand Theft Auto_. \[online] The Guardian. Available at: https://www.theguardian.com/games/2019/may/21/american-fugitive-review-old-school-grand-theft-auto-fallen-tree \[Accessed 12 May 2022].
 
 Jones, C.M., Scholes, L., Johnson, D., Katsikitis, M. and Carras, M.C. (2014). Gaming well: links between videogames and flourishing mental health. _Frontiers in Psychology_, \[online] 5(260). doi:10.3389/fpsyg.2014.00260.
 
 Katkoff, M., Heikkinen, K., Kumar, A. and Macmillan, A. (2019). _2019 Predictions #9: Say Hello to the New Breed of Battle Royale Games_. \[online] Deconstructor of Fun. Available at: https://www.deconstructoroffun.com/blog/2019/2/19/4s8e1vlxju2ltvf0sjj535bkf7eby9 \[Accessed 1 Apr. 2022].
 
+Maillot, P., Perrot, A. and Hartley, A. (2012). Effects of interactive physical-activity video-game training on physical and cognitive function in older adults. _Psychology and Aging_, 27(3), pp.589–600. doi:10.1037/a0026268.
+
+Malaka, R. (2014). How Computer Games Can Improve Your Health and Fitness. _Games for Training, Education, Health and Sports_, 8395, pp.1–7. doi:10.1007/978-3-319-05972-3\_1.
+
 Matamales, M., Skrbis, Z., Hatch, Robert J., Balleine, Bernard W., Götz, J. and Bertran-Gonzalez, J. (2016). Aging-Related Dysfunction of Striatal Cholinergic Interneurons Produces Conflict in Action Selection. _Neuron_, \[online] 90(2), pp.362–373. doi:10.1016/j.neuron.2016.03.006.
+
+Müller-Oehring, E.M., Schulte, T., Rohlfing, T., Pfefferbaum, A. and Sullivan, E.V. (2013). Visual search and the aging brain: Discerning the effects of age-related brain volume shrinkage on alertness, feature binding, and attentional control. _Neuropsychology_, 27(1), pp.48–59. doi:10.1037/a0030921.
 
 Murman, D. (2015). The Impact of Age on Cognition. _Seminars in Hearing_, \[online] 36(03), pp.111–121. doi:10.1055/s-0035-1555115.
 
@@ -48,6 +60,12 @@ Salleh, A. (2016). _Brain circuit that helps us adapt to change fades with age_.
 
 Statista (2010). _Daily TV viewing time by age UK 2010-2017 | Statista_. \[online] Statista. Available at: https://www.statista.com/statistics/269918/daily-tv-viewing-time-in-the-uk-by-age/.
 
+Taylor, D. (2013). Physical activity is medicine for older adults. _Postgraduate Medical Journal_, \[online] 90(1059), pp.26–32. doi:10.1136/postgradmedj-2012-131366.
+
 Tichon, J.G. and Mavin, T. (2016). Experiencing Resilience via Video Games. _Social Science Computer Review_, \[online] 35(5), pp.666–675. doi:10.1177/0894439316664507.
 
+Tucker, L.A. (1986). The relationship of television viewing to physical fitness and obesity. _Adolescence_, \[online] 21(84), pp.797–806. Available at: https://pubmed.ncbi.nlm.nih.gov/3825662/ \[Accessed 16 May 2022].
+
 Van den Bulck, J. (2000). Is Television Bad for Your Health? Behavior and Body Image of the Adolescent ‘Couch Potato’. _Journal of Youth and Adolescence_, \[online] 29(3), pp.273–288. doi:10.1023/a:1005102523848.
+
+Wikipedia. (2021). _List of video games based on films_. \[online] Available at: https://en.wikipedia.org/wiki/List\_of\_video\_games\_based\_on\_films.
