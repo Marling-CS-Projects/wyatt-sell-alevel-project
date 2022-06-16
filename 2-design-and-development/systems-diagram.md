@@ -36,7 +36,7 @@ In order to make my game engaging, there must a variety of different mechanics t
 #### Aims
 
 * Create a variety of items and mini-games with different functions and/or interfaces
-* Create a multiplayer mode to play
+*
 * Incorporate a style of game art the suits the game
 
 ### Error Tolerant
