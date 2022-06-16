@@ -22,12 +22,12 @@ For my game to be effective, goals must be **achievable and understandable**. It
 
 ### Efficiency
 
-The speed and accuracy to which a user can complete the goal. To do this, I will create a menu system which is easy to navigate through in order for to find what you are looking for. The information which is more important can be found with less clicks.
+Efficiency means that the speed and accuracy to which a user can complete the goal must be high.  This will be achieved by having large buttons and simple menus. Alerts should appear immediately and collecting items should be simple and easy. Movement throughout the map should update quickly and smoothly, so players get instant feedback on which direction they are travelling.
 
 #### Aims
 
 * Create a menu system that is quick and easy to navigate through
-* Create a controls system that isn't too complicated but allows the player to do multiple actions
+* Ensure proximity
 
 ### Engaging
 
@@ -36,8 +36,8 @@ In order to make my game engaging, there must a variety of different mechanics t
 #### Aims
 
 * Create a variety of items and mini-games with different functions and/or interfaces
-*
-* Incorporate a style of game art the suits the game
+* Implement a sci-fi/hacker aesthetic throughout the game
+* Ensure the game is playable in a variety of different environments and with differing player counts.
 
 ### Error Tolerant
 
