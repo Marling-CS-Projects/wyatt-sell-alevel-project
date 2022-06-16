@@ -12,7 +12,7 @@ Usability is an important aspect to my game as I want it to be accessible to all
 
 ### Effective
 
-Users can achieve the goal with completeness and accuracy. To do this, I will make it easy for the players to realise that they need to reach a goal in order to complete a level. I will make this goal clear to see so there is no confusion over where the players need to go.
+Items on the map should be clear and visible. It should be easy to work out what each item does, and how to operate it. Given that a manhunt/hide-and-seek format could last for a variable amount of time, my game will optionally allow for a fixed game or a shrinking boundary area. It should also be easy to capture a player when you are in a very close proximity.
 
 #### Aims
 
