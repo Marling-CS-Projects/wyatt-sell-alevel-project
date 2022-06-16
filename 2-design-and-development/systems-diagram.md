@@ -12,12 +12,13 @@ Usability is an important aspect to my game as I want it to be accessible to all
 
 ### Effective
 
-Items on the map should be clear and visible. It should be easy to work out what each item does, and how to operate it. Given that a manhunt/hide-and-seek format could last for a variable amount of time, my game will optionally allow for a fixed game or a shrinking boundary area. It should also be easy to capture a player when you are in a very close proximity. The buttons and alerts should also be large and simple - it should be very clear and easy to navigate menus and access all game features.
+For my game to be effective, goals must be **achievable and understandable**. Items on the map should be clear and visible. It should be easy to work out what each item does, and how to operate it. Given that a manhunt/hide-and-seek format could last for a variable amount of time, my game will optionally allow for a shrinking boundary area. It should also be easy to capture a player when you are in a very close proximity. The buttons and alerts should also be large and simple, in order to make the game more accessible and playable for my [1.2-stakeholders.md](../1-analysis/1.2-stakeholders.md "mention")
 
 #### Aims
 
-* Create a clear goal to reach to determine the end of a level
-* Create a clear goal for any multiplayer modes
+* Allow for a shrinking boundary as game time progresses
+* Create bright, colorful item indicators on the map
+* Ensure all buttons are large, legible and understandable.
 
 ### Efficiency
 
@@ -30,7 +31,7 @@ The speed and accuracy to which a user can complete the goal. To do this, I will
 
 ### Engaging
 
-The solution is engaging for the user to use. To do this, I will create 5 levels and an online multiplayer mode to keep the players engaged and allow them to have fun while playing the game. Using vector style art will also make the game nicer to look at than blocks, so will draw more people in, keeping them engaged.
+In order to make my game engaging, there must a variety of different mechanics that interact in various ways. There must also be enough features for the game to be fun to play again and again. This will primarily be helped
 
 #### Aims
 
