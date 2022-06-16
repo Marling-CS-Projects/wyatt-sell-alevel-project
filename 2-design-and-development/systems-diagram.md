@@ -31,11 +31,11 @@ The speed and accuracy to which a user can complete the goal. To do this, I will
 
 ### Engaging
 
-In order to make my game engaging, there must a variety of different mechanics that interact in various ways. There must also be enough features for the game to be fun to play again and again. This will primarily be helped
+In order to make my game engaging, there must a variety of different mechanics that interact in various ways. There must also be enough features for the game to be fun to play again and again. This will primarily be aided by the real-life multiplayer capabilities as well as the large amount of control the player has over the game - they can travel wherever they want in real life, and this will be reflected in-game.
 
 #### Aims
 
-* Create a series of levels to work through
+* Create a variety of items and mini-games with different functions and/or interfaces
 * Create a multiplayer mode to play
 * Incorporate a style of game art the suits the game
 
