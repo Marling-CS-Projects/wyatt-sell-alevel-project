@@ -12,7 +12,7 @@ Usability is an important aspect to my game as I want it to be accessible to all
 
 ### Effective
 
-Items on the map should be clear and visible. It should be easy to work out what each item does, and how to operate it. Given that a manhunt/hide-and-seek format could last for a variable amount of time, my game will optionally allow for a fixed game or a shrinking boundary area. It should also be easy to capture a player when you are in a very close proximity.
+Items on the map should be clear and visible. It should be easy to work out what each item does, and how to operate it. Given that a manhunt/hide-and-seek format could last for a variable amount of time, my game will optionally allow for a fixed game or a shrinking boundary area. It should also be easy to capture a player when you are in a very close proximity. The buttons and alerts should also be large and simple - it should be very clear and easy to navigate menus and access all game features.
 
 #### Aims
 
