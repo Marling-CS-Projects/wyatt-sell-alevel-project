@@ -27,7 +27,8 @@ Efficiency means that the speed and accuracy to which a user can complete the go
 #### Aims
 
 * Create a menu system that is quick and easy to navigate through
-* Ensure proximity
+* Ensure proximity based popups - e.g. when you approach an item, a menu to interact with it should automatically appear
+* Use linear interpolation and constant socket connection to ensure smooth location updates
 
 ### Engaging
 
@@ -50,14 +51,12 @@ The solution should have as few errors as possible and if one does occur, it sho
 
 ### Easy To Learn
 
-The solution should be easy to use and not be over complicated. To do this, I will create simple controls for the game. I will make sure that no more controls are added than are needed in order to keep them as simple as possible for the players.
+The solution should be easy to learn, but have enough mechanics to make it fun for experienced players. There needs to be clear and simple guides on the functions of various items, and perhaps a small tutorial at the start of the game.
 
 #### Aims
 
-* Create a list of controls for the game
-* Create an in-level guide that helps players learn how to play the game
-
-## Pseudocode for the Game
+* Create a guide for each item, accompanied with large clear buttons
+* Create a tutorial for players to learn the basics
 
 ### Pseudocode for game
 
