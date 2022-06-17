@@ -3,7 +3,8 @@ import {SWRConfig} from 'swr';
 import {fetcher} from '../utils/network';
 import {Auth0Provider, useAuth0} from '@auth0/auth0-react';
 import {ReactNode} from 'react';
-import {OtherProfile} from '../components/Profile';
+import {ChakraProvider} from '@chakra-ui/react';
+import {theme} from '../utils/theme';
 
 const App = ({Component, pageProps}: AppProps) => {
 	return (
@@ -15,7 +16,9 @@ const App = ({Component, pageProps}: AppProps) => {
 			scope={'openid profile email'}
 		>
 			<SWRWrapper>
-				<Component {...pageProps} />
+				<ChakraProvider theme={theme}>
+					<Component {...pageProps} />
+				</ChakraProvider>
 			</SWRWrapper>
 		</Auth0Provider>
 	);
@@ -27,10 +30,10 @@ const SWRWrapper = (props: {children: ReactNode}) => {
 		<SWRConfig
 			value={{
 				fetcher: url => fetcher('GET', url, getIdTokenClaims),
-				// refreshInterval: 120 * 1000,
-				// dedupingInterval: 120 * 1000,
-				// errorRetryInterval: 120 * 1000,
-				// focusThrottleInterval: 120 * 1000,
+				refreshInterval: 120 * 1000,
+				dedupingInterval: 120 * 1000,
+				errorRetryInterval: 120 * 1000,
+				focusThrottleInterval: 120 * 1000,
 			}}
 		>
 			{props.children}

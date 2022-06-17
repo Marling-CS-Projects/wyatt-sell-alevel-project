@@ -11,6 +11,7 @@
 		"@types/express-jwt": "^6.0.4",
 		"@types/ioredis": "^4.28.10",
 		"@types/jsonwebtoken": "^8.5.8",
+		"@types/uuid": "^8.3.4",
 		"nodemon": "^2.0.15",
 		"ts-node": "^10.7.0"
 	},
@@ -29,7 +30,8 @@
 		"jwks-rsa": "^2.1.0",
 		"socket.io": "^4.4.1",
 		"socketio-jwt": "^4.6.2",
-		"typescript": "^4.5.2"
+		"typescript": "^4.5.2",
+		"uuid": "^8.3.2"
 	},
 	"scripts": {
 		"build": "tsc",
