@@ -60,7 +60,7 @@ The solution should be easy to learn, but have enough mechanics to make it fun f
 
 ### Pseudocode for game
 
-This is the basic layout of the object to store the details of the game. This will be what is rendered as it will inherit all important code for the scenes.
+This is the basic layout of the object to store the details of the game. This will contain all the data regarding a current game: players, game time, item locations, boundaries, etc.
 
 ```
 object Game
