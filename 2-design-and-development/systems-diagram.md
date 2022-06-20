@@ -64,47 +64,66 @@ This is the basic layout of the object to store the details of the game. This wi
 
 ```
 object Game
-    type: Phaser
-    parent: id of HTML element
-    width: width
-    height: height
-    physics: set up for physics
-    scenes: add all menus, levels and other scenes
+    id: UUID
+    players: Player[]
+    hunter: Player[]
+    hunted: Player[]
+    hasStarted: boolean
+    joinCode: string
+    options: {
+        max: {
+            hunter: number
+            hunted: number
+            total: number
+        }
+    }
+    items: Item[]
+    
+    function addPlayer
+        if players.length == options.max.total
+            return false
+        add player to players list
+        add player to either hunter or hunted list
+        return true
+    end function
+    
+    function updatePlayerPref(playerID: UUID, pref: 'hunter' | 'hunted')
+        if player not in game players
+            error('Player not in game')
+        if players.length == options.max.total
+            return false
+        if [pref].length <= options.max.length
+            add player to [pref] list
+            return pref
+        else
+            add player to [inversePref] list
+            return inversePref
+    end function    
+        
 end object
 
-render Game to HTML web page
+use Game object to send data to client over sockets
 ```
 
-### Pseudocode for a level
+### Pseudocode for players
 
-This shows the basic layout of code for a Phaser scene. It shows where each task will be executed.
+This is the object that contains information about each individual player. It includes
 
 ```
-class Level extends Phaser Scene
+object Player
+    socket: Socket
+    game: Game
+    id: UUID
+    status: 'disconnected' | 'spectating' | 'alive'
+    pref?: 'hunted' | 'hunter'
+    type: 'hunted' | 'hunter'
+    user: UserObject
+    
+    function updatePref(pref: 'hunter' | 'hunted')
+        pref = pref
+        type = game.updatePlayer(id, pref)
+        return type
+    end function
 
-    procedure preload
-        load all sprites and music
-    end procedure
-    
-    procedure create
-        start music
-        draw background
-        create players
-        create platforms
-        create puzzle elements
-        create enemies
-        create obstacles
-        create finishing position
-        create key bindings
-    end procedure
-    
-    procedure update
-        handle key presses
-        move player
-        move interactable objects
-        update animations
-        check if player at exit
-    end procedure
-    
-end class
+end object
 ```
