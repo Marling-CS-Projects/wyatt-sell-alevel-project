@@ -5,6 +5,7 @@ import {
 	ServerMessages,
 	ServerToClientEvents,
 } from '@monorepo/shared/src/index';
+import {atomWithStorage} from 'jotai/utils';
 
 export const socketAtom = atom<Socket<
 	ServerToClientEvents,
@@ -12,3 +13,8 @@ export const socketAtom = atom<Socket<
 > | null>(null);
 
 export const playersAtom = atom<ServerMessages['user-connected'][]>([]);
+
+export const gameAtom = atomWithStorage<ServerMessages['game-init'] | null>(
+	'game',
+	null
+);

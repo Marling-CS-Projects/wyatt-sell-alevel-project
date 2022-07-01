@@ -5,6 +5,8 @@ import {Auth0Provider, useAuth0} from '@auth0/auth0-react';
 import {ReactNode} from 'react';
 import {ChakraProvider} from '@chakra-ui/react';
 import {theme} from '../utils/theme';
+import {SocketHandler} from '../components/SocketHandler';
+import {Toaster} from 'react-hot-toast';
 
 const App = ({Component, pageProps}: AppProps) => {
 	return (
@@ -17,7 +19,10 @@ const App = ({Component, pageProps}: AppProps) => {
 		>
 			<SWRWrapper>
 				<ChakraProvider theme={theme}>
-					<Component {...pageProps} />
+					<Toaster />
+					<SocketHandler>
+						<Component {...pageProps} />
+					</SocketHandler>
 				</ChakraProvider>
 			</SWRWrapper>
 		</Auth0Provider>

@@ -1,11 +1,16 @@
 import {IdToken} from '@auth0/auth0-react';
+import {io, Socket} from 'socket.io-client';
+import {
+	ClientToServerEvents,
+	ServerToClientEvents,
+} from '@monorepo/shared/src/index';
 
 export async function fetcher<T>(
 	method: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT',
 	endpoint: string,
 	getToken?: () => Promise<IdToken | undefined>,
 	body?: unknown
-): Promise<{data: T; code: number}> {
+): Promise<T> {
 	const token = getToken ? await getToken() : null;
 	if (!token && getToken) throw new Error("User isn't logged in");
 
@@ -24,10 +29,20 @@ export async function fetcher<T>(
 
 	const json = await request.json();
 
-	console.log('fetcher', json);
-
 	if (request.status >= 400) {
 		throw new Error(`${json.data}`);
 	}
 	return json;
 }
+
+export const connectToSocket = (
+	host: string,
+	token: IdToken,
+	query?: Record<string, string>
+): Socket<ServerToClientEvents, ClientToServerEvents> => {
+	return io(`ws${process.env.NODE_ENV === 'production' ? 's' : ''}://${host}`, {
+		transports: ['websocket'],
+		auth: {token: `Bearer ${token.__raw}`},
+		query,
+	});
+};

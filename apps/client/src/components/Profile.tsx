@@ -9,9 +9,11 @@ export default function Profile() {
 	if (!isAuthenticated || !user) return null;
 	if (isLoading) return <div>Loading...</div>;
 
+	console.log('user picture', user.picture);
+
 	return (
 		<HStack justifyContent={'center'}>
-			<Avatar src={user.picture} name={user.name} />
+			<Avatar src={user.picture} />
 			<h2>{user.name}</h2>
 			<button onClick={() => logout({returnTo: window.location.origin})}>
 				Logout
