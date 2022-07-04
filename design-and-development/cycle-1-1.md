@@ -30,10 +30,15 @@ In this cycle, I will aim to create a map with your live updating location on th
 ```
 // Server
 subroutine recieve_location_ping (player)
+    update server player with new player data (using player.id)
     if (player.hunter)
         broadcast player to all hunter clients
+    end if
     
-
+    if (out_of_bounds)
+        broadcast to all players ("player.name is out of bounds")
+    end if
+end subroutine
 
 // Client
 procedure ping_location
