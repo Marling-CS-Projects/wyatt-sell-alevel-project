@@ -16,6 +16,7 @@ In this cycle, I will aim to create a map with your live updating location on th
 * The playable game area will have to be made clear to other players to minimise the risk of accidentally breaking the rules
 * In some cases, more than one location indicator will appear on a map. There must be a difference in colour between the user and other users indicators to avoid confusion
 * Location updates should be smooth, and not sudden jolts. This will be achieved by regular pings and some [linear interpolation](https://en.wikipedia.org/wiki/Linear\_interpolation)
+* Location uncertainty should be shown on the map as a translucent circle showing the error range, to avoid confusion if the rendered location is incorrect
 
 ### Key Variables
 
@@ -27,15 +28,42 @@ In this cycle, I will aim to create a map with your live updating location on th
 ### Pseudocode
 
 ```
-procedure start_server
-    connect_to_prisma()
-    connect_to_redis()
-    server_listen(port)
-end start_server
+// Server
+subroutine recieve_location_ping (player)
+    if (player.hunter)
+        broadcast player to all hunter clients
+    
 
-procedure socket_on_connect
-    // Implement authentication and message flows
-end socket_on_connect
+
+// Client
+procedure ping_location
+    location = get_location()
+    if (near out_of_bounds)
+        alert("Near boundary")
+        if (out_of_bounds
+            alert("Move back into play zone")
+        end if
+    end if
+    add_marker_to_map(location, blue)
+    socket.send(location)
+end procedure
+
+subroutine add_marker_to_map (location, color)
+    marker = new Marker({
+        x: location.x
+        y: location.y
+        accuracy: location.accuracy
+        color: color
+    })
+    add marker to map
+end subroutine
+
+subroutine recieve_player_location (player)
+    update players with new player data (using player.id)
+    for i in range(100)
+        update marker with {x: (location.x / i), y: (location.y / i)}
+    end for
+end subroutine
 ```
 
 ## Development
