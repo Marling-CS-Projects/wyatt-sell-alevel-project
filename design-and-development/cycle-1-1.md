@@ -13,8 +13,9 @@ In this cycle, I will aim to create a map with your live updating location on th
 
 ### Usability Features
 
-* NextJS allows for quick reloading during development, meaning that it is quicker to fix bugs or prototype new features.
-* A shared package between the client and the server containing types and functions will ensure that there is consistency with communication, and fewer runtime errors.
+* The playable game area will have to be made clear to other players to minimise the risk of accidentally breaking the rules
+* In some cases, more than one location indicator will appear on a map. There must be a difference in colour between the user and other users indicators to avoid confusion
+* Location updates should be smooth, and not sudden jolts. This will be achieved by regular pings and some [linear interpolation](https://en.wikipedia.org/wiki/Linear\_interpolation)
 
 ### Key Variables
 
