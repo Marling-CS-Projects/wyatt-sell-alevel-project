@@ -19,12 +19,10 @@ In this cycle, I will aim to create a map with your live updating location on th
 
 ### Key Variables
 
-| Variable Name | Use                                                                                    |
-| ------------- | -------------------------------------------------------------------------------------- |
-| redis         | Initialises a connection to Redis                                                      |
-| env           | An object which contains validated environment variables (i.e. PORT, REDIS\_URL, etc.) |
-| server        | The base http web server that allows a Socket.io websocket to mount on it              |
-| socket        | Initialises a websocket server                                                         |
+| Variable Name                      | Use                                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| location                           | Stores the current user's location                                                                      |
+| player?.location (in players list) | Stores the location of other players - this may be null if their location is not available to the user. |
 
 ### Pseudocode
 
