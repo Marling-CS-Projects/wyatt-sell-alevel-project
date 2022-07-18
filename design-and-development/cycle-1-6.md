@@ -1,4 +1,4 @@
-# 2.2.7 Cycle 7: Item Functions 1
+# 2.2.8 Cycle 8: Item Functions 1
 
 ## Design
 

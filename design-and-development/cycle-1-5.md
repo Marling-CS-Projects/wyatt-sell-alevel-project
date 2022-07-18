@@ -1,4 +1,4 @@
-# 2.2.6 Cycle 6: Inventory system
+# 2.2.7 Cycle 7: Inventory system
 
 ## Design
 

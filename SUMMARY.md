@@ -20,12 +20,12 @@
 * [2.2.3 Cycle 3: Map and location](design-and-development/cycle-1-1.md)
 * [2.2.4 Cycle 4: Map enhancements](design-and-development/cycle-1-2.md)
 * [2.2.5 Cycle 5: Misc. changes](design-and-development/cycle-1-3.md)
-* [2.2.5 Cycle 5: Item generation](design-and-development/cycle-1-4.md)
-* [2.2.6 Cycle 6: Inventory system](design-and-development/cycle-1-5.md)
-* [2.2.7 Cycle 7: Item Functions 1](design-and-development/cycle-1-6.md)
-* [2.2.8 Cycle 8: Item Functions 2](design-and-development/cycle-1-7.md)
-* [2.2.9 Cycle 9: Item Functions 3](design-and-development/cycle-1-8.md)
-* [2.2.9 Cycle 9: Catching players](design-and-development/cycle-1-9.md)
+* [2.2.6 Cycle 6: Item generation](design-and-development/cycle-1-4.md)
+* [2.2.7 Cycle 7: Inventory system](design-and-development/cycle-1-5.md)
+* [2.2.8 Cycle 8: Item Functions 1](design-and-development/cycle-1-6.md)
+* [2.2.9 Cycle 9: Item Functions 2](design-and-development/cycle-1-7.md)
+* [2.2.10 Cycle 10: Item Functions 3](design-and-development/cycle-1-8.md)
+* [2.2.11 Cycle 11: Catching players](design-and-development/cycle-1-9.md)
 
 ## 3 Testing <a href="#testing" id="testing"></a>
 

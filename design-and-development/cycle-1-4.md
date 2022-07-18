@@ -1,4 +1,4 @@
-# 2.2.5 Cycle 5: Item generation
+# 2.2.6 Cycle 6: Item generation
 
 ## Design
 
