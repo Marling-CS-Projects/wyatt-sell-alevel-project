@@ -9,7 +9,6 @@ In this cycle, I will aim to create a map with your live updating location on th
 * [x] Create a Google Maps instance on the client, and render the users location and play-area over the top of it
 * [x] Stream location updates to the server, and emit them to other clients (where appropriate)
 * [x] Render locations of other clients on the client (where appropriate)
-* [x] Create a game boundary configuration screen on the "Create" page, and ensure players don't go out of bounds (server-side)
 
 ### Usability Features
 
@@ -33,10 +32,6 @@ subroutine recieve_location_ping (player)
     update server player with new player data (using player.id)
     if (player.hunter)
         broadcast player to all hunter clients
-    end if
-    
-    if (out_of_bounds)
-        broadcast to all players ("player.name is out of bounds")
     end if
 end subroutine
 
@@ -77,70 +72,184 @@ end subroutine
 
 #### Server
 
-In \`index.ts\` in the server directory, I configured a websocket server, using [Socket.IO](https://socket.io/), with an [Express.js](https://expressjs.com/) server object as the mount point. Additionally, I made sure to initialise connections to:
+On the server, the additional code I had to write to allow for player location to be streamed to other clients was minimal due to the strong architecture I had implemented in Cycle 1 and 2. I utilised a new feature in my socket sending process called "rooms". This means that I am able to quickly send a message to multiple clients in a certain group (i.e. all hunters in game with ID: 123) without having to iterate through an array manually.
 
-* Redis: A caching solution that avoids costly I/O operations on a database, when unnecessary.
-* Prisma: A typed ORM (Object Relational Mapping) that enables easy interaction with my PostgreSQL database from within Typescript
+{% embed url="https://socket.io/docs/v3/rooms/" %}
 
-At this stage of the project, I'm not making use of these resources, however I configured them now, as I will likely need to to use them later
+I also had to update a few class constructors, for instance, ensuring that a player joins and leaves the room for their respective role and game, and making sure that the location is a field on the player class. Additionally, I fixed a few bugs, where player updates would be sent twice or sent to the wrong players.
 
 #### Client
 
-I created a new Next.js project, installing a few libraries that I've found useful before:
+I researched several map libraries to embed a map view in my game. Initially I intended to use the Google Maps API, but after discovering that they charge a high fee (7$ per 1000 map loads). After doing some research I found [react-leaflet](https://react-leaflet.js.org/), that allowed for easy integration into a React app, and supported several different mapping providers.
 
-* Chakra UI: A UI framework that closely follows React principles
-* SWR: A reactive request handler that allows for simple data fetching and mutation
-
-I also installed `socket-io.client`, a frontend library that allows me to create connections to my websocket server. With reference to _some_ of the elements of [an excellent tutorial by Holger Schmitz](https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial#implement-the-socketio-client-using-react), I was able to connect to my websocket server, and display received messages (see [#evidence](cycle-1-1.md#evidence "mention")). This code is contained within `index.tsx`
+I had to do some calculations to correctly render the player location depending on the zoom level of the map. I also had to make sure that the clients location was updated regularly on the map, and on the server.
 
 {% tabs %}
-{% tab title="index.ts" %}
+{% tab title="Map.tsx" %}
 ```typescript
-import 'dotenv/config';
-import {prisma} from './prisma';
-import {redis} from './utils/redis';
-import {Server} from 'socket.io';
-import {env} from './utils/env';
-import {createServer} from 'http';
-import express from 'express';
-import cors from 'cors';
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+  CircleMarker,
+} from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import {useEffect, useRef, useState} from 'react';
+import {CircleMarker as LeafletCircleMarker, LatLng} from 'leaflet';
+import {useMe, usePlayers, useSocket} from '../../utils/hooks';
+import {Socket} from 'socket.io-client';
 
-const app = express();
-const server = createServer(app);
+export default () => {
+  const [location, setLocation] = useState<GeolocationCoordinates | null>(null);
+  const socket = useSocket();
 
-const socket = new Server(server, {
-	cors: {
-		origin: env.CLIENT_ORIGIN,
-		methods: ['GET', 'POST'],
-	},
-});
+  useEffect(() => {
+    // This is a built in browser function that is called when a 
+    // device's location updates
+    const watchId = navigator.geolocation.watchPosition(data => {
+      console.log('watch called');
+      setLocation(data.coords);
+      if (socket) {
+        emitLocation(socket, data.coords);
+      }
+    });
+    
+    // This is a function which requests a new location each second. 
+    // In combination with the above function, this will ensure that
+    // player location is both accurate and up-to-date.
+    const interval = setInterval(() => {
+      console.log('interval called', socket);
+      navigator.geolocation.getCurrentPosition(data => {
+        setLocation(data.coords);
+        if (socket) {
+          emitLocation(socket, data.coords);
+        }
+      });
+    }, 1000);
+    
+    // Clear interval when component unmounts. This prevents memory leaks.
+    return () => {
+      console.log('cleared');
+      clearInterval(interval);
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, [socket]);
 
-app.use(
-	cors({
-		origin: env.CLIENT_ORIGIN,
-		credentials: true,
-	})
-);
-
-const start = async () => {
-	await prisma.$connect();
-	await redis.connect();
-	await server.listen(env.PORT, () => {
-		console.log(`Listening on port ${env.PORT}`);
-	});
+  if (!location || !socket) return null;
+  
+  // Render the map, centering it at the the players location.
+  // The <TileLayer/> component is responsible for renddering the actual map 
+  // content. If we know the domain from which Google requests their map
+  // tiles, we can use this for no extra cost in our map, which is what
+  // you see here.
+  return (
+    <MapContainer
+      center={[location.latitude, location.longitude]}
+      zoom={13}
+      scrollWheelZoom={false}
+      style={{height: '100vh', width: '100%'}}
+    >
+      <TileLayer
+        url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+        subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+      />
+      <MapMarkers location={location} />
+    </MapContainer>
+  );
 };
 
-void start();
+const MapMarkers = (props: {location: GeolocationCoordinates}) => {
+  const [players] = usePlayers();
+  const me = useMe();
 
-// This is a function to send test data to the client
-socket.on('connection', socket => {
-	console.log('Client connected');
-	socket.send('Hello world');
-	let i = 0;
-	setInterval(() => {
-		socket.send('message ' + i++);
-	}, 1000);
-});
+  if (!me) return null;
+
+  return (
+    <>
+      <PlayerMarker location={props.location} isMe />
+      {players
+        .filter(p => p.location && p.id !== me.id)
+        .map(({location}) => (
+          <PlayerMarker location={location!} isMe={false} />
+        ))}
+    </>
+  );
+};
+
+const PlayerMarker = (props: {
+  location: GeolocationCoordinates;
+  isMe: boolean;
+}) => {
+  const circleRef = useRef<LeafletCircleMarker<any>>(null);
+  const map = useMap();
+
+  const mapZoomListener = () => {
+    const bounds = map.getBounds();
+    const pixelBounds = map.getSize();
+    const {lat} = bounds.getCenter();
+
+    const widthInMetres = new LatLng(lat, bounds.getWest()).distanceTo({
+      lat,
+      lng: bounds.getEast(),
+    });
+    if (circleRef.current) {
+      circleRef.current.setStyle({
+        weight: (props.location.accuracy / widthInMetres) * pixelBounds.x,
+      });
+      circleRef.current;
+    }
+  };
+
+  useEffect(() => {
+    map.on('load', mapZoomListener);
+    map.on('zoom', mapZoomListener);
+    return () => {
+      map.off('load', mapZoomListener);
+      map.off('zoom', mapZoomListener);
+    };
+  }, [circleRef, map]);
+
+  useEffect(() => {
+    if (props.location && circleRef.current) {
+      circleRef.current.setLatLng([
+        props.location.latitude,
+        props.location.longitude,
+      ]);
+    }
+  }, [circleRef, props.location]);
+
+  return (
+    <CircleMarker
+      center={[props.location.latitude, props.location.longitude]}
+      color={props.isMe ? '#4286f5' : 'red'}
+      stroke
+      fillColor={props.isMe ? '#4286f5' : 'red'}
+      opacity={0.2}
+      fillOpacity={1}
+      radius={10}
+      ref={circleRef}
+    >
+      <Popup>
+        A pretty CSS3 popup. <br /> Easily customizable.
+      </Popup>
+    </CircleMarker>
+  );
+};
+
+const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
+  socket.emit('player-location', {
+    accuracy: data.accuracy,
+    altitude: data.altitude,
+    altitudeAccuracy: data.altitudeAccuracy,
+    heading: data.heading,
+    latitude: data.latitude,
+    longitude: data.longitude,
+    speed: data.speed,
+  });
+};
+
 ```
 {% endtab %}
 
