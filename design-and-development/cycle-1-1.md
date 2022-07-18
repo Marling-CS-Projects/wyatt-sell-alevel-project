@@ -12,7 +12,6 @@ In this cycle, I will aim to create a map with your live updating location on th
 
 ### Usability Features
 
-* The playable game area will have to be made clear to other players to minimise the risk of accidentally breaking the rules
 * In some cases, more than one location indicator will appear on a map. There must be a difference in colour between the user and other users indicators to avoid confusion
 * Location updates should be smooth, and not sudden jolts. This will be achieved by regular pings and some [linear interpolation](https://en.wikipedia.org/wiki/Linear\_interpolation)
 * Location uncertainty should be shown on the map as a translucent circle showing the error range, to avoid confusion if the rendered location is incorrect
@@ -100,6 +99,7 @@ import {useEffect, useRef, useState} from 'react';
 import {CircleMarker as LeafletCircleMarker, LatLng} from 'leaflet';
 import {useMe, usePlayers, useSocket} from '../../utils/hooks';
 import {Socket} from 'socket.io-client';
+import './map-lerp.css';
 
 export default () => {
   const [location, setLocation] = useState<GeolocationCoordinates | null>(null);
@@ -274,6 +274,21 @@ const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
 ```
 {% endtab %}
 
+{% tab title="map-lerp.css" %}
+```css
+/* Source: https://gist.github.com/meule/777d9a8a42e2c99a3386 */
+/* This adds a linear transition to the map marker when their */
+/* location updates */
+.leaflet-marker-pane > * {
+    -webkit-transition: transform .3s linear;
+    -moz-transition: transform .3s linear;
+    -o-transition: transform .3s linear;
+    -ms-transition: transform .3s linear;
+    transition: transform .3s linear;
+}
+```
+{% endtab %}
+
 {% tab title="SocketHandler.tsx" %}
 ```typescript
 // I added a small section to <SocketHandler/> to recieve location updates
@@ -365,16 +380,8 @@ io.on('connection', async socket => {
 
 ### Challenges
 
-* Working out how to display the&#x20;
-
-```typescript
-{
-	cors: {
-		origin: env.CLIENT_ORIGIN,
-		methods: ['GET', 'POST'],
-	},
-}
-```
+* Working out how to display the accuracy circle correctly was challenge, but it helped to break down the problem into smaller parts (see: [#thinking-abstractly-and-visualisation](../1-analysis/1.4b-computational-methods.md#thinking-abstractly-and-visualisation "mention")), until I came to the solution - I had to listen for map updates, find the map width and finally calculate proportions.
+*
 
 ## Testing
 
