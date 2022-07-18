@@ -225,8 +225,8 @@ const PlayerMarker = (props: {
     };
   }, [circleRef, map]);
 
-  // This updates the location of the marker if the 
-  // parameters passed to this component are changed
+  // This updates the location of the marker if the parameters passed 
+  // to this component are changed.
   useEffect(() => {
     if (props.location && circleRef.current) {
       circleRef.current.setLatLng([
@@ -235,7 +235,10 @@ const PlayerMarker = (props: {
       ]);
     }
   }, [circleRef, props.location]);
-
+  
+  // This is the actual circle marker. At present it only displays a
+  // different color for other players, but I intend to add popups 
+  // in the future.
   return (
     <CircleMarker
       center={[props.location.latitude, props.location.longitude]}
@@ -248,12 +251,14 @@ const PlayerMarker = (props: {
       ref={circleRef}
     >
       <Popup>
-        A pretty CSS3 popup. <br /> Easily customizable.
+        Example popup
       </Popup>
     </CircleMarker>
   );
 };
 
+// This is a reusable function that broadcasts the given location data to
+// the server
 const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
   socket.emit('player-location', {
     accuracy: data.accuracy,
