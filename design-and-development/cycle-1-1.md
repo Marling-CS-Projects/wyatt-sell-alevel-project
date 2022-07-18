@@ -323,8 +323,8 @@ io.on('connection', async socket => {
       id: socket.player.id,
       type,
     });
-    // We register a seperate event (`player-location`), for broadcasting
-    // location updates to the hunter "room", if the player is a hunter
+    // We make sure to send a location update to all hunter clients, if
+    // a player changes to become a hunter, to ensure they are all in sync.
     if (socket.player.type === 'hunter') {
       io.to(socket.game.id + 'hunter').emit('player-location', {
         id: socket.player.id,
@@ -333,6 +333,8 @@ io.on('connection', async socket => {
     }
   });
 
+  // We register a seperate event (`player-location`), for broadcasting
+  // location updates to the hunter "room", if the player is a hunter
   socket.on('player-location', async data => {
     socket.player.location = data;
     if (socket.player.type === 'hunter') {
