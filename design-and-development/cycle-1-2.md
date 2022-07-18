@@ -1,4 +1,4 @@
-# 2.2.3 Cycle 3: Map and location
+# 2.2.4 Cycle 4: Map enhancements
 
 ## Design
 
@@ -387,11 +387,14 @@ io.on('connection', async socket => {
 
 ### Tests
 
-| Test | Instructions                                             | What I expect                                                                                    | What actually happens | Pass/Fail |
-| ---- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------- | --------- |
-| 1    | A player creates and starts a game with no other players | A map is displayed with their location indicator in the centre, and no other indicators rendered | As expected           | Pass      |
-| 2    | Visit localhost:3000, and observe server logs            | A "Client connected message" is logged to the console.                                           | As expected           | Pass      |
+| Test | Instructions                                                          | What I expect                                                                                                              | What actually happens | Pass/Fail |
+| ---- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------- | --------- |
+| 1    | A player creates and starts a game with no other players              | A map is displayed with their location indicator in the centre, and no other indicators rendered                           | As expected           | Pass      |
+| 2    | A Hunter and Hunted player join the same game, and the host starts it | Each player should see a map with only their own location marker rendered                                                  | As expected           | Pass      |
+| 3    | 2 Hunted players join the same game, and the host starts it           | Each player should see a map with only their own location marker rendered                                                  | As expected           | Pass      |
+| 4    | 2 Hunter players join the same game, and the host starts it           | Both players should see a map with their own location in the centre in blue, AND the other players location marker in red. | As expected           |           |
+| 5    | Create and start a game                                               | The map renders a satellite view, and supports zoom with a dynamic accuracy circle                                         | As expected           |           |
 
 ### Evidence
 
-![](<../.gitbook/assets/image (1) (1).png>)![](<../.gitbook/assets/image (5) (1) (1) (1).png>)
+TODO: RECORD EVIDENCE
