@@ -271,7 +271,6 @@ const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
     speed: data.speed,
   });
 };
-
 ```
 {% endtab %}
 
@@ -382,16 +381,16 @@ io.on('connection', async socket => {
 ### Challenges
 
 * Working out how to display the accuracy circle correctly was challenge, but it helped to break down the problem into smaller parts (see: [#thinking-abstractly-and-visualisation](../1-analysis/1.4b-computational-methods.md#thinking-abstractly-and-visualisation "mention")), until I came to the solution - I had to listen for map updates, find the map width and finally calculate proportions.
-*
+* I was initially confused about how to update the marker position - typically within React, if you update the parameters passed to a component, it will update automatically. However, it appeared this was not the case with `react-leaflet`, as I had to use "refs" in order to interact with the marker. This was discovered by reading the example code provided in the library's documentation.
 
 ## Testing
 
 ### Tests
 
-| Test | Instructions                                  | What I expect                                                              | What actually happens | Pass/Fail |
-| ---- | --------------------------------------------- | -------------------------------------------------------------------------- | --------------------- | --------- |
-| 1    | Visit http://locahost:3000                    | A simple UI is displayed with a list of messages received from the server. | As expected           | Pass      |
-| 2    | Visit localhost:3000, and observe server logs | A "Client connected message" is logged to the console.                     | As expected           | Pass      |
+| Test | Instructions                                             | What I expect                                                                                    | What actually happens | Pass/Fail |
+| ---- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------- | --------- |
+| 1    | A player creates and starts a game with no other players | A map is displayed with their location indicator in the centre, and no other indicators rendered | As expected           | Pass      |
+| 2    | Visit localhost:3000, and observe server logs            | A "Client connected message" is logged to the console.                                           | As expected           | Pass      |
 
 ### Evidence
 
