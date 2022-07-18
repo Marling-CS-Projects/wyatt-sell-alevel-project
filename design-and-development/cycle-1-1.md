@@ -160,6 +160,7 @@ export default () => {
   );
 };
 
+// Component that renders map markers of other players
 const MapMarkers = (props: {location: GeolocationCoordinates}) => {
   const [players] = usePlayers();
   const me = useMe();
@@ -178,10 +179,13 @@ const MapMarkers = (props: {location: GeolocationCoordinates}) => {
   );
 };
 
+// Component that renders each individual map markers
 const PlayerMarker = (props: {
   location: GeolocationCoordinates;
   isMe: boolean;
 }) => {
+  // "refs" allow us to interact with the underlying HTML element within
+  // React.
   const circleRef = useRef<LeafletCircleMarker<any>>(null);
   const map = useMap();
 
@@ -189,7 +193,17 @@ const PlayerMarker = (props: {
     const bounds = map.getBounds();
     const pixelBounds = map.getSize();
     const {lat} = bounds.getCenter();
-
+    
+    // The code below is used to update the accuracy circle of the player
+    // depending on zoom value. Every time we fetch a location on the client
+    // an "accuracy" value is associated with it. In common map apps, this is
+    // rendered as a translucent circle around the actual location.
+    
+    // In this case, we have to convert the metre value of the accuracy to
+    // pixel values that we can show on our map. We find what percentage of the 
+    // map width is covered by the accuracy distance, and we convert that to 
+    // find its radius in pixels, before updating our location indicator.
+    
     const widthInMetres = new LatLng(lat, bounds.getWest()).distanceTo({
       lat,
       lng: bounds.getEast(),
@@ -198,10 +212,10 @@ const PlayerMarker = (props: {
       circleRef.current.setStyle({
         weight: (props.location.accuracy / widthInMetres) * pixelBounds.x,
       });
-      circleRef.current;
     }
   };
 
+  // This registers and unregisters the afformentioned zoom listeners
   useEffect(() => {
     map.on('load', mapZoomListener);
     map.on('zoom', mapZoomListener);
@@ -211,6 +225,8 @@ const PlayerMarker = (props: {
     };
   }, [circleRef, map]);
 
+  // This updates the location of the marker if the 
+  // parameters passed to this component are changed
   useEffect(() => {
     if (props.location && circleRef.current) {
       circleRef.current.setLatLng([
