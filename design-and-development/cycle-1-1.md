@@ -274,39 +274,75 @@ const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
 ```
 {% endtab %}
 
-{% tab title="index.tsx" %}
+{% tab title="index.ts" %}
 ```jsx
-import {Heading} from '@chakra-ui/react';
-import {useEffect, useState} from 'react';
-import {io, Socket} from 'socket.io-client';
+// SHORTENED FOR BREVITY (LINES 178-239)
+// This is a function to transmit connection and disconnection events
+io.on('connection', async socket => {
+  io.emit('game-init', {
+    id: socket.game.id,
+    code: socket.game.joinCode,
+    options: socket.game.options,
+  });
 
-export default function () {
-	const [socket, setSocket] = useState<Socket | null>(null);
-	const [messages, setMessages] = useState<string[]>([]);
+  // Tells all users in game that a new user connected
+  io.to(socket.game.id).emit('player-connected', {
+    id: socket.user.sub,
+    username: socket.user.given_name,
+    picture: socket.user.picture,
+    type: socket.player.type,
+    isHost: socket.player.isHost,
+  });
 
-	useEffect(() => {
-		if (!socket) {
-			const newSocket = io(`http://localhost:8888`);
-			setSocket(newSocket);
-			return;
-		}
-		socket.on('message', (message: string) => {
-			setMessages(messages => [...messages, message]);
-		});
-	}, [socket, setSocket, setMessages]);
+  // Sends already connected users to new user
+  for (const {id, user, type, socket: s, ...player} of socket.game.players) {
+    if (id === socket.player.id || !s.connected) continue;
 
-	return (
-		<>
-			<Heading>Hello world!</Heading>
-			<p>Socket messages:</p>
-			<ul>
-				{messages.map(message => (
-					<li key={message}>{message}</li>
-				))}
-			</ul>
-		</>
-	);
-}
+    socket.emit('player-connected', {
+      id: user.sub,
+      username: user.given_name,
+      picture: user.picture,
+      type,
+      isHost: player.isHost,
+      // Here we append the location to the `player-connected` broadcast
+      // IF the both the player being send and recieving is a hunter 
+      location:
+        socket.player.type === 'hunter' && socket.player.type === type
+          ? player.location
+          : undefined,
+    });
+  }
+
+  socket.on('disconnect', () => {
+    io.emit('player-disconnected', {id: socket.user.sub});
+  });
+
+  socket.on('player-pref', async data => {
+    const type = socket.player.updatePref(data);
+    io.emit('player-updated', {
+      id: socket.player.id,
+      type,
+    });
+    // We register a seperate event (`player-location`), for broadcasting
+    // location updates to the hunter "room", if the player is a hunter
+    if (socket.player.type === 'hunter') {
+      io.to(socket.game.id + 'hunter').emit('player-location', {
+        id: socket.player.id,
+        location: socket.player.location,
+      });
+    }
+  });
+
+  socket.on('player-location', async data => {
+    socket.player.location = data;
+    if (socket.player.type === 'hunter') {
+      io.to(socket.game.id + 'hunter').emit('player-location', {
+        id: socket.player.id,
+        location: data,
+      });
+    }
+  });
+});
 ```
 {% endtab %}
 {% endtabs %}
