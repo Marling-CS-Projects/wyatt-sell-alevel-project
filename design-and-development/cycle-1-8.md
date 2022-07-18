@@ -1,4 +1,4 @@
-# 2.2.9 Cycle 9: Catching players
+# 2.2.9 Cycle 9: Item Functions 3
 
 ## Design
 

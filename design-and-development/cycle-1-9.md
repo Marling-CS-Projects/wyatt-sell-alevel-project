@@ -1,4 +1,4 @@
-# 2.2.5 Cycle 5: Misc. changes
+# 2.2.9 Cycle 9: Catching players
 
 ## Design
 
