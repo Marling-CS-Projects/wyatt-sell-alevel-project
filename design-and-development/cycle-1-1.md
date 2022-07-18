@@ -274,6 +274,20 @@ const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
 ```
 {% endtab %}
 
+{% tab title="SocketHandler.tsx" %}
+```typescript
+// I added a small section to <SocketHandler/> to recieve location updates
+// and update the player list accordingly.
+socket.on('player-location', message => {
+  setPlayers(players =>
+    players.map(p =>
+      p.id === message.id ? {...p, location: message.location} : p
+    )
+  );
+})
+```
+{% endtab %}
+
 {% tab title="index.ts" %}
 ```jsx
 // SHORTENED FOR BREVITY (LINES 178-239)
