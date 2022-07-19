@@ -28,42 +28,38 @@ In this cycle, I will aim to add some upgrades to the map interface and overall 
 ### Pseudocode
 
 ```
-// Server
-subroutine recieve_location_ping (player)
-    update server player with new player data (using player.id)
-    if (player.hunter)
-        broadcast player to all hunter clients
-    end if
+// Client
+allowedArea = []
+
+subroutine add_point_to_map (point)
+    add point to allowedArea
+    display point on map
 end subroutine
 
-// Client
-procedure ping_location
-    location = get_location()
-    if (near out_of_bounds)
-        alert("Near boundary")
-        if (out_of_bounds
-            alert("Move back into play zone")
-        end if
-    end if
-    add_marker_to_map(location, blue)
-    socket.send(location)
+subroutine create_game 
+    send /create POST request with content {points: allowedArea}
+end subroutine
+
+subroutine on_location_update (location)
+    if location near to boundary
+        display alert
+        vibrate device
+end subroutine
+
+procedure recentre
+    location = get_my_location()
+    set map centre to location
+    set zoom level to default
 end procedure
 
-subroutine add_marker_to_map (location, color)
-    marker = new Marker({
-        x: location.x
-        y: location.y
-        accuracy: location.accuracy
-        color: color
-    })
-    add marker to map
-end subroutine
-
-subroutine recieve_player_location (player)
-    update players with new player data (using player.id)
-    for i in range(100)
-        update marker with {x: (location.x / i), y: (location.y / i)}
-    end for
+// Server
+subroutine on_location_update (location)
+    if location not in allowedArea
+        broadcast player_out_of_bounds to all players
+    else if location now back in allowedArea
+        broadcast player_back_in_bounds to all players
+    else
+        update location data
 end subroutine
 ```
 
