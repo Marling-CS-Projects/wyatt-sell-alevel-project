@@ -4,24 +4,26 @@
 
 ### Objectives
 
-In this cycle, I will aim to create a map with your live updating location on the client. I will also hope to have these updates send to the server, and where appropriate, broadcast them to other notes - for instance, if you're a Hunter, your live location will also update on the screen of other Hunters. Additionally, I would like to include a map in the "Create" screen so that game hosts are able to define a polygon over which the game is playable.
+In this cycle, I will aim to add some upgrades to the map interface and overall usability features. The primary feature I will add in the cycle will be the ability to define bounds in the game creation screen and to alert players when they stray outside these bounds. A few other features are more minor - like labels with player details if their location marker is clicked, and a recenter button on the map. I also intend to change the game interface slightly to allow for an information display and settings and inventory buttons.
 
-* [x] Create a Google Maps instance on the client, and render the users location and play-area over the top of it
-* [x] Stream location updates to the server, and emit them to other clients (where appropriate)
-* [x] Render locations of other clients on the client (where appropriate)
+* [ ] Create a boundary system, where the game host can define and edit the boundary, and players can see (and be warned about) the boundary area
+* [ ] Create player labels for hunters to differentiate between each other
+* [ ] Add a "recenter" button on the map, that translates the map so that the users location is in the centre again.
+* [ ] Add some placeholder buttons for settings and inventory, and some player details at the bottom of the screen
 
 ### Usability Features
 
-* In some cases, more than one location indicator will appear on a map. There must be a difference in colour between the user and other users indicators to avoid confusion
-* Location updates should be smooth, and not sudden jolts. This will be achieved by regular pings and some [linear interpolation](https://en.wikipedia.org/wiki/Linear\_interpolation)
-* Location uncertainty should be shown on the map as a translucent circle showing the error range, to avoid confusion if the rendered location is incorrect
+* The popup text must be large enough for older users to see, and I must be careful to ensure that any added buttons or "hit-boxes" are not too small.
+* The boundary system must be clear on the map, and my game must alert the user obviously if they veer too close (vibration and sound)
+* Ensure pinch-and-zoom functionality is enabled on the map, for use in a smartphone
 
 ### Key Variables
 
-| Variable Name                      | Use                                                                                                     |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| location                           | Stores the current user's location                                                                      |
-| player?.location (in players list) | Stores the location of other players - this may be null if their location is not available to the user. |
+| Variable Name | Use                                                                                                                                     |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| allowedArea   | Stores a list of co-ordinates that define the vertices of the acceptable polygon                                                        |
+| players       | Stores a list of all known player data, which will be used to render labels above indicators on the map                                 |
+| location      | Stores the current player position which we will check if it is inside bounds on each update, and display warning messages accordingly. |
 
 ### Pseudocode
 
