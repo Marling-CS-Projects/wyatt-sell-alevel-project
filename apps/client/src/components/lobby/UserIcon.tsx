@@ -2,7 +2,7 @@ import {Image, Text, VStack, WrapItem} from '@chakra-ui/react';
 import {ServerMessages} from '@monorepo/shared/src/index';
 import {useMe} from '../../utils/hooks';
 
-export const UserIcon = (props: {u: ServerMessages['user-connected']}) => {
+export const UserIcon = (props: {u: ServerMessages['player-connected']}) => {
 	const me = useMe();
 	const {u} = props;
 

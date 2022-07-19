@@ -5,7 +5,6 @@ import {createServer} from 'http';
 import express from 'express';
 import cors from 'cors';
 import jwksClient from 'jwks-rsa';
-import 'express-oauth2-jwt-bearer';
 import {expressjwt, GetVerificationKey} from 'express-jwt';
 import {authorize} from '@thream/socketio-jwt';
 import {userType} from './types';
@@ -17,12 +16,21 @@ import {Player} from './classes/player';
 import {Game} from './classes/game';
 import {createSchema} from '@monorepo/shared/src/schemas/connection';
 import * as http from 'http';
+import {JwtPayload} from 'jsonwebtoken';
 
 declare module 'socket.io' {
 	interface Socket {
 		user: userType;
 		player: Player;
 		game: Game;
+	}
+}
+
+declare module 'express-serve-static-core' {
+	interface Request {
+		auth: JwtPayload;
+		game: Game;
+		player: Player;
 	}
 }
 
@@ -61,31 +69,45 @@ app.use((req, res, next) => {
 	});
 });
 
-const checkJwt = expressjwt({
-	secret: jwksClient.expressJwtSecret({
-		cache: true,
-		rateLimit: true,
-		jwksRequestsPerMinute: 5,
-		jwksUri: `https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`,
-	}) as GetVerificationKey,
+app.use(
+	expressjwt({
+		secret: jwksClient.expressJwtSecret({
+			cache: true,
+			rateLimit: true,
+			jwksRequestsPerMinute: 5,
+			jwksUri: `https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+		}) as GetVerificationKey,
+		algorithms: ['RS256'],
+	})
+);
 
-	algorithms: ['RS256'],
-});
-
-app.get('/user', checkJwt, (req, res) => {
+app.get('/user', (req, res) => {
 	res.send(JSON.stringify(req.auth));
 });
 
-app.get('/', (req, res) => {
-	res.redirect(env.CLIENT_ORIGIN);
-});
-
-app.post('/create', checkJwt, (req, res) => {
+app.post('/create', (req, res) => {
 	const result = createSchema.safeParse(req.body);
 	if (!result.success) return res.status(400).send(result.error);
 	const game = new Game(result.data.options);
 	games.push(game);
 	res.send(JSON.stringify({code: game.joinCode}));
+});
+
+app.use((req, res, next) => {
+	const player = games.flatMap(g => g.players).find(p => p.id === req.auth.sub);
+	if (!player) {
+		console.error('No player found');
+		res.sendStatus(400);
+		return;
+	}
+	req.player = player;
+	req.game = player.game;
+	next();
+});
+
+app.post('/start', (req, res) => {
+	req.game.start();
+	res.send(JSON.stringify({code: 200}));
 });
 
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
@@ -139,6 +161,13 @@ io.use((socket, next) => {
 			name: 'InvalidGameCode',
 			message: 'No game with this game code exists',
 		});
+	// TODO: Implement rejoin logic here
+	if (matchingGame.hasStarted) {
+		return next({
+			name: 'GameAlreadyStarted',
+			message: 'This game has already started',
+		});
+	}
 
 	const player = new Player(socket, matchingGame);
 	socket.player = player;
@@ -153,8 +182,9 @@ io.on('connection', async socket => {
 		code: socket.game.joinCode,
 		options: socket.game.options,
 	});
-	// Tells all users that a new user connected
-	io.emit('user-connected', {
+
+	// Tells all users in game that a new user connected
+	io.to(socket.game.id).emit('player-connected', {
 		id: socket.user.sub,
 		username: socket.user.given_name,
 		picture: socket.user.picture,
@@ -163,32 +193,47 @@ io.on('connection', async socket => {
 	});
 
 	// Sends already connected users to new user
-	for (const [id, s] of io.of('/').sockets) {
-		if (id === socket.id || !s.connected) continue;
+	for (const {id, user, type, socket: s, ...player} of socket.game.players) {
+		if (id === socket.player.id || !s.connected) continue;
 
-		socket.emit('user-connected', {
-			id: s.user.sub,
-			username: s.user.given_name,
-			picture: s.user.picture,
-			type: s.player.type,
-			isHost: socket.player.isHost,
+		socket.emit('player-connected', {
+			id: user.sub,
+			username: user.given_name,
+			picture: user.picture,
+			type,
+			isHost: player.isHost,
+			location:
+				socket.player.type === 'hunter' && socket.player.type === type
+					? player.location
+					: undefined,
 		});
 	}
 
 	socket.on('disconnect', () => {
-		io.emit('user-disconnected', {id: socket.user.sub});
+		io.emit('player-disconnected', {id: socket.user.sub});
 	});
 
 	socket.on('player-pref', async data => {
 		const type = socket.player.updatePref(data);
-		if (type !== data) return;
-		io.emit('user-updated', {
-			type: 'type',
-			data: {id: socket.player.id, type: type},
+		io.emit('player-updated', {
+			id: socket.player.id,
+			type,
 		});
+		if (socket.player.type === 'hunter') {
+			io.to(socket.game.id + 'hunter').emit('player-location', {
+				id: socket.player.id,
+				location: socket.player.location,
+			});
+		}
 	});
 
-	socket.on('game-start', () => {
-		socket.game.hasStarted;
+	socket.on('player-location', async data => {
+		socket.player.location = data;
+		if (socket.player.type === 'hunter') {
+			io.to(socket.game.id + 'hunter').emit('player-location', {
+				id: socket.player.id,
+				location: data,
+			});
+		}
 	});
 });

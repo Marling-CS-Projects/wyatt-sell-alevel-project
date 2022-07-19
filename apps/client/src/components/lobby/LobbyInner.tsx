@@ -1,11 +1,12 @@
 import Profile from '../Profile';
-import {Button, Flex, Heading, Text, VStack} from '@chakra-ui/react';
+import {Box, Button, Flex, Heading, Text, VStack} from '@chakra-ui/react';
 import {PlayerContainer} from './PlayerContainer';
-import {PrefButtons} from '../PrefButtons';
+import {SwitchRole} from './SwitchRole';
 import {ServerMessages, ServerToClientEvents} from '@monorepo/shared/src/index';
 import {useGame, useMe, usePlayers} from '../../utils/hooks';
 import {JoinOrCreateGame} from './JoinOrCreateGame';
 import {StartGame} from './StartGame';
+import dynamic from 'next/dynamic';
 
 export const LobbyInner = () => {
 	const [players] = usePlayers();
@@ -23,7 +24,7 @@ export const LobbyInner = () => {
 					<Text color={'gray.200'}>{players.length} / 20</Text>
 				</VStack>
 				<PlayerContainer />
-				<PrefButtons />
+				<SwitchRole />
 			</Flex>
 			{me.isHost && <StartGame />}
 		</Flex>

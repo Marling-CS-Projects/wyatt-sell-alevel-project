@@ -5,7 +5,7 @@
 // 	const eventsMap: Partial<{
 // 		[key in keyof ServerMessages]: () => ServerMessages[key];
 // 	}> = {
-// 		'user-connected': () => {
+// 		'player-connected': () => {
 // 			const {socket: playerSocket, game, user, ...safePlayer} = socket.player;
 // 			return {
 // 				username: socket.user.given_name,

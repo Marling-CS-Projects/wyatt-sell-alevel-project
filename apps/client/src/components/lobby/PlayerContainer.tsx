@@ -28,7 +28,7 @@ export const PlayerContainer = () => {
 };
 
 const PlayerClassContainer = (props: {
-	players: ServerMessages['user-connected'][];
+	players: ServerMessages['player-connected'][];
 	title: string;
 	bg: string;
 }) => {
@@ -37,7 +37,7 @@ const PlayerClassContainer = (props: {
 			<Heading size={'sm'}>{props.title}</Heading>
 			<Wrap spacing={6}>
 				{props.players.map(u => (
-					<UserIcon u={u} />
+					<UserIcon u={u} key={u.id} />
 				))}
 			</Wrap>
 		</VStack>

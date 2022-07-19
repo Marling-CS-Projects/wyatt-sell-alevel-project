@@ -2,7 +2,7 @@ export const generateJoinCode = () => {
 	const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'.split('');
 	return [...new Array(6)]
 		.fill(0)
-		.map(() => chars[Math.floor(Math.random() * chars.length + 1)])
+		.map(() => chars[Math.floor(Math.random() * chars.length)])
 		.join('');
 };
 

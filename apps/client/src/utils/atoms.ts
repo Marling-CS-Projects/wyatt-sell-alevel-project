@@ -12,9 +12,12 @@ export const socketAtom = atom<Socket<
 	ClientToServerEvents
 > | null>(null);
 
-export const playersAtom = atom<ServerMessages['user-connected'][]>([]);
+export const playersAtom = atom<
+	(ServerMessages['player-connected'] & {
+		location?: GeolocationCoordinates | null;
+	})[]
+>([]);
 
-export const gameAtom = atomWithStorage<ServerMessages['game-init'] | null>(
-	'game',
-	null
-);
+export const gameAtom = atomWithStorage<
+	(ServerMessages['game-init'] & {hasStarted: boolean}) | null
+>('game', null);

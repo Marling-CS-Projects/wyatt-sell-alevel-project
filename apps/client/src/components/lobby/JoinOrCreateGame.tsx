@@ -105,6 +105,7 @@ export const JoinPage = () => {
 
 export const CreatePage = () => {
 	const {getIdTokenClaims} = useAuth0();
+	// TBI
 	const [options, setOptions] = useState({
 		max: {
 			hunter: 10,
@@ -165,7 +166,7 @@ const ConnectWithCode = (props: {
 		});
 
 		const tempConnectedListener = async (game: ServerMessages['game-init']) => {
-			setGame(game);
+			setGame({...game, hasStarted: false});
 			setSocket(newSocket);
 			newSocket.off('game-init', tempConnectedListener);
 			await router.push('/');

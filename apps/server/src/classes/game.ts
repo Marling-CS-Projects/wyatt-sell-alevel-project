@@ -29,19 +29,19 @@ export class Game {
 		const area = polygonArea([
 			{
 				x: 51.756754,
-				y: 2.258926,
+				y: -2.258926,
 			},
 			{
 				x: 51.756754,
-				y: 2.197053,
+				y: -2.197053,
 			},
 			{
 				x: 51.735922,
-				y: 2.258926,
+				y: -2.258926,
 			},
 			{
 				x: 51.735922,
-				y: 2.197053,
+				y: -2.197053,
 			},
 		]);
 
@@ -95,6 +95,8 @@ export class Game {
 
 	start() {
 		this.hasStarted = true;
-		this;
+		for (const socket of this.players.map(p => p.socket)) {
+			socket.emit('game-start', true);
+		}
 	}
 }

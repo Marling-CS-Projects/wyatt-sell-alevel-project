@@ -1,21 +1,28 @@
 export type ServerMessages = {
-	'user-connected': {
+	'player-connected': {
 		id: string;
 		picture: string;
 		username: string;
 		type: 'hunter' | 'hunted';
 		isHost: boolean;
+		location?: GeolocationCoordinates | null;
 	};
-	'user-disconnected': {id: string};
-	'user-updated': {
-		type: keyof UserUpdate;
-		data: {id: string} & UserUpdate[keyof UserUpdate];
+	'player-disconnected': {id: string};
+	'player-updated': {
+		id: string;
+		location?: GeolocationCoordinates | null;
+		type?: 'hunter' | 'hunted';
 	};
 	'game-init': {
 		id: string;
 		code: string;
 		options: Record<string, any>;
 	};
+	'player-location': {
+		id: string;
+		location: GeolocationCoordinates | null;
+	};
+	'game-start': true;
 };
 
 export type ServerResponses = {
@@ -24,15 +31,10 @@ export type ServerResponses = {
 	};
 };
 
-type UserUpdate = {
-	type: {
-		type: 'hunter' | 'hunted';
-	};
-};
-
 export type ClientMessages = {
-	'player-pref': 'hunter' | 'hunted';
 	'game-start': true;
+	'player-pref': 'hunter' | 'hunted';
+	'player-location': GeolocationCoordinates;
 };
 
 export type ServerToClientEvents = {

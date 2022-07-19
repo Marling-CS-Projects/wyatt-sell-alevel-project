@@ -27,22 +27,31 @@ import {
 	ServerMessages,
 	ServerToClientEvents,
 } from '@monorepo/shared';
-import {PrefButtons} from '../components/PrefButtons';
-import {usePlayers} from '../utils/hooks';
+import {SwitchRole} from '../components/lobby/SwitchRole';
+import {useGame, usePlayers} from '../utils/hooks';
 import {UserIcon} from '../components/lobby/UserIcon';
 import {PlayerContainer} from '../components/lobby/PlayerContainer';
 import {LoginContainer} from '../components/lobby/LoginContainer';
 import {LobbyInner} from '../components/lobby/LobbyInner';
 import {LobbyContainer} from '../components/lobby/LobbyContainer';
 import {JoinOrCreateGame} from '../components/lobby/JoinOrCreateGame';
+import {useRouter} from 'next/router';
+import dynamic from 'next/dynamic';
+const Map = dynamic(() => import('../components/game/Map'), {ssr: false});
 
 const IndexInner = () => {
+	const router = useRouter();
 	const [socket, setSocket] = useAtom(socketAtom);
+	const [game] = useGame();
 	const {isAuthenticated, isLoading} = useAuth0();
 
 	if (isLoading) return <h1>Loading...</h1>;
 
-	return (
+	console.log('game', game);
+
+	return game?.hasStarted ? (
+		<Map />
+	) : (
 		<LobbyContainer>
 			{isAuthenticated ? (
 				socket ? (

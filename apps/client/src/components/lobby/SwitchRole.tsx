@@ -1,7 +1,7 @@
-import {useMe, usePlayers, useSocket} from '../utils/hooks';
+import {useMe, usePlayers, useSocket} from '../../utils/hooks';
 import {Button, ButtonGroup, VStack} from '@chakra-ui/react';
 
-export const PrefButtons = () => {
+export const SwitchRole = () => {
 	const socket = useSocket();
 	const [players] = usePlayers();
 	const me = useMe();
