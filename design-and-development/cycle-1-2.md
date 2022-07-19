@@ -63,6 +63,12 @@ subroutine on_location_update (location)
 end subroutine
 ```
 
+### UI Mockup
+
+![](<../.gitbook/assets/image (4).png>)
+
+Add annotation to this!
+
 ## Development
 
 ### Outcome
