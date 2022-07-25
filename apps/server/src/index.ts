@@ -37,7 +37,7 @@ declare module 'express-serve-static-core' {
 const app = express();
 const server = createServer(app);
 
-const games: Game[] = [];
+let games: Game[] = [];
 
 const client = jwksClient({
 	jwksUri: `https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`,
@@ -181,6 +181,7 @@ io.on('connection', async socket => {
 		id: socket.game.id,
 		code: socket.game.joinCode,
 		options: socket.game.options,
+		hasStarted: socket.game.hasStarted,
 	});
 
 	// Tells all users in game that a new user connected
@@ -211,6 +212,9 @@ io.on('connection', async socket => {
 
 	socket.on('disconnect', () => {
 		io.emit('player-disconnected', {id: socket.user.sub});
+		if (socket.game.players.filter(p => p.socket.connected).length === 0) {
+			games = games.filter(g => g.id !== socket.game.id);
+		}
 	});
 
 	socket.on('player-pref', async data => {
@@ -230,7 +234,7 @@ io.on('connection', async socket => {
 	socket.on('player-location', async data => {
 		socket.player.location = data;
 		if (socket.player.type === 'hunter') {
-			io.to(socket.game.id + 'hunter').emit('player-location', {
+			socket.to(socket.game.id + 'hunter').emit('player-location', {
 				id: socket.player.id,
 				location: data,
 			});

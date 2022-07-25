@@ -13,16 +13,18 @@ export const randomBetweenInterval = (min: number, max: number) => {
 // Credit: https://stackoverflow.com/questions/16285134/calculating-polygon-area
 export const polygonArea = (
 	verticesRaw: {
-		x: number;
-		y: number;
+		lat: number;
+		lng: number;
 	}[]
 ) => {
 	let total = 0;
-	const vertices = verticesRaw.map(({x, y}) => {
-		const vx = x * 111320;
-		const vy = y * ((40075000 * Math.cos(x)) / 360);
-		return {x: vx, y: vy};
-	});
+	const vertices = verticesRaw
+		.map(({lat, lng}) => ({x: lat, y: lng}))
+		.map(({x, y}) => {
+			const vx = x * 111320;
+			const vy = y * ((40075000 * Math.cos(x)) / 360);
+			return {x: vx, y: vy};
+		});
 
 	console.log(vertices);
 

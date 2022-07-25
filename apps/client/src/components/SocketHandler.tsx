@@ -31,6 +31,13 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 						)
 					);
 				});
+				socket.on('game-start', message => {
+					setGame(prev => ({
+						...prev!,
+						hasStarted: true,
+						startTime: message.startTime,
+					}));
+				});
 				socket.on('connect_error', error => {
 					toast.error(error.name);
 					setPlayers([]);

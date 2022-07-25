@@ -7,6 +7,7 @@ import {
 	FormControl,
 	Flex,
 	Text,
+	Box,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import {
@@ -22,6 +23,7 @@ import {useAtom} from 'jotai';
 import {io, Socket} from 'socket.io-client';
 import {
 	ClientToServerEvents,
+	GameOptions,
 	ServerMessages,
 	ServerResponses,
 	ServerToClientEvents,
@@ -31,6 +33,8 @@ import {useRouter} from 'next/router';
 import {connectToSocket, fetcher} from '../../utils/network';
 import {codeSchema} from '@monorepo/shared/src/schemas/connection';
 import {toast} from 'react-hot-toast';
+import dynamic from 'next/dynamic';
+import {Map} from '../game/map/Map';
 
 export const JoinOrCreateGame = () => {
 	return (
@@ -103,20 +107,29 @@ export const JoinPage = () => {
 	);
 };
 
+const DynamicPolygonFeature = dynamic(() => import('../game/map/MapPolygon'), {
+	ssr: false,
+});
+
 export const CreatePage = () => {
 	const {getIdTokenClaims} = useAuth0();
 	// TBI
-	const [options, setOptions] = useState({
+	const [options, setOptions] = useState<GameOptions>({
 		max: {
 			hunter: 10,
 			hunted: 10,
 		},
+		vertices: [],
 	});
 
 	return (
 		<Flex alignItems={'center'} flexDir={'column'}>
 			<GoBackButton />
-			<Text>Settings for game setup</Text>
+			<Box height={'75vh'} w={'full'}>
+				<Map vertices={options.vertices}>
+					<DynamicPolygonFeature options={options} setOptions={setOptions} />
+				</Map>
+			</Box>
 			<ConnectWithCode>
 				{createGame => (
 					<Button

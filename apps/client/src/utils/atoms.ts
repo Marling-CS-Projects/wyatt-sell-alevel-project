@@ -18,6 +18,8 @@ export const playersAtom = atom<
 	})[]
 >([]);
 
-export const gameAtom = atomWithStorage<
-	(ServerMessages['game-init'] & {hasStarted: boolean}) | null
->('game', null);
+export const gameAtom = atom<
+	(ServerMessages['game-init'] & {startTime?: number}) | null
+>(null);
+
+export const locationAtom = atom<GeolocationCoordinates | null>(null);

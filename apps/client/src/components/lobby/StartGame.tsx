@@ -12,15 +12,14 @@ export const StartGame = () => {
 	if (!socket) return null;
 
 	const start = async () => {
-		const res = await toast
-			.promise(fetcher<{code: number}>('POST', '/start', getIdTokenClaims), {
+		const res = await toast.promise(
+			fetcher<{code: number}>('POST', '/start', getIdTokenClaims),
+			{
 				success: 'Game started',
 				error: 'Game failed to start',
 				loading: 'Starting game',
-			})
-			.then(() => {
-				setGame(g => ({...g!, hasStarted: true}));
-			});
+			}
+		);
 	};
 
 	return (

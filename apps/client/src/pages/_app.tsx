@@ -7,6 +7,9 @@ import {ChakraProvider} from '@chakra-ui/react';
 import {theme} from '../utils/theme';
 import {SocketHandler} from '../components/SocketHandler';
 import {Toaster} from 'react-hot-toast';
+import '../components/game/map/map.css';
+import '../../../../node_modules/leaflet/dist/leaflet.css';
+import '../../../../node_modules/leaflet-draw/dist/leaflet.draw.css';
 
 const App = ({Component, pageProps}: AppProps) => {
 	return (

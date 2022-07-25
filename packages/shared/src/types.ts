@@ -16,13 +16,16 @@ export type ServerMessages = {
 	'game-init': {
 		id: string;
 		code: string;
-		options: Record<string, any>;
+		options: GameOptions;
+		hasStarted: boolean;
 	};
 	'player-location': {
 		id: string;
 		location: GeolocationCoordinates | null;
 	};
-	'game-start': true;
+	'game-start': {
+		startTime: number;
+	};
 };
 
 export type ServerResponses = {
@@ -44,3 +47,13 @@ export type ServerToClientEvents = {
 export type ClientToServerEvents = {
 	[key in keyof ClientMessages]: (data: ClientMessages[key]) => void;
 };
+
+// Other types
+export interface GameOptions {
+	max: {
+		hunter: number;
+		hunted: number;
+		total?: number;
+	};
+	vertices: {lat: number; lng: number}[];
+}

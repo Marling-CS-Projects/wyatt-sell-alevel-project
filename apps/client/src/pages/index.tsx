@@ -37,7 +37,8 @@ import {LobbyContainer} from '../components/lobby/LobbyContainer';
 import {JoinOrCreateGame} from '../components/lobby/JoinOrCreateGame';
 import {useRouter} from 'next/router';
 import dynamic from 'next/dynamic';
-const Map = dynamic(() => import('../components/game/Map'), {ssr: false});
+import {Map} from '../components/game/map/Map';
+import {GameContainer} from '../components/game/GameContainer';
 
 const IndexInner = () => {
 	const router = useRouter();
@@ -50,7 +51,7 @@ const IndexInner = () => {
 	console.log('game', game);
 
 	return game?.hasStarted ? (
-		<Map />
+		<GameContainer />
 	) : (
 		<LobbyContainer>
 			{isAuthenticated ? (

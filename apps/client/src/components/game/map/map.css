@@ -6,3 +6,13 @@
     -ms-transition: transform .3s linear;
     transition: transform .3s linear;
 }
+.leaflet-marker-draggable {
+    transition: none !important;
+}
+.leaflet-top.leaflet-right {
+    transform: scale(1.5);
+    margin-top: 18px;
+}
+.sr-only {
+    display: none;
+}

@@ -1,4 +1,4 @@
-import {number, object, string} from 'zod';
+import {array, number, object, string} from 'zod';
 
 export const codeSchema = string()
 	.length(6, 'Invalid code')
@@ -14,5 +14,11 @@ export const createSchema = object({
 			hunter: number().gt(0),
 			hunted: number().gt(0),
 		}),
+		vertices: array(
+			object({
+				lat: number().gt(-90).lt(90),
+				lng: number().gt(-180).lt(180),
+			})
+		),
 	}),
 });

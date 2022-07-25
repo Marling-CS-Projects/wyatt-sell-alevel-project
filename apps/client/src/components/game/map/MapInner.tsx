@@ -1,63 +1,93 @@
 import {
 	MapContainer,
-	Marker,
 	Popup,
 	TileLayer,
 	useMap,
 	CircleMarker,
+	Polygon,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import {useEffect, useRef, useState} from 'react';
+import {
+	ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import {CircleMarker as LeafletCircleMarker, LatLng} from 'leaflet';
-import {useMe, usePlayers, useSocket} from '../../utils/hooks';
+import {
+	useGame,
+	useLocation,
+	useMe,
+	usePlayers,
+	useSocket,
+} from '../../../utils/hooks';
 import {Socket} from 'socket.io-client';
-import './map-lerp.css';
+import {GameOptions, isPointInsidePolygon} from '@monorepo/shared/src/index';
+import {toast} from 'react-hot-toast';
 
-export default () => {
-	const [location, setLocation] = useState<GeolocationCoordinates | null>(null);
+export default (props: {children: ReactNode; markers?: boolean}) => {
+	const [location, setLocation] = useLocation();
 	const socket = useSocket();
+	const [game] = useGame();
 
 	useEffect(() => {
 		const watchId = navigator.geolocation.watchPosition(data => {
-			console.log('watch called');
-			setLocation(data.coords);
 			if (socket) {
 				emitLocation(socket, data.coords);
 			}
+			if (
+				data.coords.latitude === location?.latitude &&
+				data.coords.longitude === location?.longitude
+			) {
+				return;
+			}
+			setLocation(data.coords);
 		});
 
 		const interval = setInterval(() => {
-			console.log('interval called', socket);
 			navigator.geolocation.getCurrentPosition(data => {
-				setLocation(data.coords);
 				if (socket) {
 					emitLocation(socket, data.coords);
 				}
+				if (
+					data.coords.latitude === location?.latitude &&
+					data.coords.longitude === location?.longitude
+				) {
+					return;
+				}
+				setLocation(data.coords);
 			});
-		}, 1000);
+		}, 500);
 
 		return () => {
-			console.log('cleared');
-			clearInterval(interval);
 			navigator.geolocation.clearWatch(watchId);
+			clearInterval(interval);
 		};
-	}, [socket]);
+	}, [socket, location]);
 
-	if (!location || !socket) return null;
+	if (!location) return null;
 
 	return (
 		<MapContainer
 			center={[location.latitude, location.longitude]}
 			zoom={13}
-			scrollWheelZoom={false}
-			style={{height: '100vh', width: '100%'}}
+			scrollWheelZoom={true}
+			style={{height: '100%', width: '100%'}}
 		>
 			<TileLayer
 				url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
 				subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
-				// maxNativeZoom={20}
 			/>
-			<MapMarkers location={location} />
+			{props.markers !== false && <MapMarkers location={location} />}
+			{game?.hasStarted && (
+				<Polygon
+					pathOptions={{stroke: true, color: 'red', fillOpacity: 0}}
+					positions={game.options.vertices}
+				/>
+			)}
+			{props.children}
 		</MapContainer>
 	);
 };
@@ -66,16 +96,15 @@ const MapMarkers = (props: {location: GeolocationCoordinates}) => {
 	const [players] = usePlayers();
 	const me = useMe();
 
-	if (!me) return null;
-
 	return (
 		<>
 			<PlayerMarker location={props.location} isMe />
-			{players
-				.filter(p => p.location && p.id !== me.id)
-				.map(({location}) => (
-					<PlayerMarker location={location!} isMe={false} />
-				))}
+			{me &&
+				players
+					.filter(p => p.location && p.id !== me.id)
+					.map(({location}) => (
+						<PlayerMarker location={location!} isMe={false} />
+					))}
 		</>
 	);
 };

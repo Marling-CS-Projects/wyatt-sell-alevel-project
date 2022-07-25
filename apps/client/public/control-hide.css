@@ -1,0 +1,9 @@
+.leaflet-draw-draw-polygon {
+    display: none !important;
+}
+.leaflet-draw-toolbar {
+    margin-top: 0 !important;
+}
+.leaflet-top.leaflet-right {
+    margin-top: 3px !important;
+}

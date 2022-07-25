@@ -8,8 +8,12 @@
 		"forceConsistentCasingInFileNames": true,
 		"noEmit": true,
 		"incremental": true,
-		"isolatedModules": true
+		"isolatedModules": true,
+		"baseUrl": "./",
+		"paths": {
+			"react-leaflet-draw": ["react-leaflet-draw-override"]
+		}
 	},
 	"include": ["src/**/*"],
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules"],
 }
