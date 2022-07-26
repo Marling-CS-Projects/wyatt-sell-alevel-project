@@ -11,7 +11,7 @@ export class Game {
 	players: Player[];
 	hunter: Player[];
 	hunted: Player[];
-	items: Item[];
+	// items: Item[];
 	host?: Player;
 	hasStarted: boolean;
 	joinCode: string;
@@ -22,13 +22,13 @@ export class Game {
 		// 51.756754, -2.258926
 		// to
 		// 51.735922, -2.197053
-		const area = polygonArea(this.options.vertices);
-
-		console.log(area);
-		// 40 is our density constant
-		const totalItems = area / 40;
-
-		return [...new Array(Math.floor(totalItems))].fill(0).map(() => new Item());
+		// const area = polygonArea(this.options.vertices);
+		//
+		// console.log(area);
+		// // 40 is our density constant
+		// const totalItems = area / 40;
+		//
+		// return [...new Array(Math.floor(totalItems))].fill(0).map(() => new Item());
 	};
 
 	constructor(options: GameOptions) {
@@ -42,7 +42,7 @@ export class Game {
 			...options,
 			max: {...options.max, total: options.max.hunted + options.max.hunter},
 		};
-		this.items = this.generateItems();
+		// this.items = this.generateItems();
 		this.joinCode = generateJoinCode();
 	}
 

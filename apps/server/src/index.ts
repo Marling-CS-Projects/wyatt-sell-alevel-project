@@ -224,7 +224,7 @@ io.on('connection', async socket => {
 			type,
 		});
 		if (socket.player.type === 'hunter') {
-			io.to(socket.game.id + 'hunter').emit('player-location', {
+			socket.to(socket.game.id + 'hunter').emit('player-location', {
 				id: socket.player.id,
 				location: socket.player.location,
 			});

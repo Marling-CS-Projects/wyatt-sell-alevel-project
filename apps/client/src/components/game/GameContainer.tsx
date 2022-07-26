@@ -1,4 +1,12 @@
-import {Avatar, Flex, HStack, Tag, Text, VStack} from '@chakra-ui/react';
+import {
+	Avatar,
+	Button,
+	Flex,
+	HStack,
+	Tag,
+	Text,
+	VStack,
+} from '@chakra-ui/react';
 import {Map} from './map/Map';
 import {PlayerContainer} from '../lobby/PlayerContainer';
 import Profile from '../Profile';
@@ -6,6 +14,7 @@ import {useGame, useMe} from '../../utils/hooks';
 import {useEffect, useState} from 'react';
 import MapPolygon from './map/MapPolygon';
 import {Polygon} from 'react-leaflet';
+import {TypeTag} from '../TypeTag';
 
 export const GameContainer = () => {
 	const [game] = useGame();
@@ -28,15 +37,43 @@ const GameFooter = () => {
 
 	return (
 		<Flex p={4}>
-			<VStack flexDir={'column'} spacing={2} alignItems={'flex-start'}>
-				<HStack spacing={2} alignItems={'center'}>
-					<Text fontSize={24} fontWeight={'800'} lineHeight={'24px'}>
-						{me.username.toUpperCase()}
-					</Text>
-					<GameTime />
+			<HStack justifyContent={'space-between'} w={'full'}>
+				<VStack flexDir={'column'} spacing={2} alignItems={'flex-start'}>
+					<HStack spacing={2} alignItems={'center'}>
+						<Text fontSize={24} fontWeight={'800'} lineHeight={'24px'}>
+							{me.username.toUpperCase()}
+						</Text>
+						<GameTime />
+					</HStack>
+					<TypeTag type={me.type} />
+				</VStack>
+				<HStack h={'full'} justifyContent={'flex-end'}>
+					<Button
+						h={'full'}
+						fontSize={40}
+						borderColor={'red'}
+						borderWidth={2}
+						borderRadius={'lg'}
+						style={{
+							aspectRatio: '1',
+						}}
+					>
+						🎒
+					</Button>
+					<Button
+						h={'full'}
+						fontSize={40}
+						borderColor={'red'}
+						borderWidth={2}
+						borderRadius={'lg'}
+						style={{
+							aspectRatio: '1',
+						}}
+					>
+						⚙️
+					</Button>
 				</HStack>
-				<Tag w={'max-content'}>{me.type.toUpperCase()}</Tag>
-			</VStack>
+			</HStack>
 		</Flex>
 	);
 };

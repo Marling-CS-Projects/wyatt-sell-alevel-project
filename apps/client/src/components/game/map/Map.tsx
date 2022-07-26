@@ -1,8 +1,8 @@
 import {ReactNode, useEffect, useState} from 'react';
 import dynamic from 'next/dynamic';
 import {
+	distanceFromBoundary,
 	GameOptions,
-	isNearPolygonEdge,
 	isPointInsidePolygon,
 } from '@monorepo/shared/src/index';
 import {toast} from 'react-hot-toast';
@@ -15,7 +15,7 @@ export const Map = (props: {
 }) => {
 	const [location] = useLocation();
 	const [game] = useGame();
-	const [warningId, setWarningId] = useState<string | undefined>();
+	const [warningIds, setWarningIds] = useState<string[]>([]);
 
 	const vertices = game?.options.vertices || props.vertices;
 
@@ -26,20 +26,27 @@ export const Map = (props: {
 				{lat: location.latitude, lng: location.longitude},
 				vertices
 			);
-			const isNear = isNearPolygonEdge(
+			const distance = distanceFromBoundary(
 				{lat: location.latitude, lng: location.longitude},
 				vertices
 			);
-			console.log(isNear);
+
+			if (warningIds.length) {
+				warningIds.forEach(id => toast.dismiss(id));
+			}
 
 			if (!isInside) {
 				const toastId = toast.error('You are not inside the game area.', {
 					duration: Infinity,
 				});
-				setWarningId(toastId);
+				setWarningIds(prev => [...prev, toastId]);
 			} else {
-				if (warningId) {
-					toast.dismiss(warningId);
+				if (distance <= location.accuracy / 2) {
+					const toastId = toast.error(
+						'You are near the edge of the game area.',
+						{duration: Infinity}
+					);
+					setWarningIds(prev => [...prev, toastId]);
 				}
 			}
 		}

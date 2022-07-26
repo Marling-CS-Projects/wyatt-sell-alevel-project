@@ -6,17 +6,14 @@ import {
 	ServerToClientEvents,
 } from '@monorepo/shared/src/index';
 import {atomWithStorage} from 'jotai/utils';
+import {ClientPlayer} from './types';
 
 export const socketAtom = atom<Socket<
 	ServerToClientEvents,
 	ClientToServerEvents
 > | null>(null);
 
-export const playersAtom = atom<
-	(ServerMessages['player-connected'] & {
-		location?: GeolocationCoordinates | null;
-	})[]
->([]);
+export const playersAtom = atom<ClientPlayer[]>([]);
 
 export const gameAtom = atom<
 	(ServerMessages['game-init'] & {startTime?: number}) | null

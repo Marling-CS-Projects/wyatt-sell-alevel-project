@@ -16,3 +16,15 @@
 .sr-only {
     display: none;
 }
+.leaflet-popup-content {
+    margin: 4px 8px 4px 8px !important;
+}
+.leaflet-popup-content-wrapper {
+    border-radius: 0 !important;
+}
+.leaflet-popup-content p {
+    margin: 0 !important;
+}
+.leaflet-control-attribution {
+    display: none !important;
+}

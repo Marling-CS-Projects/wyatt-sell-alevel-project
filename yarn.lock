@@ -2485,10 +2485,12 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-hot-toast: ^2.2.0
+    react-icons: ^4.4.0
     react-leaflet: ^4.0.1
     react-leaflet-draw: ^0.20.1
     sharp: ^0.30.0
     socket.io-client: ^4.4.1
+    spherical-geometry-js: ^3.0.0
     swr: ^1.3.0
     typescript: ^4.5.5
   languageName: unknown
@@ -7450,6 +7452,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-icons@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "react-icons@npm:4.4.0"
+  peerDependencies:
+    react: "*"
+  checksum: dd93a1dcc8ac8a3cf46a2b33e80b586fa967331fa5fcb90d061abf276155a8363a331643e203d67cb9bab4261d00a757da854bcce1fce2c6e4258bf3e33f711b
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -8229,6 +8240,13 @@ __metadata:
   version: 3.0.11
   resolution: "spdx-license-ids@npm:3.0.11"
   checksum: 1da1acb090257773e60b022094050e810ae9fec874dc1461f65dc0400cd42dd830ab2df6e64fb49c2db3dce386dd0362110780e1b154db7c0bb413488836aaeb
+  languageName: node
+  linkType: hard
+
+"spherical-geometry-js@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "spherical-geometry-js@npm:3.0.0"
+  checksum: d58497aae629b59a901470bfaca8618abe4bf0c32165eb0b510b4f5038c7fa97dca6a63394c5f278fe78d6ca0e7bd85f17ca457a1b45cd58edeefb27c0fb2c32
   languageName: node
   linkType: hard
 

@@ -5,6 +5,8 @@ import {
 	useMap,
 	CircleMarker,
 	Polygon,
+	FeatureGroup,
+	AttributionControl,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -15,7 +17,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
-import {CircleMarker as LeafletCircleMarker, LatLng} from 'leaflet';
+import {CircleMarker as LeafletCircleMarker, LatLng, Map} from 'leaflet';
 import {
 	useGame,
 	useLocation,
@@ -26,46 +28,46 @@ import {
 import {Socket} from 'socket.io-client';
 import {GameOptions, isPointInsidePolygon} from '@monorepo/shared/src/index';
 import {toast} from 'react-hot-toast';
+import {ClientPlayer} from '../../../utils/types';
+import {useAuth0} from '@auth0/auth0-react';
+import {Button, HStack, Tag, Text} from '@chakra-ui/react';
+import {TypeTag} from '../../TypeTag';
+import {RiNavigationLine} from 'react-icons/ri';
 
 export default (props: {children: ReactNode; markers?: boolean}) => {
 	const [location, setLocation] = useLocation();
 	const socket = useSocket();
+	const [, setPlayers] = usePlayers();
+	const me = useMe();
 	const [game] = useGame();
+	const mapRef = useRef<Map>(null);
 
 	useEffect(() => {
-		const watchId = navigator.geolocation.watchPosition(data => {
+		const updateLocation = (data: GeolocationPosition) => {
+			setLocation(data.coords);
+			if (me) {
+				setPlayers(prev => [
+					...prev.filter(p => p.id !== me.id),
+					{...me, location: data.coords},
+				]);
+			}
+			mapRef.current?.setView([data.coords.latitude, data.coords.longitude]);
 			if (socket) {
 				emitLocation(socket, data.coords);
 			}
-			if (
-				data.coords.latitude === location?.latitude &&
-				data.coords.longitude === location?.longitude
-			) {
-				return;
-			}
-			setLocation(data.coords);
-		});
+		};
+
+		const watchId = navigator.geolocation.watchPosition(updateLocation);
 
 		const interval = setInterval(() => {
-			navigator.geolocation.getCurrentPosition(data => {
-				if (socket) {
-					emitLocation(socket, data.coords);
-				}
-				if (
-					data.coords.latitude === location?.latitude &&
-					data.coords.longitude === location?.longitude
-				) {
-					return;
-				}
-				setLocation(data.coords);
-			});
+			navigator.geolocation.getCurrentPosition(updateLocation);
 		}, 500);
 
 		return () => {
 			navigator.geolocation.clearWatch(watchId);
 			clearInterval(interval);
 		};
-	}, [socket, location]);
+	}, [socket]);
 
 	if (!location) return null;
 
@@ -75,6 +77,7 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 			zoom={13}
 			scrollWheelZoom={true}
 			style={{height: '100%', width: '100%'}}
+			ref={mapRef}
 		>
 			<TileLayer
 				url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
@@ -85,8 +88,32 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 				<Polygon
 					pathOptions={{stroke: true, color: 'red', fillOpacity: 0}}
 					positions={game.options.vertices}
+					interactive={false}
 				/>
 			)}
+			<div className="leaflet-bottom leaflet-right">
+				{location && (
+					<Button
+						onClick={() =>
+							mapRef.current?.flyTo(
+								[location.latitude, location.longitude],
+								16,
+								{animate: true}
+							)
+						}
+						m={4}
+						rounded={'full'}
+						style={{
+							aspectRatio: '1',
+						}}
+						p={0}
+						colorScheme={'blue'}
+						pointerEvents={'all'}
+					>
+						<RiNavigationLine size={'1.25em'} />
+					</Button>
+				)}
+			</div>
 			{props.children}
 		</MapContainer>
 	);
@@ -94,27 +121,37 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 
 const MapMarkers = (props: {location: GeolocationCoordinates}) => {
 	const [players] = usePlayers();
+	const {user} = useAuth0();
 	const me = useMe();
 
 	return (
 		<>
-			<PlayerMarker location={props.location} isMe />
+			{user && (
+				<PlayerMarker
+					player={{
+						location: props.location,
+						username: user.given_name,
+						type: me?.type,
+					}}
+					isMe
+				/>
+			)}
 			{me &&
 				players
 					.filter(p => p.location && p.id !== me.id)
-					.map(({location}) => (
-						<PlayerMarker location={location!} isMe={false} />
-					))}
+					.map(p => <PlayerMarker player={p} />)}
 		</>
 	);
 };
 
 const PlayerMarker = (props: {
-	location: GeolocationCoordinates;
-	isMe: boolean;
+	player: Partial<ClientPlayer>;
+	isMe?: boolean;
 }) => {
 	const circleRef = useRef<LeafletCircleMarker<any>>(null);
 	const map = useMap();
+
+	const location = props.player.location;
 
 	const mapZoomListener = () => {
 		const bounds = map.getBounds();
@@ -127,7 +164,7 @@ const PlayerMarker = (props: {
 		});
 		if (circleRef.current) {
 			circleRef.current.setStyle({
-				weight: (props.location.accuracy / widthInMetres) * pixelBounds.x,
+				weight: (location!.accuracy / widthInMetres) * pixelBounds.x,
 			});
 		}
 	};
@@ -142,17 +179,16 @@ const PlayerMarker = (props: {
 	}, [circleRef, map]);
 
 	useEffect(() => {
-		if (props.location && circleRef.current) {
-			circleRef.current.setLatLng([
-				props.location.latitude,
-				props.location.longitude,
-			]);
+		if (location && circleRef.current) {
+			circleRef.current.setLatLng([location.latitude, location.longitude]);
 		}
-	}, [circleRef, props.location]);
+	}, [circleRef, location]);
+
+	if (!location) return null;
 
 	return (
 		<CircleMarker
-			center={[props.location.latitude, props.location.longitude]}
+			center={[location.latitude, location.longitude]}
 			color={props.isMe ? '#4286f5' : 'red'}
 			stroke
 			fillColor={props.isMe ? '#4286f5' : 'red'}
@@ -161,9 +197,19 @@ const PlayerMarker = (props: {
 			radius={10}
 			ref={circleRef}
 		>
-			<Popup>
-				A pretty CSS3 popup. <br /> Easily customizable.
-			</Popup>
+			{props.player.type && (
+				<Popup
+					position={[location.longitude, location.longitude]}
+					closeButton={false}
+				>
+					<HStack>
+						<Text fontSize={'20px'} m={0}>
+							{props.player.username?.toUpperCase()}
+						</Text>
+						{props.player.type && <TypeTag type={props.player.type} />}
+					</HStack>
+				</Popup>
+			)}
 		</CircleMarker>
 	);
 };

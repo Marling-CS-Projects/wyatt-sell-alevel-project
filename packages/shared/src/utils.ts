@@ -19,7 +19,7 @@ export const isPointInsidePolygon = (
 	return inside;
 };
 
-export const isNearPolygonEdge = (
+export const distanceFromBoundary = (
 	pointRaw: {lat: number; lng: number},
 	polygonRaw: {lat: number; lng: number}[]
 ) => {
@@ -34,9 +34,32 @@ export const isNearPolygonEdge = (
 		const yj = polygon[j].y;
 
 		const gradient = (yj - yi) / (xj - xi);
-		const intercept = yi - gradient * xi;
-		const distance = Math.abs(gradient * point.x + intercept - point.y);
+		const inverseGradient = -1 / gradient;
+
+		const xIntersect =
+			(yj - gradient * xj - (point.y - inverseGradient * point.x)) /
+			(inverseGradient - gradient);
+
+		const yIntersect = gradient * xIntersect + yj - gradient * xj;
+
+		const distance = measure(point.x, point.y, xIntersect, yIntersect);
 		distances.push(distance);
 	}
 	return Math.min(...distances);
 };
+
+function measure(lat1: number, lng1: number, lat2: number, lng2: number) {
+	// generally used geo measurement function
+	const R = 6378.137; // Radius of earth in KM
+	const dLat = (lat2 * Math.PI) / 180 - (lat1 * Math.PI) / 180;
+	const dLng = (lng2 * Math.PI) / 180 - (lng1 * Math.PI) / 180;
+	const a =
+		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		Math.cos((lat1 * Math.PI) / 180) *
+			Math.cos((lat2 * Math.PI) / 180) *
+			Math.sin(dLng / 2) *
+			Math.sin(dLng / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	const d = R * c;
+	return d * 1000; // meters
+}
