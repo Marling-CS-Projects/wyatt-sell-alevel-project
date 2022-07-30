@@ -163,7 +163,6 @@ export const distanceFromBoundary = (
   // Returns the minimum of all the distances from each segment
   return Math.min(...distances);
 };
-
 ```
 {% endtab %}
 
@@ -464,7 +463,7 @@ const FooterButton = (props: {children: ReactNode}) => {
 
 ### Challenges
 
-
+Overall this was a fairly simple Cycle, with largely cosmetic changes
 
 ## Testing
 
