@@ -9,8 +9,6 @@ export default function Profile() {
 	if (!isAuthenticated || !user) return null;
 	if (isLoading) return <div>Loading...</div>;
 
-	console.log('user picture', user.picture);
-
 	return (
 		<HStack justifyContent={'center'}>
 			<Avatar src={user.picture} />

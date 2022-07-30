@@ -33,6 +33,7 @@ import {useAuth0} from '@auth0/auth0-react';
 import {Button, HStack, Tag, Text} from '@chakra-ui/react';
 import {TypeTag} from '../../TypeTag';
 import {RiNavigationLine} from 'react-icons/ri';
+import {debounce} from 'lodash';
 
 export default (props: {children: ReactNode; markers?: boolean}) => {
 	const [location, setLocation] = useLocation();
@@ -42,8 +43,8 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 	const [game] = useGame();
 	const mapRef = useRef<Map>(null);
 
-	useEffect(() => {
-		const updateLocation = (data: GeolocationPosition) => {
+	const updateLocation = (data: GeolocationPosition) => {
+		debounce(() => {
 			setLocation(data.coords);
 			if (me) {
 				setPlayers(prev => [
@@ -55,17 +56,13 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 			if (socket) {
 				emitLocation(socket, data.coords);
 			}
-		};
+		}, 500)();
+	};
 
+	useEffect(() => {
 		const watchId = navigator.geolocation.watchPosition(updateLocation);
-
-		const interval = setInterval(() => {
-			navigator.geolocation.getCurrentPosition(updateLocation);
-		}, 500);
-
 		return () => {
 			navigator.geolocation.clearWatch(watchId);
-			clearInterval(interval);
 		};
 	}, [socket]);
 

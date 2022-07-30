@@ -11,6 +11,7 @@ import {userType} from './types';
 import {
 	ServerToClientEvents,
 	ClientToServerEvents,
+	distanceFromBoundary,
 } from '@monorepo/shared/src/index';
 import {Player} from './classes/player';
 import {Game} from './classes/game';
@@ -110,12 +111,15 @@ app.post('/start', (req, res) => {
 	res.send(JSON.stringify({code: 200}));
 });
 
-const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
-	cors: {
-		origin: env.CLIENT_ORIGIN,
-		methods: ['GET', 'POST'],
-	},
-});
+export const io = new Server<ClientToServerEvents, ServerToClientEvents>(
+	server,
+	{
+		cors: {
+			origin: env.CLIENT_ORIGIN,
+			methods: ['GET', 'POST'],
+		},
+	}
+);
 
 const start = async () => {
 	// await prisma.$connect();
@@ -232,12 +236,6 @@ io.on('connection', async socket => {
 	});
 
 	socket.on('player-location', async data => {
-		socket.player.location = data;
-		if (socket.player.type === 'hunter') {
-			socket.to(socket.game.id + 'hunter').emit('player-location', {
-				id: socket.player.id,
-				location: data,
-			});
-		}
+		socket.player.updateLocation(data);
 	});
 });

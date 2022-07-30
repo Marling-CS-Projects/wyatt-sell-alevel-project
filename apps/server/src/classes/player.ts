@@ -3,6 +3,7 @@ import {Game} from './game';
 import {userType} from '../types';
 import {
 	ClientToServerEvents,
+	isPointInsidePolygon,
 	ServerToClientEvents,
 } from '@monorepo/shared/src/index';
 
@@ -16,6 +17,7 @@ export class Player {
 	user: userType;
 	isHost: boolean;
 	location: GeolocationCoordinates | null;
+	isOutside: boolean;
 
 	constructor(socket: Socket, game: Game) {
 		this.socket = socket;
@@ -27,6 +29,7 @@ export class Player {
 		this.isHost = !game.players.length;
 		this.type = game.hunted.length > game.hunter.length ? 'hunter' : 'hunted';
 		this.location = null;
+		this.isOutside = false;
 
 		game.addPlayer(this);
 		socket.join(game.id);
@@ -53,5 +56,34 @@ export class Player {
 			isHost: this.isHost,
 			user: this.user,
 		};
+	}
+
+	updateLocation(location: GeolocationCoordinates) {
+		this.location = location;
+		if (this.socket.player.type === 'hunter') {
+			this.socket.to(this.game.id + 'hunter').emit('player-location', {
+				id: this.id,
+				location: this.location,
+			});
+		}
+		const isInside = isPointInsidePolygon(
+			{lat: this.location.latitude, lng: this.location.longitude},
+			this.game.options.vertices
+		);
+
+		if (this.isOutside && isInside) {
+			this.isOutside = false;
+			this.socket.to(this.game.id).emit('player-boundary', {
+				id: this.id,
+				outside: false,
+			});
+		}
+		if (!isInside) {
+			this.isOutside = true;
+			this.socket.to(this.game.id).emit('player-boundary', {
+				id: this.id,
+				outside: true,
+			});
+		}
 	}
 }

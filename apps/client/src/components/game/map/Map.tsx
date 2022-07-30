@@ -20,7 +20,6 @@ export const Map = (props: {
 	const vertices = game?.options.vertices || props.vertices;
 
 	useEffect(() => {
-		console.log('useeffect', location, vertices);
 		if (location && vertices?.length) {
 			const isInside = isPointInsidePolygon(
 				{lat: location.latitude, lng: location.longitude},

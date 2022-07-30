@@ -13,6 +13,10 @@ export type ServerMessages = {
 		location?: GeolocationCoordinates | null;
 		type?: 'hunter' | 'hunted';
 	};
+	'player-boundary': {
+		id: string;
+		outside: boolean;
+	};
 	'game-init': {
 		id: string;
 		code: string;
