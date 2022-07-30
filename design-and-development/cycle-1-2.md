@@ -177,18 +177,31 @@ export const isPointInsidePolygon = (
   pointRaw: {lat: number; lng: number},
   polygonRaw: {lat: number; lng: number}[]
 ) => {
+  // Initiates a mutable boolean to store the "inside" state
   let inside = false;
   const polygon = polygonRaw.map(p => ({x: p.lat, y: p.lng}));
+  // The point we are testing
   const point = {x: pointRaw.lat, y: pointRaw.lng};
+  // Iterates over each point on the polygon, assigning i to be the 
+  // "current point" and j to be the point before.
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    // Assigns (xi, yi) and (xj, yj) to be co-ordinates for the pair of
+    // points on the polygon.
     const xi = polygon[i].x;
     const yi = polygon[i].y;
     const xj = polygon[j].x;
     const yj = polygon[j].y;
 
     const intersect =
-      yi > point.y !== yj > point.y &&
+      // The first condition checks whether point.y is between yi and yj
+      (yi > point.y) !== (yj > point.y) &&
+      // AND ensures that point.x is greater than the s_x of the line segment
+      // (the x co-ordinate of the line if you extended it to point.y)
       point.x > ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+      
+    // If there is an intersection, invert the current "inside" value - if
+    // there are an even number of intersections, the point does not lie 
+    // within the polygon.
     if (intersect) inside = !inside;
   }
   return inside;
