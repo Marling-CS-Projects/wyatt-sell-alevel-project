@@ -45,6 +45,7 @@ export const Map = (props: {
 						'You are near the edge of the game area.',
 						{duration: Infinity}
 					);
+					navigator.vibrate(100);
 					setWarningIds(prev => [...prev, toastId]);
 				}
 			}
