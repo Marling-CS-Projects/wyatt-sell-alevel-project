@@ -94,17 +94,20 @@ import {FeatureGroup} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {DrawEvents, LatLng} from 'leaflet';
 import {Dispatch, SetStateAction} from 'react';
-import {GameOptions} from '@monorepo/shared/src/index';
+import {GameOptions} from '@monorepo/shared';
 
 type UpdateParameter =
   | DrawEvents.Edited
   | DrawEvents.Created
   | DrawEvents.Deleted;
 
+// This would be added as a child element of <Map/> in the create screen,
+// with options and setOptions passed down to it.
 export default (props: {
   options: GameOptions;
   setOptions: Dispatch<SetStateAction<GameOptions>>;
 }) => {
+  // A helper function to add the vertices to the game options
   const setVertices = (vertices: GameOptions['vertices']) => {
     props.setOptions({
       ...props.options,
@@ -112,12 +115,17 @@ export default (props: {
     });
   };
 
+  // This function runs on create, edit and delete of polygons to ensure 
+  // the stored vertex array is in sync with what the user sees.
   const update = (v: UpdateParameter) => {
     switch (v.type) {
       case 'draw:deleted':
         setVertices([]);
         break;
       case 'draw:created':
+        // The data passed to the "update" function has a different structure
+        // depending on what event occurs, meaning some detective work was
+        // required to find the appropriate data. 
         setVertices(
           (v.layer.editing.latlngs[0][0] as LatLng[]).map(({lat, lng}) => ({
             lat,
@@ -138,9 +146,11 @@ export default (props: {
     <FeatureGroup>
       <EditControl
         position="topright"
+        // Registers the update subroutine to various event listeners
         onEdited={update}
         onCreated={update}
         onDeleted={update}
+        // Disables all other editing controls apart from the polygon
         draw={{
           rectangle: false,
           circle: false,
@@ -149,6 +159,8 @@ export default (props: {
           circlemarker: false,
         }}
       />
+      // Renders a custom stylesheet to disable drawing multiple polygons
+      // This applys a "display: none" style to the relevant button.
       {props.options.vertices.length && (
         <link rel="stylesheet" type="text/css" href={'control-hide.css'} />
       )}
