@@ -397,4 +397,8 @@ io.on('connection', async socket => {
 
 ### Evidence
 
-![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro).png>)
+![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (1).png>)
+
+The first screenshot shows the location view all players will see of themselves - a blue dot with a translucent circle displaying their accuracy.
+
+The second screenshot is an example of what a hunter might see, with their fellow teammates rendered in as the red circle, and their location rendered in blue.
