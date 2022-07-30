@@ -1,19 +1,7 @@
-import {
-	Avatar,
-	Button,
-	Flex,
-	HStack,
-	Tag,
-	Text,
-	VStack,
-} from '@chakra-ui/react';
+import {Button, Flex, HStack, Text, VStack} from '@chakra-ui/react';
 import {Map} from './map/Map';
-import {PlayerContainer} from '../lobby/PlayerContainer';
-import Profile from '../Profile';
 import {useGame, useMe} from '../../utils/hooks';
-import {useEffect, useState} from 'react';
-import MapPolygon from './map/MapPolygon';
-import {Polygon} from 'react-leaflet';
+import {ReactNode, useEffect, useState} from 'react';
 import {TypeTag} from '../TypeTag';
 
 export const GameContainer = () => {
@@ -48,30 +36,8 @@ const GameFooter = () => {
 					<TypeTag type={me.type} />
 				</VStack>
 				<HStack h={'full'} justifyContent={'flex-end'}>
-					<Button
-						h={'full'}
-						fontSize={40}
-						borderColor={'red'}
-						borderWidth={2}
-						borderRadius={'lg'}
-						style={{
-							aspectRatio: '1',
-						}}
-					>
-						🎒
-					</Button>
-					<Button
-						h={'full'}
-						fontSize={40}
-						borderColor={'red'}
-						borderWidth={2}
-						borderRadius={'lg'}
-						style={{
-							aspectRatio: '1',
-						}}
-					>
-						⚙️
-					</Button>
+					<FooterButton>⚙️</FooterButton>
+					<FooterButton>⚙️</FooterButton>
 				</HStack>
 			</HStack>
 		</Flex>
@@ -100,5 +66,22 @@ const GameTime = () => {
 				.padStart(2, '0')}
 			:{(time % 60).toString().padStart(2, '0')}
 		</Text>
+	);
+};
+
+const FooterButton = (props: {children: ReactNode}) => {
+	return (
+		<Button
+			h={'full'}
+			fontSize={40}
+			borderColor={'red'}
+			borderWidth={2}
+			borderRadius={'lg'}
+			style={{
+				aspectRatio: '1',
+			}}
+		>
+			{props.children}
+		</Button>
 	);
 };

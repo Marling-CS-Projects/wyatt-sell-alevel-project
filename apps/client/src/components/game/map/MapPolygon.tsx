@@ -3,7 +3,6 @@ import {EditControl} from 'react-leaflet-draw';
 import {DrawEvents, LatLng} from 'leaflet';
 import {Dispatch, SetStateAction} from 'react';
 import {GameOptions} from '@monorepo/shared/src/index';
-import {useMe} from '../../../utils/hooks';
 
 type UpdateParameter =
 	| DrawEvents.Edited
