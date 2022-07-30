@@ -6,10 +6,10 @@
 
 In this cycle, I will aim to add some upgrades to the map interface and overall usability features. The primary feature I will add in the cycle will be the ability to define bounds in the game creation screen and to alert players when they stray outside these bounds. A few other features are more minor - like labels with player details if their location marker is clicked, and a recenter button on the map. I also intend to change the game interface slightly to allow for an information display and settings and inventory buttons.
 
-* [ ] Create a boundary system, where the game host can define and edit the boundary, and players can see (and be warned about) the boundary area
-* [ ] Create player labels for hunters to differentiate between each other
-* [ ] Add a "recenter" button on the map, that translates the map so that the users location is in the centre again.
-* [ ] Add some placeholder buttons for settings and inventory, and some player details at the bottom of the screen
+* [x] Create a boundary system, where the game host can define and edit the boundary, and players can see (and be warned about) the boundary area
+* [x] Create player labels for hunters to differentiate between each other
+* [x] Add a "recenter" button on the map, that translates the map so that the users location is in the centre again.
+* [x] Add some placeholder buttons for settings and inventory, and some player details at the bottom of the screen
 
 ### Usability Features
 
@@ -89,7 +89,7 @@ I used similar principles to write a separate algorithm for detecting proximity 
 
 {% tabs %}
 {% tab title="MapPolygon.tsx" %}
-```typescript
+```tsx
 import {FeatureGroup} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {DrawEvents, LatLng} from 'leaflet';
@@ -248,7 +248,7 @@ export const distanceFromBoundary = (
 ```
 {% endtab %}
 
-{% tab title="index.ts" %}
+{% tab title="Map.tsx" %}
 ```jsx
 import {ReactNode, useEffect, useState} from 'react';
 import dynamic from 'next/dynamic';
@@ -308,12 +308,103 @@ export const Map = (props: {
 };
 ```
 {% endtab %}
+
+{% tab title="Untitled" %}
+```tsx
+import {Button, Flex, HStack, Text, VStack} from '@chakra-ui/react';
+import {Map} from './map/Map';
+import {useGame, useMe} from '../../utils/hooks';
+import {ReactNode, useEffect, useState} from 'react';
+import {TypeTag} from '../TypeTag';
+
+export const GameContainer = () => {
+	const [game] = useGame();
+
+	if (!game) return null;
+
+	return (
+		<Flex h={'100vh'} w={'full'} flexDir={'column'}>
+			<Flex h={'full'}>
+				<Map />
+			</Flex>
+			<GameFooter />
+		</Flex>
+	);
+};
+const GameFooter = () => {
+	const me = useMe();
+	const [game] = useGame();
+	if (!me || !game) return null;
+
+	return (
+		<Flex p={4}>
+			<HStack justifyContent={'space-between'} w={'full'}>
+				<VStack flexDir={'column'} spacing={2} alignItems={'flex-start'}>
+					<HStack spacing={2} alignItems={'center'}>
+						<Text fontSize={24} fontWeight={'800'} lineHeight={'24px'}>
+							{me.username.toUpperCase()}
+						</Text>
+						<GameTime />
+					</HStack>
+					<TypeTag type={me.type} />
+				</VStack>
+				<HStack h={'full'} justifyContent={'flex-end'}>
+					<FooterButton>⚙️</FooterButton>
+					<FooterButton>⚙️</FooterButton>
+				</HStack>
+			</HStack>
+		</Flex>
+	);
+};
+
+const GameTime = () => {
+	const [game] = useGame();
+	const [time, setTime] = useState(0);
+
+	useEffect(() => {
+		const inverval = setInterval(() => {
+			if (game?.startTime) {
+				setTime(Math.floor((Date.now() - game.startTime) / 1000));
+			}
+		});
+		return () => clearInterval(inverval);
+	}, [game]);
+
+	if (!game) return null;
+
+	return (
+		<Text>
+			{Math.floor(time / 60)
+				.toString()
+				.padStart(2, '0')}
+			:{(time % 60).toString().padStart(2, '0')}
+		</Text>
+	);
+};
+
+const FooterButton = (props: {children: ReactNode}) => {
+	return (
+		<Button
+			h={'full'}
+			fontSize={40}
+			borderColor={'red'}
+			borderWidth={2}
+			borderRadius={'lg'}
+			style={{
+				aspectRatio: '1',
+			}}
+		>
+			{props.children}
+		</Button>
+	);
+};
+```
+{% endtab %}
 {% endtabs %}
 
 ### Challenges
 
-* Working out how to display the accuracy circle correctly was challenge, but it helped to break down the problem into smaller parts (see: [#thinking-abstractly-and-visualisation](../1-analysis/1.4b-computational-methods.md#thinking-abstractly-and-visualisation "mention")), until I came to the solution - I had to listen for map updates, find the map width and finally calculate proportions.
-* I was initially confused about how to update the marker position - typically within React, if you update the parameters passed to a component, it will update automatically. However, it appeared this was not the case with `react-leaflet`, as I had to use "refs" in order to interact with the marker. This was discovered by reading the example code provided in the library's documentation.
+
 
 ## Testing
 
