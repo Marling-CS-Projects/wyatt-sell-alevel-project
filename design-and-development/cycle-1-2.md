@@ -65,9 +65,7 @@ end subroutine
 
 ### UI Mockup
 
-![](<../.gitbook/assets/image (4).png>)
-
-Add annotation to this!
+![](../.gitbook/assets/image.png)
 
 ## Development
 
@@ -75,17 +73,11 @@ Add annotation to this!
 
 #### Server
 
-On the server, the additional code I had to write to allow for player location to be streamed to other clients was minimal due to the strong architecture I had implemented in Cycle 1 and 2. I utilised a new feature in my socket sending process called "rooms". This means that I am able to quickly send a message to multiple clients in a certain group (i.e. all hunters in game with ID: 123) without having to iterate through an array manually.
 
-{% embed url="https://socket.io/docs/v3/rooms/" %}
-
-I also had to update a few class constructors, for instance, ensuring that a player joins and leaves the room for their respective role and game, and making sure that the location is a field on the player class. Additionally, I fixed a few bugs, where player updates would be sent twice or sent to the wrong players.
 
 #### Client
 
-I researched several map libraries to embed a map view in my game. Initially I intended to use the Google Maps API, but after discovering that they charge a high fee (7$ per 1000 map loads). After doing some research I found [react-leaflet](https://react-leaflet.js.org/), that allowed for easy integration into a React app, and supported several different mapping providers.
 
-I had to do some calculations to correctly render the player location depending on the zoom level of the map. I also had to make sure that the clients location was updated regularly on the map, and on the server, and that the updates were smooth.
 
 {% tabs %}
 {% tab title="Map.tsx" %}
