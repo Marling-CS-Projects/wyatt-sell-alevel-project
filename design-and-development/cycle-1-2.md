@@ -159,18 +159,58 @@ export default (props: {
 ```
 {% endtab %}
 
-{% tab title="map-lerp.css" %}
-```css
-/* Source: https://gist.github.com/meule/777d9a8a42e2c99a3386 */
-/* This adds a linear transition to the map marker when their */
-/* location updates */
-.leaflet-marker-pane > * {
-    -webkit-transition: transform .3s linear;
-    -moz-transition: transform .3s linear;
-    -o-transition: transform .3s linear;
-    -ms-transition: transform .3s linear;
-    transition: transform .3s linear;
-}
+{% tab title="utils.ts" %}
+```typescript
+export const isPointInsidePolygon = (
+  pointRaw: {lat: number; lng: number},
+  polygonRaw: {lat: number; lng: number}[]
+) => {
+  let inside = false;
+  const polygon = polygonRaw.map(p => ({x: p.lat, y: p.lng}));
+  const point = {x: pointRaw.lat, y: pointRaw.lng};
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    const intersect =
+      yi > point.y !== yj > point.y &&
+      point.x > ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+};
+
+export const distanceFromBoundary = (
+  pointRaw: {lat: number; lng: number},
+  polygonRaw: {lat: number; lng: number}[]
+) => {
+  const polygon = polygonRaw.map(p => ({x: p.lat, y: p.lng}));
+  const point = {x: pointRaw.lat, y: pointRaw.lng};
+
+  let distances = [];
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    const gradient = (yj - yi) / (xj - xi);
+    const inverseGradient = -1 / gradient;
+
+    const xIntersect =
+      (yj - gradient * xj - (point.y - inverseGradient * point.x)) /
+      (inverseGradient - gradient);
+
+    const yIntersect = gradient * xIntersect + yj - gradient * xj;
+
+    const distance = measure(point.x, point.y, xIntersect, yIntersect);
+    distances.push(distance);
+  }
+  return Math.min(...distances);
+};
+
 ```
 {% endtab %}
 
