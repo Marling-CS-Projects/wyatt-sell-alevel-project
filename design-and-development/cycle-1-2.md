@@ -483,4 +483,13 @@ const FooterButton = (props: {children: ReactNode}) => {
 
 ### Evidence
 
-TODO: RECORD EVIDENCE
+![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (2).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (6).png>)
+
+The first screenshot shows the game creation screen where the host can define the playable area. As shown in the image, there is no button to create a polygon, only to edit and delete, once the first one has been created.
+
+The second screenshot shows the in-game screen:
+
+* At the footer, the username, game-time and role are displayed. There are also two currently non-functional buttons in preparation for later functionality.
+* The recenter button (visible in both) is in the bottom right, easy to reach and will pan the map with an animation after pressing
+* There is an example popup above the red indicator showing details about the player when their indicator is clicked
+* At the very top, there is an alert triggered as soon as the other player moved out of bounds
