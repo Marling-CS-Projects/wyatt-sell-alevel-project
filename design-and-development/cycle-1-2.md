@@ -471,14 +471,15 @@ const FooterButton = (props: {children: ReactNode}) => {
 
 ### Tests
 
-| Test | Instructions                                                                               | What I expect                                                                                      | What actually happens | Pass/Fail |
-| ---- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | --------------------- | --------- |
-| 1    | The host draws (and optionally edits) an  polygon, before creating and starting the game   | The polygon can be drawn and edited, and rendered as red outline when the host loads into the game | As expected           | Pass      |
-| 2    | The host attempts to draw two polygons                                                     | The controls for drawing a new polygon should disappear, after the first one is drawn              | As expected           | Pass      |
-| 3    | The host draws a polygon, another player joins the game, and the game is started           | Both players should see the game area rendered with a red outline                                  | As expected           | Pass      |
-| 4    | Create and start a game, pan away from your location marker, and click the recenter button | The map should pan and zoom back to your location                                                  | As expected           | Pass      |
-| 5    | Create and start a game with two Hunters, and click the indicator of the other hunter      | A popup should appear with the other players username and role                                     | As expected           | Pass      |
-|      |                                                                                            |                                                                                                    |                       |           |
+| Test | Instructions                                                                                    | What I expect                                                                                            | What actually happens | Pass/Fail |
+| ---- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------- | --------- |
+| 1    | The host draws (and optionally edits) an  polygon, before creating and starting the game        | The polygon can be drawn and edited, and rendered as red outline when the host loads into the game       | As expected           | Pass      |
+| 2    | The host attempts to draw two polygons                                                          | The controls for drawing a new polygon should disappear, after the first one is drawn                    | As expected           | Pass      |
+| 3    | The host draws a polygon, another player joins the game, and the game is started                | Both players should see the game area rendered with a red outline                                        | As expected           | Pass      |
+| 4    | Create and start a game, pan away from your location marker, and click the recenter button      | The map should pan and zoom back to your location                                                        | As expected           | Pass      |
+| 5    | Create and start a game with two Hunters, and click the indicator of the other hunter           | A popup should appear with the other players username and role                                           | As expected           | Pass      |
+| 6    | Create and start a game with two players and emulate the location being outside of the boundary | A popup should appear on both players screens alerting them that this player is out of bounds            | As expected           |           |
+| 7    | Create and start a game and emulate the location being near to the boundary                     | A popup should appear on the players screen with a warning and if applicable their device should vibrate | As expected           |           |
 
 ### Evidence
 
