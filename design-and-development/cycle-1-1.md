@@ -397,4 +397,4 @@ io.on('connection', async socket => {
 
 ### Evidence
 
-TODO: RECORD EVIDENCE
+![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro).png>)
