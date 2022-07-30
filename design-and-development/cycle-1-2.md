@@ -250,75 +250,62 @@ export const distanceFromBoundary = (
 
 {% tab title="index.ts" %}
 ```jsx
-// SHORTENED FOR BREVITY (LINES 178-239)
-// This is a function to transmit connection and disconnection events
-io.on('connection', async socket => {
-  io.emit('game-init', {
-    id: socket.game.id,
-    code: socket.game.joinCode,
-    options: socket.game.options,
-  });
+import {ReactNode, useEffect, useState} from 'react';
+import dynamic from 'next/dynamic';
+import {
+  distanceFromBoundary,
+  GameOptions,
+  isPointInsidePolygon,
+} from '@monorepo/shared/src/index';
+import {toast} from 'react-hot-toast';
+import {useGame, useLocation} from '../../../utils/hooks';
+const MapWrapper = dynamic(() => import('./MapInner'), {ssr: false});
 
-  // Tells all users in game that a new user connected
-  io.to(socket.game.id).emit('player-connected', {
-    id: socket.user.sub,
-    username: socket.user.given_name,
-    picture: socket.user.picture,
-    type: socket.player.type,
-    isHost: socket.player.isHost,
-  });
+export const Map = (props: {
+  children?: ReactNode;
+  vertices?: GameOptions['vertices'];
+}) => {
+  const [location] = useLocation();
+  const [game] = useGame();
+  const [warningIds, setWarningIds] = useState<string[]>([]);
 
-  // Sends already connected users to new user
-  for (const {id, user, type, socket: s, ...player} of socket.game.players) {
-    if (id === socket.player.id || !s.connected) continue;
+  const vertices = game?.options.vertices || props.vertices;
 
-    socket.emit('player-connected', {
-      id: user.sub,
-      username: user.given_name,
-      picture: user.picture,
-      type,
-      isHost: player.isHost,
-      // Here we append the location to the `player-connected` broadcast
-      // IF the both the player being send and recieving is a hunter 
-      location:
-        socket.player.type === 'hunter' && socket.player.type === type
-          ? player.location
-          : undefined,
-    });
-  }
+  useEffect(() => {
+    if (location && vertices?.length) {
+      const isInside = isPointInsidePolygon(
+        {lat: location.latitude, lng: location.longitude},
+        vertices
+      );
+      const distance = distanceFromBoundary(
+        {lat: location.latitude, lng: location.longitude},
+        vertices
+      );
 
-  socket.on('disconnect', () => {
-    io.emit('player-disconnected', {id: socket.user.sub});
-  });
+      if (warningIds.length) {
+        warningIds.forEach(id => toast.dismiss(id));
+      }
 
-  socket.on('player-pref', async data => {
-    const type = socket.player.updatePref(data);
-    io.emit('player-updated', {
-      id: socket.player.id,
-      type,
-    });
-    // We make sure to send a location update to all hunter clients, if
-    // a player changes to become a hunter, to ensure they are all in sync.
-    if (socket.player.type === 'hunter') {
-      io.to(socket.game.id + 'hunter').emit('player-location', {
-        id: socket.player.id,
-        location: socket.player.location,
-      });
+      if (!isInside) {
+        const toastId = toast.error('You are not inside the game area.', {
+          duration: Infinity,
+        });
+        setWarningIds(prev => [...prev, toastId]);
+      } else {
+        if (distance <= location.accuracy / 2) {
+          const toastId = toast.error(
+            'You are near the edge of the game area.',
+            {duration: Infinity}
+          );
+          navigator.vibrate(100);
+          setWarningIds(prev => [...prev, toastId]);
+        }
+      }
     }
-  });
+  }, [location, vertices]);
 
-  // We register a seperate event (`player-location`), for broadcasting
-  // location updates to the hunter "room", if the player is a hunter
-  socket.on('player-location', async data => {
-    socket.player.location = data;
-    if (socket.player.type === 'hunter') {
-      io.to(socket.game.id + 'hunter').emit('player-location', {
-        id: socket.player.id,
-        location: data,
-      });
-    }
-  });
-});
+  return <MapWrapper>{props.children}</MapWrapper>;
+};
 ```
 {% endtab %}
 {% endtabs %}
