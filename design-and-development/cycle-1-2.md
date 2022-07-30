@@ -88,6 +88,85 @@ I followed this guide to create my algorithm
 I used similar principles to write a separate algorithm for detecting proximity to edge by computing the perpendicular intersections distance with each line segment and finding the minimum. I also implemented the visual changes, namely the information panel and buttons at the bottom of the screen, the player information popups on each node and the recenter button. This required some minor refactoring to implement, but was fairly straightforward. I made some small visual tweaks too, changing from a dark to a light theme, for increased readability (especially important for my target audience:[#older-gamers](../1-analysis/1.2-stakeholders.md#older-gamers "mention"))
 
 {% tabs %}
+{% tab title="utils.ts" %}
+```typescript
+export const isPointInsidePolygon = (
+  pointRaw: {lat: number; lng: number},
+  polygonRaw: {lat: number; lng: number}[]
+) => {
+  // Initiates a mutable boolean to store the "inside" state
+  let inside = false;
+  const polygon = polygonRaw.map(p => ({x: p.lat, y: p.lng}));
+  // The point we are testing
+  const point = {x: pointRaw.lat, y: pointRaw.lng};
+  // Iterates over each point on the polygon, assigning i to be the 
+  // "current point" and j to be the point before.
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    // Assigns (xi, yi) and (xj, yj) to be co-ordinates for the pair of
+    // points on the polygon.
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    const intersect =
+      // The first condition checks whether point.y is between yi and yj
+      (yi > point.y) !== (yj > point.y) &&
+      // AND ensures that point.x is greater than the s_x of the line segment
+      // (the x co-ordinate of the line if you extended it to point.y)
+      point.x > ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+      
+    // If there is an intersection, invert the current "inside" value - if
+    // there are an even number of intersections, the point does not lie 
+    // within the polygon.
+    if (intersect) inside = !inside;
+  }
+  return inside;
+};
+
+export const distanceFromBoundary = (
+  pointRaw: {lat: number; lng: number},
+  polygonRaw: {lat: number; lng: number}[]
+) => {
+  const polygon = polygonRaw.map(p => ({x: p.lat, y: p.lng}));
+  const point = {x: pointRaw.lat, y: pointRaw.lng};
+
+  let distances = [];
+  // As above iterates over pairs of polygon points to get points for a
+  // segment (xi, yi), (xj, yj)
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    // Finds the gradient and inverse gradient of the line segment
+    const gradient = (yj - yi) / (xj - xi);
+    const inverseGradient = -1 / gradient;
+    
+    // Uses y = mx + c (rearranged), to find the point at which the
+    // line that intersects the point and is perpendicular to the segment
+    // intersects the segment
+    const xIntersect =
+      (yj - gradient * xj - (point.y - inverseGradient * point.x)) /
+      (inverseGradient - gradient);
+      
+    // Find the y co-ordinate on the segment by using y = mx + c and
+    // substituting in the new x point.
+    const yIntersect = gradient * xIntersect + yj - gradient * xj;
+    
+    // Uses a measure function I found that takes into account the
+    // Earths curvature to compute a distance in metres
+    const distance = measure(point.x, point.y, xIntersect, yIntersect);
+    distances.push(distance);
+  }
+  // Returns the minimum of all the distances from each segment
+  return Math.min(...distances);
+};
+
+```
+{% endtab %}
+
 {% tab title="MapPolygon.tsx" %}
 ```tsx
 import {FeatureGroup} from 'react-leaflet';
@@ -166,85 +245,6 @@ export default (props: {
       )}
     </FeatureGroup>
   );
-};
-
-```
-{% endtab %}
-
-{% tab title="utils.ts" %}
-```typescript
-export const isPointInsidePolygon = (
-  pointRaw: {lat: number; lng: number},
-  polygonRaw: {lat: number; lng: number}[]
-) => {
-  // Initiates a mutable boolean to store the "inside" state
-  let inside = false;
-  const polygon = polygonRaw.map(p => ({x: p.lat, y: p.lng}));
-  // The point we are testing
-  const point = {x: pointRaw.lat, y: pointRaw.lng};
-  // Iterates over each point on the polygon, assigning i to be the 
-  // "current point" and j to be the point before.
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    // Assigns (xi, yi) and (xj, yj) to be co-ordinates for the pair of
-    // points on the polygon.
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
-
-    const intersect =
-      // The first condition checks whether point.y is between yi and yj
-      (yi > point.y) !== (yj > point.y) &&
-      // AND ensures that point.x is greater than the s_x of the line segment
-      // (the x co-ordinate of the line if you extended it to point.y)
-      point.x > ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
-      
-    // If there is an intersection, invert the current "inside" value - if
-    // there are an even number of intersections, the point does not lie 
-    // within the polygon.
-    if (intersect) inside = !inside;
-  }
-  return inside;
-};
-
-export const distanceFromBoundary = (
-  pointRaw: {lat: number; lng: number},
-  polygonRaw: {lat: number; lng: number}[]
-) => {
-  const polygon = polygonRaw.map(p => ({x: p.lat, y: p.lng}));
-  const point = {x: pointRaw.lat, y: pointRaw.lng};
-
-  let distances = [];
-  // As above iterates over pairs of polygon points to get points for a
-  // segment (xi, yi), (xj, yj)
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
-
-    // Finds the gradient and inverse gradient of the line segment
-    const gradient = (yj - yi) / (xj - xi);
-    const inverseGradient = -1 / gradient;
-    
-    // Uses y = mx + c (rearranged), to find the point at which the
-    // line that intersects the point and is perpendicular to the segment
-    // intersects the segment
-    const xIntersect =
-      (yj - gradient * xj - (point.y - inverseGradient * point.x)) /
-      (inverseGradient - gradient);
-      
-    // Find the y co-ordinate on the segment by using y = mx + c and
-    // substituting in the new x point.
-    const yIntersect = gradient * xIntersect + yj - gradient * xj;
-    
-    // Uses a measure function I found that takes into account the
-    // Earths curvature to compute a distance in metres
-    const distance = measure(point.x, point.y, xIntersect, yIntersect);
-    distances.push(distance);
-  }
-  // Returns the minimum of all the distances from each segment
-  return Math.min(...distances);
 };
 
 ```
