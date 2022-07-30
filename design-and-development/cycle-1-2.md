@@ -372,6 +372,7 @@ import {TypeTag} from '../TypeTag';
 export const GameContainer = () => {
   const [game] = useGame();
 
+  // Only display the game container if there is an ongoing game.
   if (!game) return null;
 
   return (
@@ -383,12 +384,14 @@ export const GameContainer = () => {
     </Flex>
   );
 };
+
 const GameFooter = () => {
   const me = useMe();
   const [game] = useGame();
   if (!me || !game) return null;
 
   return (
+    // Creates a footer that displays the information and buttons
     <Flex p={4}>
       <HStack justifyContent={'space-between'} w={'full'}>
         <VStack flexDir={'column'} spacing={2} alignItems={'flex-start'}>
@@ -401,7 +404,7 @@ const GameFooter = () => {
           <TypeTag type={me.type} />
         </VStack>
         <HStack h={'full'} justifyContent={'flex-end'}>
-          <FooterButton>⚙️</FooterButton>
+          <FooterButton>🎒</FooterButton>
           <FooterButton>⚙️</FooterButton>
         </HStack>
       </HStack>
@@ -413,6 +416,8 @@ const GameTime = () => {
   const [game] = useGame();
   const [time, setTime] = useState(0);
 
+  // A function that updates the "time" state every second, relative to the
+  // unix game start time.
   useEffect(() => {
     const inverval = setInterval(() => {
       if (game?.startTime) {
@@ -426,6 +431,8 @@ const GameTime = () => {
 
   return (
     <Text>
+      // Display the minutes and seconds the game has been going, padded
+      // zeros
       {Math.floor(time / 60)
         .toString()
         .padStart(2, '0')}
@@ -434,6 +441,7 @@ const GameTime = () => {
   );
 };
 
+// Reusable FooterButton component
 const FooterButton = (props: {children: ReactNode}) => {
   return (
     <Button
