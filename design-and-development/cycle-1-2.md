@@ -255,17 +255,20 @@ export const distanceFromBoundary = (
  // SHORTED FOR BREVITY: LINES 61-87 
   updateLocation(location: GeolocationCoordinates) {
     this.location = location;
+    // Emits player location to all other hunters if player is a hunter
     if (this.socket.player.type === 'hunter') {
       this.socket.to(this.game.id + 'hunter').emit('player-location', {
         id: this.id,
         location: this.location,
       });
     }
+    // Determines whether player is inside game area
     const isInside = isPointInsidePolygon(
       {lat: this.location.latitude, lng: this.location.longitude},
       this.game.options.vertices
     );
-
+    // If player was outside before and is now inside, broadcast that they
+    // are BACK inside.
     if (this.isOutside && isInside) {
       this.isOutside = false;
       this.socket.to(this.game.id).emit('player-boundary', {
@@ -273,7 +276,9 @@ export const distanceFromBoundary = (
         outside: false,
       });
     }
-    if (!isInside) {
+    // If they weren't outside before but now are, broadcast that they are
+    // now outside.
+    if (!this.isOutside && !isInside) {
       this.isOutside = true;
       this.socket.to(this.game.id).emit('player-boundary', {
         id: this.id,
@@ -295,6 +300,8 @@ import {
 } from '@monorepo/shared/src/index';
 import {toast} from 'react-hot-toast';
 import {useGame, useLocation} from '../../../utils/hooks';
+// Only import MapWrapper in the browser, as leaflet does not function
+// with sever-side rendering
 const MapWrapper = dynamic(() => import('./MapInner'), {ssr: false});
 
 export const Map = (props: {
@@ -303,12 +310,15 @@ export const Map = (props: {
 }) => {
   const [location] = useLocation();
   const [game] = useGame();
+  // Stores an array of alerts, so they can be removed when expired.
   const [warningIds, setWarningIds] = useState<string[]>([]);
 
   const vertices = game?.options.vertices || props.vertices;
 
   useEffect(() => {
     if (location && vertices?.length) {
+      // Finds whether player is inside, and how far they are from boundary
+      // on every location update.
       const isInside = isPointInsidePolygon(
         {lat: location.latitude, lng: location.longitude},
         vertices
@@ -317,17 +327,22 @@ export const Map = (props: {
         {lat: location.latitude, lng: location.longitude},
         vertices
       );
-
+      
+      // Remove all previous warnings
       if (warningIds.length) {
         warningIds.forEach(id => toast.dismiss(id));
       }
-
+      
       if (!isInside) {
+        // Display an persistent alert if the player is outside.
         const toastId = toast.error('You are not inside the game area.', {
           duration: Infinity,
         });
         setWarningIds(prev => [...prev, toastId]);
       } else {
+        // If the players distance from the border is less than the
+        // inaccuracy of the user's location, display a persistent alert
+        // and vibrate the users phone for 100ms.
         if (distance <= location.accuracy / 2) {
           const toastId = toast.error(
             'You are near the edge of the game area.',
@@ -339,7 +354,8 @@ export const Map = (props: {
       }
     }
   }, [location, vertices]);
-
+  
+  // Display the map and pass any <Map/> children down
   return <MapWrapper>{props.children}</MapWrapper>;
 };
 ```
