@@ -214,17 +214,37 @@ export const distanceFromBoundary = (
 ```
 {% endtab %}
 
-{% tab title="SocketHandler.tsx" %}
+{% tab title="player.ts" %}
 ```typescript
-// I added a small section to <SocketHandler/> to recieve location updates
-// and update the player list accordingly.
-socket.on('player-location', message => {
-  setPlayers(players =>
-    players.map(p =>
-      p.id === message.id ? {...p, location: message.location} : p
-    )
-  );
-})
+ // SHORTED FOR BREVITY: LINES 61-87 
+  updateLocation(location: GeolocationCoordinates) {
+    this.location = location;
+    if (this.socket.player.type === 'hunter') {
+      this.socket.to(this.game.id + 'hunter').emit('player-location', {
+        id: this.id,
+        location: this.location,
+      });
+    }
+    const isInside = isPointInsidePolygon(
+      {lat: this.location.latitude, lng: this.location.longitude},
+      this.game.options.vertices
+    );
+
+    if (this.isOutside && isInside) {
+      this.isOutside = false;
+      this.socket.to(this.game.id).emit('player-boundary', {
+        id: this.id,
+        outside: false,
+      });
+    }
+    if (!isInside) {
+      this.isOutside = true;
+      this.socket.to(this.game.id).emit('player-boundary', {
+        id: this.id,
+        outside: true,
+      });
+    }
+  }
 ```
 {% endtab %}
 
