@@ -215,24 +215,35 @@ export const distanceFromBoundary = (
   const point = {x: pointRaw.lat, y: pointRaw.lng};
 
   let distances = [];
+  // As above iterates over pairs of polygon points to get points for a
+  // segment (xi, yi), (xj, yj)
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const xi = polygon[i].x;
     const yi = polygon[i].y;
     const xj = polygon[j].x;
     const yj = polygon[j].y;
 
+    // Finds the gradient and inverse gradient of the line segment
     const gradient = (yj - yi) / (xj - xi);
     const inverseGradient = -1 / gradient;
-
+    
+    // Uses y = mx + c (rearranged), to find the point at which the
+    // line that intersects the point and is perpendicular to the segment
+    // intersects the segment
     const xIntersect =
       (yj - gradient * xj - (point.y - inverseGradient * point.x)) /
       (inverseGradient - gradient);
-
+      
+    // Find the y co-ordinate on the segment by using y = mx + c and
+    // substituting in the new x point.
     const yIntersect = gradient * xIntersect + yj - gradient * xj;
-
+    
+    // Uses a measure function I found that takes into account the
+    // Earths curvature to compute a distance in metres
     const distance = measure(point.x, point.y, xIntersect, yIntersect);
     distances.push(distance);
   }
+  // Returns the minimum of all the distances from each segment
   return Math.min(...distances);
 };
 
