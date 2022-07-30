@@ -88,193 +88,74 @@ I followed this guide to create my algorithm
 I used similar principles to write a separate algorithm for detecting proximity to edge by computing the perpendicular intersections distance with each line segment and finding the minimum. I also implemented the visual changes, namely the information panel and buttons at the bottom of the screen, the player information popups on each node and the recenter button. This required some minor refactoring to implement, but was fairly straightforward. I made some small visual tweaks too, changing from a dark to a light theme, for increased readability (especially important for my target audience:[#older-gamers](../1-analysis/1.2-stakeholders.md#older-gamers "mention"))
 
 {% tabs %}
-{% tab title="Map.tsx" %}
+{% tab title="MapPolygon.tsx" %}
 ```typescript
-import {
-  MapContainer,
-  Marker,
-  Popup,
-  TileLayer,
-  useMap,
-  CircleMarker,
-} from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import {useEffect, useRef, useState} from 'react';
-import {CircleMarker as LeafletCircleMarker, LatLng} from 'leaflet';
-import {useMe, usePlayers, useSocket} from '../../utils/hooks';
-import {Socket} from 'socket.io-client';
-// Imports animation styling
-import './map-lerp.css';
+import {FeatureGroup} from 'react-leaflet';
+import {EditControl} from 'react-leaflet-draw';
+import {DrawEvents, LatLng} from 'leaflet';
+import {Dispatch, SetStateAction} from 'react';
+import {GameOptions} from '@monorepo/shared/src/index';
 
-export default () => {
-  const [location, setLocation] = useState<GeolocationCoordinates | null>(null);
-  const socket = useSocket();
+type UpdateParameter =
+  | DrawEvents.Edited
+  | DrawEvents.Created
+  | DrawEvents.Deleted;
 
-  useEffect(() => {
-    // This is a built in browser function that is called when a 
-    // device's location updates
-    const watchId = navigator.geolocation.watchPosition(data => {
-      console.log('watch called');
-      setLocation(data.coords);
-      if (socket) {
-        emitLocation(socket, data.coords);
-      }
-    });
-    
-    // This is a function which requests a new location each second. 
-    // In combination with the above function, this will ensure that
-    // player location is both accurate and up-to-date.
-    const interval = setInterval(() => {
-      console.log('interval called', socket);
-      navigator.geolocation.getCurrentPosition(data => {
-        setLocation(data.coords);
-        if (socket) {
-          emitLocation(socket, data.coords);
-        }
-      });
-    }, 1000);
-    
-    // Clear interval when component unmounts. This prevents memory leaks.
-    return () => {
-      console.log('cleared');
-      clearInterval(interval);
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, [socket]);
-
-  if (!location || !socket) return null;
-  
-  // Render the map, centering it at the the players location.
-  // The <TileLayer/> component is responsible for renddering the actual map 
-  // content. If we know the domain from which Google requests their map
-  // tiles, we can use this for no extra cost in our map, which is what
-  // you see here.
-  return (
-    <MapContainer
-      center={[location.latitude, location.longitude]}
-      zoom={13}
-      scrollWheelZoom={false}
-      style={{height: '100vh', width: '100%'}}
-    >
-      <TileLayer
-        url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-        subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
-      />
-      <MapMarkers location={location} />
-    </MapContainer>
-  );
-};
-
-// Component that renders map markers of other players
-const MapMarkers = (props: {location: GeolocationCoordinates}) => {
-  const [players] = usePlayers();
-  const me = useMe();
-
-  if (!me) return null;
-
-  return (
-    <>
-      <PlayerMarker location={props.location} isMe />
-      {players
-        .filter(p => p.location && p.id !== me.id)
-        .map(({location}) => (
-          <PlayerMarker location={location!} isMe={false} />
-        ))}
-    </>
-  );
-};
-
-// Component that renders each individual map markers
-const PlayerMarker = (props: {
-  location: GeolocationCoordinates;
-  isMe: boolean;
+export default (props: {
+  options: GameOptions;
+  setOptions: Dispatch<SetStateAction<GameOptions>>;
 }) => {
-  // "refs" allow us to interact with the underlying HTML element within
-  // React.
-  const circleRef = useRef<LeafletCircleMarker<any>>(null);
-  const map = useMap();
-
-  const mapZoomListener = () => {
-    const bounds = map.getBounds();
-    const pixelBounds = map.getSize();
-    const {lat} = bounds.getCenter();
-    
-    // The code below is used to update the accuracy circle of the player
-    // depending on zoom value. Every time we fetch a location on the client
-    // an "accuracy" value is associated with it. In common map apps, this is
-    // rendered as a translucent circle around the actual location.
-    
-    // In this case, we have to convert the metre value of the accuracy to
-    // pixel values that we can show on our map. We find what percentage of the 
-    // map width is covered by the accuracy distance, and we convert that to 
-    // find its radius in pixels, before updating our location indicator.
-    
-    const widthInMetres = new LatLng(lat, bounds.getWest()).distanceTo({
-      lat,
-      lng: bounds.getEast(),
+  const setVertices = (vertices: GameOptions['vertices']) => {
+    props.setOptions({
+      ...props.options,
+      vertices,
     });
-    if (circleRef.current) {
-      circleRef.current.setStyle({
-        weight: (props.location.accuracy / widthInMetres) * pixelBounds.x,
-      });
+  };
+
+  const update = (v: UpdateParameter) => {
+    switch (v.type) {
+      case 'draw:deleted':
+        setVertices([]);
+        break;
+      case 'draw:created':
+        setVertices(
+          (v.layer.editing.latlngs[0][0] as LatLng[]).map(({lat, lng}) => ({
+            lat,
+            lng,
+          }))
+        );
+        break;
+      case 'draw:edited':
+        const latlngArr = (
+          ((v as DrawEvents.Edited).layers.getLayers()[0] as any)!.editing
+            .latlngs[0][0] as LatLng[]
+        ).map(({lat, lng}) => ({lat, lng}));
+        setVertices(latlngArr);
     }
   };
 
-  // This registers and unregisters the afformentioned zoom listeners
-  useEffect(() => {
-    map.on('load', mapZoomListener);
-    map.on('zoom', mapZoomListener);
-    return () => {
-      map.off('load', mapZoomListener);
-      map.off('zoom', mapZoomListener);
-    };
-  }, [circleRef, map]);
-
-  // This updates the location of the marker if the parameters passed 
-  // to this component are changed.
-  useEffect(() => {
-    if (props.location && circleRef.current) {
-      circleRef.current.setLatLng([
-        props.location.latitude,
-        props.location.longitude,
-      ]);
-    }
-  }, [circleRef, props.location]);
-  
-  // This is the actual circle marker. At present it only displays a
-  // different color for other players, but I intend to add popups 
-  // in the future.
   return (
-    <CircleMarker
-      center={[props.location.latitude, props.location.longitude]}
-      color={props.isMe ? '#4286f5' : 'red'}
-      stroke
-      fillColor={props.isMe ? '#4286f5' : 'red'}
-      opacity={0.2}
-      fillOpacity={1}
-      radius={10}
-      ref={circleRef}
-    >
-      <Popup>
-        Example popup
-      </Popup>
-    </CircleMarker>
+    <FeatureGroup>
+      <EditControl
+        position="topright"
+        onEdited={update}
+        onCreated={update}
+        onDeleted={update}
+        draw={{
+          rectangle: false,
+          circle: false,
+          marker: false,
+          polyline: false,
+          circlemarker: false,
+        }}
+      />
+      {props.options.vertices.length && (
+        <link rel="stylesheet" type="text/css" href={'control-hide.css'} />
+      )}
+    </FeatureGroup>
   );
 };
 
-// This is a reusable function that broadcasts the given location data to
-// the server
-const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
-  socket.emit('player-location', {
-    accuracy: data.accuracy,
-    altitude: data.altitude,
-    altitudeAccuracy: data.altitudeAccuracy,
-    heading: data.heading,
-    latitude: data.latitude,
-    longitude: data.longitude,
-    speed: data.speed,
-  });
-};
 ```
 {% endtab %}
 
