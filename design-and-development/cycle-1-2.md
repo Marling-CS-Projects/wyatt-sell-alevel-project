@@ -463,19 +463,22 @@ const FooterButton = (props: {children: ReactNode}) => {
 
 ### Challenges
 
-Overall this was a fairly simple Cycle, with largely cosmetic changes
+* Working out how to compute the distance from the nearest edge. I knew how to do this on paper, but transferring the algebraic expression into a single expression that a computer could understand required some time. It wasn't a challenge per-se, but it just took some time.
+* Determining whether a co-ordinate point was inside a polygon - I understood the even-odd rule in theory, but its implementation was more complex. The aforementioned article was enormously helpful at actually creating a suitable function.
+* Hiding the controls for the polygon drawing library was more difficult than I initially suspected, due to some strange quirks with how the polygon edit tools are rendered - they aren't suitably mutable within React. I spent a lot of time experimenting with different ideas before going with the unconventional approach of conditionally embedding an stylesheet tag to hide the controls.
 
 ## Testing
 
 ### Tests
 
-| Test | Instructions                                                          | What I expect                                                                                                              | What actually happens | Pass/Fail |
-| ---- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------- | --------- |
-| 1    | A player creates and starts a game with no other players              | A map is displayed with their location indicator in the centre, and no other indicators rendered                           | As expected           | Pass      |
-| 2    | A Hunter and Hunted player join the same game, and the host starts it | Each player should see a map with only their own location marker rendered                                                  | As expected           | Pass      |
-| 3    | 2 Hunted players join the same game, and the host starts it           | Each player should see a map with only their own location marker rendered                                                  | As expected           | Pass      |
-| 4    | 2 Hunter players join the same game, and the host starts it           | Both players should see a map with their own location in the centre in blue, AND the other players location marker in red. | As expected           |           |
-| 5    | Create and start a game                                               | The map renders a satellite view, and supports zoom with a dynamic accuracy circle                                         | As expected           |           |
+| Test | Instructions                                                                               | What I expect                                                                                      | What actually happens | Pass/Fail |
+| ---- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | --------------------- | --------- |
+| 1    | The host draws (and optionally edits) an  polygon, before creating and starting the game   | The polygon can be drawn and edited, and rendered as red outline when the host loads into the game | As expected           | Pass      |
+| 2    | The host attempts to draw two polygons                                                     | The controls for drawing a new polygon should disappear, after the first one is drawn              | As expected           | Pass      |
+| 3    | The host draws a polygon, another player joins the game, and the game is started           | Both players should see the game area rendered with a red outline                                  | As expected           | Pass      |
+| 4    | Create and start a game, pan away from your location marker, and click the recenter button | The map should pan and zoom back to your location                                                  | As expected           | Pass      |
+| 5    | Create and start a game with two Hunters, and click the indicator of the other hunter      | A popup should appear with the other players username and role                                     | As expected           | Pass      |
+|      |                                                                                            |                                                                                                    |                       |           |
 
 ### Evidence
 
