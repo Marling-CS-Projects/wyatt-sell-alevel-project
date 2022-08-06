@@ -4,17 +4,18 @@
 
 ### Objectives
 
-In this cycle, I will aim to create a map with your live updating location on the client. I will also hope to have these updates send to the server, and where appropriate, broadcast them to other notes - for instance, if you're a Hunter, your live location will also update on the screen of other Hunters. Additionally, I would like to include a map in the "Create" screen so that game hosts are able to define a polygon over which the game is playable.
+In this cycle, I will aim to "tidy-up" the codebase, adding some features that will be primarily useful as development
 
-* [ ] Create a notification system that stores messages in a global queue and allows adding, removing and clearing.
+* [ ] Create a notification system that stores messages in a global queue and allows adding, removing and clearing
 * [ ] Refactor server-side socket messaging into separate files and into classes where appropriate.
 * [ ] Change styling to fit the styles decided in [#design-language](../1-analysis/1.4a-features-of-the-proposed-solution.md#design-language "mention"), and ensure these are consistent throughout the app
+* [ ] Create rejoin logic that will automatically rejoin a game if a user loses and then regains a network connection
 
 ### Usability Features
 
 * It should be clear the relevancy of notifications - for instance, if the message is just information, and not a warning, this should be immediately obvious to the user.
-* Location updates should be smooth, and not sudden jolts. This will be achieved by regular pings and some [linear interpolation](https://en.wikipedia.org/wiki/Linear\_interpolation)
-* Location uncertainty should be shown on the map as a translucent circle showing the error range, to avoid confusion if the rendered location is incorrect
+* Add a _temporary_ "Leave Game" button for testing in development. This will be moved to the settings popup in a future cycle.
+* The styling should prioritise legibility and good contrast ratios (W3, 2019), before aesthetics
 
 ### Key Variables
 
