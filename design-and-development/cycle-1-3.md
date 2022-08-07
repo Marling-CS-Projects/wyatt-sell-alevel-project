@@ -4,7 +4,7 @@
 
 ### Objectives
 
-In this cycle, I will aim to "tidy-up" the codebase, adding some features that will be primarily useful as development
+In this cycle, I will aim to "tidy-up" the codebase, adding some features that will be primarily useful as development but also some minor logic that enables game rejoining. Throughout my refactoring of the codebase, I will attempt to make a system that is flexible enough to allow for me to add new features and routes in the future. I do however plan to build a global notification system that can be used easily, as I encountered some buggy behaviour in the previous cycle with showing and hiding alerts.
 
 * [ ] Create a notification system that stores messages in a global queue and allows adding, removing and clearing
 * [ ] Refactor server-side socket messaging into separate files and into classes where appropriate.
@@ -19,10 +19,10 @@ In this cycle, I will aim to "tidy-up" the codebase, adding some features that w
 
 ### Key Variables
 
-| Variable Name                      | Use                                                                                                     |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| location                           | Stores the current user's location                                                                      |
-| player?.location (in players list) | Stores the location of other players - this may be null if their location is not available to the user. |
+| Variable Name | Use                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------- |
+| notifications | Stores a list of all currently active notifications as an object with details such as id, message, type, etc. |
+| game          | Stores the location of other players - this may be null if their location is not available to the user.       |
 
 ### Pseudocode
 
