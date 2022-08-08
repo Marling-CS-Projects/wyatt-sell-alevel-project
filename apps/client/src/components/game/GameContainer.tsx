@@ -36,7 +36,7 @@ const GameFooter = () => {
 					<TypeTag type={me.type} />
 				</VStack>
 				<HStack h={'full'} justifyContent={'flex-end'}>
-					<FooterButton>⚙️</FooterButton>
+					<FooterButton>🎒</FooterButton>
 					<FooterButton>⚙️</FooterButton>
 				</HStack>
 			</HStack>

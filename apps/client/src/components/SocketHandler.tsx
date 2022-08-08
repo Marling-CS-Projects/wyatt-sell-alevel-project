@@ -36,7 +36,10 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 						toast.error(
 							`${players.find(p => p.id === message.id)!.username} is ${
 								message.outside ? '' : 'no longer'
-							} out of bounds`
+							} out of bounds`,
+							{
+								duration: Infinity,
+							}
 						);
 						return players;
 					});
