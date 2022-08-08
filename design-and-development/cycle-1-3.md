@@ -48,6 +48,13 @@ subroutine remove_nofitication (id)
         end if
     end for
 end subroutine
+
+subroutine onload
+    game = fetch 'game' from browser storage
+    if game
+        make new socket connection using game.code
+    end if
+end subroutine
 ```
 
 ## Development
