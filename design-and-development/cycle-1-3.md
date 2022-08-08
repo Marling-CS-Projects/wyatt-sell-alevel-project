@@ -19,49 +19,33 @@ In this cycle, I will aim to "tidy-up" the codebase, adding some features that w
 
 ### Key Variables
 
-| Variable Name | Use                                                                                                           |
-| ------------- | ------------------------------------------------------------------------------------------------------------- |
-| notifications | Stores a list of all currently active notifications as an object with details such as id, message, type, etc. |
-| game          | Stores the location of other players - this may be null if their location is not available to the user.       |
+| Variable Name | Use                                                                                                                                 |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| notifications | Stores a list of all currently active notifications as an object with details such as id, message, type, etc.                       |
+| game          | Stores the current game - this may have to be stored persistently to be maintained when losing connection or on accidental refresh. |
 
 ### Pseudocode
 
 ```
-// Server
-subroutine recieve_location_ping (player)
-    update server player with new player data (using player.id)
-    if (player.hunter)
-        broadcast player to all hunter clients
-    end if
+notifications = []
+
+subroutine add_notification (notif)
+    if notifications length > 2:
+        dequeue notif
+    queue notif to notification list
 end subroutine
 
-// Client
-procedure ping_location
-    location = get_location()
-    if (near out_of_bounds)
-        alert("Near boundary")
-        if (out_of_bounds
-            alert("Move back into play zone")
+subroutine clear_notification
+    for notif in notifications
+        remove from screen
+    end for
+end subroutine
+
+subroutine remove_nofitication (id)
+    for notif in notifications
+        if notif.id = id
+            remove notif
         end if
-    end if
-    add_marker_to_map(location, blue)
-    socket.send(location)
-end procedure
-
-subroutine add_marker_to_map (location, color)
-    marker = new Marker({
-        x: location.x
-        y: location.y
-        accuracy: location.accuracy
-        color: color
-    })
-    add marker to map
-end subroutine
-
-subroutine recieve_player_location (player)
-    update players with new player data (using player.id)
-    for i in range(100)
-        update marker with {x: (location.x / i), y: (location.y / i)}
     end for
 end subroutine
 ```
