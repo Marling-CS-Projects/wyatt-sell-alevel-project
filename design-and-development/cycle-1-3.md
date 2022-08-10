@@ -25,40 +25,35 @@ In this cycle, I will aim to "tidy-up" the codebase, adding some features that w
 
 ### Pseudocode
 
-```
-notifications = []
-
-subroutine add_notification (notif)
-    if notifications length > 2:
-        dequeue notif
-    queue notif to notification list
-end subroutine
-
-subroutine clear_notification
-    for notif in notifications
-        remove from screen
-    end for
-end subroutine
-
-subroutine remove_nofitication (id)
-    for notif in notifications
-        if notif.id = id
-            remove notif
-        end if
-    end for
-end subroutine
-
+<pre><code>// Reconnection
+// Reconnection: Client
 subroutine onload
-    game = fetch 'game' from browser storage
-    if game
-        make new socket connection using game.code
+<strong>    game = fetch 'game' from browser storage
+</strong>    if game
+        display reconnect button
+            make new socket connection using game.code
+        display leave game button
+            remove 'game' from local storage
+            disconnect socket
+    end if
+end subroutine
+
+
+// Reconnection: Server
+subroutine on_reconnection (player_id, game_code)
+    game = get game from game_code
+    playerInGame = find player_id in game.players
+    if (playerInGame)
+        playerInGame.socket = socket
+        socket.player = playerInGame 
+        broadcast reconnection to all other players
     end if
 end subroutine
 
 subroutine on_player_disconnect (id)
     player = find player in players list from id
-    
-```
+    notify all other players player.name has disconnected
+end subroutine</code></pre>
 
 ## Development
 
