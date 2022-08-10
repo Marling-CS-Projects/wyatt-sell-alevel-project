@@ -11,6 +11,7 @@
 		"@chakra-ui/react": "^1.8.8",
 		"@emotion/react": "^11",
 		"@emotion/styled": "^11",
+		"@fontsource/share-tech-mono": "^4.5.9",
 		"@monorepo/shared": "workspace:^",
 		"@preconstruct/next": "^3.0.1",
 		"@thream/socketio-jwt": "2.2.1",

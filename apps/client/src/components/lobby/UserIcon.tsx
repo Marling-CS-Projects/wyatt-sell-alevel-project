@@ -20,7 +20,7 @@ export const UserIcon = (props: {u: ServerMessages['player-connected']}) => {
 					border={'4px'}
 					borderColor={u.id === me.id ? 'yellow.500' : 'none'}
 				/>
-				<Text color={'white'}>{u.username}</Text>
+				<Text>{u.username}</Text>
 			</VStack>
 		</WrapItem>
 	);

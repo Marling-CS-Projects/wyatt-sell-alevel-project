@@ -1,18 +1,8 @@
 export type ServerMessages = {
-	'player-connected': {
-		id: string;
-		picture: string;
-		username: string;
-		type: 'hunter' | 'hunted';
-		isHost: boolean;
-		location?: GeolocationCoordinates | null;
-	};
+	'player-connected': Player;
+	'player-reconnected': Player;
 	'player-disconnected': {id: string};
-	'player-updated': {
-		id: string;
-		location?: GeolocationCoordinates | null;
-		type?: 'hunter' | 'hunted';
-	};
+	'player-updated': Player;
 	'player-boundary': {
 		id: string;
 		outside: boolean;
@@ -30,6 +20,15 @@ export type ServerMessages = {
 	'game-start': {
 		startTime: number;
 	};
+};
+
+export type Player = {
+	id: string;
+	picture: string;
+	username: string;
+	type: 'hunter' | 'hunted';
+	isHost: boolean;
+	location?: GeolocationCoordinates | null;
 };
 
 export type ServerResponses = {

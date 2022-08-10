@@ -18,10 +18,10 @@ export const LobbyInner = () => {
 			<Heading size={'2xl'} textAlign={'center'} pt={12} pb={4}>
 				{game.code.toUpperCase()}
 			</Heading>
-			<Flex bg={'gray.700'} p={6} m={6} rounded={'xl'} flexDir={'column'}>
+			<Flex bg={'gray.200'} p={6} m={6} rounded={'xl'} flexDir={'column'}>
 				<VStack justifyContent={'center'} spacing={0}>
-					<Heading color={'white'}>Players</Heading>
-					<Text color={'gray.200'}>{players.length} / 20</Text>
+					<Heading>Players</Heading>
+					<Text>{players.length} / 20</Text>
 				</VStack>
 				<PlayerContainer />
 				<SwitchRole />

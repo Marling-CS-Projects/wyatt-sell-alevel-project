@@ -35,8 +35,10 @@ import {codeSchema} from '@monorepo/shared/src/schemas/connection';
 import {toast} from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 import {Map} from '../game/map/Map';
+import {emitLocation} from '../../utils/utils';
 
 export const JoinOrCreateGame = () => {
+	toast.dismiss();
 	return (
 		<Stack direction={['column', 'row']} justifyContent={'center'} mt={8}>
 			<NextLink passHref href={'/join'}>
@@ -125,7 +127,7 @@ export const CreatePage = () => {
 	return (
 		<Flex alignItems={'center'} flexDir={'column'}>
 			<GoBackButton />
-			<Box height={'75vh'} w={'full'}>
+			<Box height={'72vh'} w={'full'} py={2}>
 				<Map vertices={options.vertices}>
 					<DynamicPolygonFeature options={options} setOptions={setOptions} />
 				</Map>
@@ -159,7 +161,7 @@ const GoBackButton = () => (
 	</Link>
 );
 
-const ConnectWithCode = (props: {
+export const ConnectWithCode = (props: {
 	children(fn: (c: string) => Promise<void>): ReactElement;
 }) => {
 	const router = useRouter();
@@ -179,8 +181,12 @@ const ConnectWithCode = (props: {
 		});
 
 		const tempConnectedListener = async (game: ServerMessages['game-init']) => {
-			setGame({...game, hasStarted: false});
+			setGame(game);
 			setSocket(newSocket);
+			navigator.geolocation.getCurrentPosition(data => {
+				emitLocation(newSocket, data.coords);
+			});
+
 			newSocket.off('game-init', tempConnectedListener);
 			await router.push('/');
 		};
@@ -189,6 +195,7 @@ const ConnectWithCode = (props: {
 
 		newSocket.on('connect_error', error => {
 			toast.error(error.message);
+			// setGame(null);
 			newSocket.disconnect();
 		});
 	};

@@ -3,6 +3,7 @@ import {Player} from './player';
 import {generateJoinCode, polygonArea} from '../utils/helper';
 import {Item} from './item';
 import {GameOptions} from '@monorepo/shared/src/index';
+import {io} from '../index';
 
 export class Game {
 	id: string;
@@ -73,13 +74,41 @@ export class Game {
 		return invertedPlayerPref;
 	}
 
+	sendGameData(id: string) {
+		const primaryPlayer = this.players.find(p => p.id === id)!;
+		const socket = primaryPlayer.socket;
+
+		socket.emit('game-init', {
+			id: socket.game.id,
+			code: socket.game.joinCode,
+			options: socket.game.options,
+			hasStarted: socket.game.hasStarted,
+		});
+
+		// Sends data about the new player to all other players
+		socket
+			.to(socket.game.id)
+			.emit(
+				`player-${this.hasStarted ? 're' : ''}connected`,
+				primaryPlayer.getPublic()
+			);
+		primaryPlayer.emitLocation();
+
+		for (const player of this.players) {
+			if (player.status === 'disconnected') continue;
+
+			socket.emit('player-connected', {
+				...player.getPublic(),
+				location: player.getCanAccessLocation(id) ? player.location : undefined,
+			});
+		}
+	}
+
 	start() {
 		this.hasStarted = true;
 		this.startTime = Date.now();
-		for (const socket of this.players.map(p => p.socket)) {
-			socket.emit('game-start', {
-				startTime: this.startTime,
-			});
-		}
+		io.to(this.id).emit('game-start', {
+			startTime: this.startTime,
+		});
 	}
 }

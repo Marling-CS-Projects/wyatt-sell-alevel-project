@@ -6,6 +6,7 @@ import {
 	isPointInsidePolygon,
 	ServerToClientEvents,
 } from '@monorepo/shared/src/index';
+import {io} from '../index';
 
 export class Player {
 	socket: Socket<ClientToServerEvents, ServerToClientEvents>;
@@ -41,9 +42,11 @@ export class Player {
 		const newType = this.game.updatePlayer(this.id, this.pref);
 		if (newType !== this.type) {
 			this.socket.leave(this.game.id + this.type);
-			this.type = newType;
 			this.socket.join(this.game.id + newType);
+			this.type = newType;
+			this.emitAll();
 		}
+
 		return this.type;
 	}
 
@@ -51,11 +54,41 @@ export class Player {
 		return {
 			id: this.id,
 			status: this.status,
+			picture: this.user.picture,
+			username: this.user.given_name,
 			pref: this.pref,
 			type: this.type,
 			isHost: this.isHost,
 			user: this.user,
 		};
+	}
+
+	getCanAccessLocation(playerId: string) {
+		if (this.type === 'hunted') return false;
+		if (this.game.hunter.find(p => p.id === playerId)) return true;
+	}
+
+	disconnect() {
+		this.socket.to(this.game.id).emit('player-disconnected', {id: this.id});
+		this.status = 'disconnected';
+	}
+
+	emitInfo() {
+		io.to(this.game.id).emit('player-updated', this.getPublic());
+	}
+
+	emitLocation() {
+		if (this.type === 'hunter') {
+			io.to(this.game.id + 'hunter').emit('player-location', {
+				id: this.id,
+				location: this.location,
+			});
+		}
+	}
+
+	emitAll() {
+		this.emitInfo();
+		this.emitLocation();
 	}
 
 	updateLocation(location: GeolocationCoordinates) {
@@ -66,19 +99,19 @@ export class Player {
 				location: this.location,
 			});
 		}
-		const isInside = isPointInsidePolygon(
+		const isOutside = !isPointInsidePolygon(
 			{lat: this.location.latitude, lng: this.location.longitude},
 			this.game.options.vertices
 		);
 
-		if (this.isOutside && isInside) {
+		if (this.isOutside && !isOutside) {
 			this.isOutside = false;
 			this.socket.to(this.game.id).emit('player-boundary', {
 				id: this.id,
 				outside: false,
 			});
 		}
-		if (!isInside) {
+		if (isOutside && !this.isOutside) {
 			this.isOutside = true;
 			this.socket.to(this.game.id).emit('player-boundary', {
 				id: this.id,

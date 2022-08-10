@@ -34,6 +34,7 @@ import {Button, HStack, Tag, Text} from '@chakra-ui/react';
 import {TypeTag} from '../../TypeTag';
 import {RiNavigationLine} from 'react-icons/ri';
 import {debounce} from 'lodash';
+import {emitLocation} from '../../../utils/utils';
 
 export default (props: {children: ReactNode; markers?: boolean}) => {
 	const [location, setLocation] = useLocation();
@@ -44,19 +45,21 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 	const mapRef = useRef<Map>(null);
 
 	const updateLocation = (data: GeolocationPosition) => {
-		debounce(() => {
-			setLocation(data.coords);
-			if (me) {
-				setPlayers(prev => [
-					...prev.filter(p => p.id !== me.id),
-					{...me, location: data.coords},
-				]);
-			}
-			mapRef.current?.setView([data.coords.latitude, data.coords.longitude]);
-			if (socket) {
-				emitLocation(socket, data.coords);
-			}
-		}, 500)();
+		if (
+			socket &&
+			(location?.longitude !== data.coords.longitude ||
+				location?.latitude !== data.coords.latitude)
+		) {
+			emitLocation(socket, data.coords);
+		}
+		setLocation(data.coords);
+		if (me) {
+			setPlayers(prev => [
+				...prev.filter(p => p.id !== me.id),
+				{...me, location: data.coords},
+			]);
+		}
+		mapRef.current?.setView([data.coords.latitude, data.coords.longitude]);
 	};
 
 	useEffect(() => {
@@ -136,7 +139,7 @@ const MapMarkers = (props: {location: GeolocationCoordinates}) => {
 			{me &&
 				players
 					.filter(p => p.location && p.id !== me.id)
-					.map(p => <PlayerMarker player={p} />)}
+					.map(p => <PlayerMarker player={p} key={p.id} />)}
 		</>
 	);
 };
@@ -209,16 +212,4 @@ const PlayerMarker = (props: {
 			)}
 		</CircleMarker>
 	);
-};
-
-const emitLocation = (socket: Socket, data: GeolocationCoordinates) => {
-	socket.emit('player-location', {
-		accuracy: data.accuracy,
-		altitude: data.altitude,
-		altitudeAccuracy: data.altitudeAccuracy,
-		heading: data.heading,
-		latitude: data.latitude,
-		longitude: data.longitude,
-		speed: data.speed,
-	});
 };

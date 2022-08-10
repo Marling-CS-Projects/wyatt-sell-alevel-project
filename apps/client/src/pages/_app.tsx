@@ -1,3 +1,4 @@
+import '@fontsource/share-tech-mono/400.css';
 import {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
 import {fetcher} from '../utils/network';

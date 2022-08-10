@@ -15,8 +15,8 @@ export const socketAtom = atom<Socket<
 
 export const playersAtom = atom<ClientPlayer[]>([]);
 
-export const gameAtom = atom<
+export const gameAtom = atomWithStorage<
 	(ServerMessages['game-init'] & {startTime?: number}) | null
->(null);
+>('game', null);
 
 export const locationAtom = atom<GeolocationCoordinates | null>(null);

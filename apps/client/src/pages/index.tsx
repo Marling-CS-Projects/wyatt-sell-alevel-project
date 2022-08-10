@@ -48,8 +48,6 @@ const IndexInner = () => {
 
 	if (isLoading) return <h1>Loading...</h1>;
 
-	console.log('game', game);
-
 	return game?.hasStarted ? (
 		<GameContainer />
 	) : (

@@ -1,5 +1,3 @@
 import {ServerMessages} from '@monorepo/shared/src/index';
 
-export type ClientPlayer = ServerMessages['player-connected'] & {
-	location?: GeolocationCoordinates | null;
-};
+export type ClientPlayer = ServerMessages['player-connected'];

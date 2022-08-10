@@ -14,12 +14,12 @@ export const PlayerContainer = () => {
 			pos={'relative'}
 		>
 			<PlayerClassContainer
-				bg={'red.700'}
+				bg={'red.200'}
 				players={players.filter(u => u.type === 'hunted')}
 				title={'Hunted'}
 			/>
 			<PlayerClassContainer
-				bg={'blue.700'}
+				bg={'blue.200'}
 				players={players.filter(u => u.type === 'hunter')}
 				title={'Hunters'}
 			/>

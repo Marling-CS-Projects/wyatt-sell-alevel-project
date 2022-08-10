@@ -167,75 +167,45 @@ io.use((socket, next) => {
 		});
 	// TODO: Implement rejoin logic here
 	if (matchingGame.hasStarted) {
-		return next({
-			name: 'GameAlreadyStarted',
-			message: 'This game has already started',
-		});
+		const playerInGame = matchingGame.players.find(
+			p => p.id === socket.user.sub
+		);
+		if (!playerInGame) {
+			return next({
+				name: 'GameAlreadyStarted',
+				message: 'This game has already started',
+			});
+		} else {
+			playerInGame.status = 'alive';
+			socket.player = playerInGame;
+			playerInGame.socket = socket;
+		}
+	} else {
+		const player = new Player(socket, matchingGame);
+		socket.player = player;
 	}
 
-	const player = new Player(socket, matchingGame);
-	socket.player = player;
 	socket.game = matchingGame;
 	next();
 });
 
 // This is a function to transmit connection and disconnection events
 io.on('connection', async socket => {
-	io.emit('game-init', {
-		id: socket.game.id,
-		code: socket.game.joinCode,
-		options: socket.game.options,
-		hasStarted: socket.game.hasStarted,
-	});
-
-	// Tells all users in game that a new user connected
-	io.to(socket.game.id).emit('player-connected', {
-		id: socket.user.sub,
-		username: socket.user.given_name,
-		picture: socket.user.picture,
-		type: socket.player.type,
-		isHost: socket.player.isHost,
-	});
-
-	// Sends already connected users to new user
-	for (const {id, user, type, socket: s, ...player} of socket.game.players) {
-		if (id === socket.player.id || !s.connected) continue;
-
-		socket.emit('player-connected', {
-			id: user.sub,
-			username: user.given_name,
-			picture: user.picture,
-			type,
-			isHost: player.isHost,
-			location:
-				socket.player.type === 'hunter' && socket.player.type === type
-					? player.location
-					: undefined,
-		});
-	}
-
-	socket.on('disconnect', () => {
-		io.emit('player-disconnected', {id: socket.user.sub});
-		if (socket.game.players.filter(p => p.socket.connected).length === 0) {
-			games = games.filter(g => g.id !== socket.game.id);
-		}
-	});
+	socket.game.sendGameData(socket.player.id);
 
 	socket.on('player-pref', async data => {
-		const type = socket.player.updatePref(data);
-		io.emit('player-updated', {
-			id: socket.player.id,
-			type,
-		});
-		if (socket.player.type === 'hunter') {
-			socket.to(socket.game.id + 'hunter').emit('player-location', {
-				id: socket.player.id,
-				location: socket.player.location,
-			});
-		}
+		socket.player.updatePref(data);
 	});
 
 	socket.on('player-location', async data => {
 		socket.player.updateLocation(data);
+	});
+
+	socket.on('disconnect', () => {
+		socket.player.disconnect();
+		socket.disconnect(true);
+		if (socket.game.players.filter(p => p.socket.connected).length === 0) {
+			games = games.filter(g => g.id !== socket.game.id);
+		}
 	});
 });
