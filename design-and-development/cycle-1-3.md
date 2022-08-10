@@ -4,9 +4,8 @@
 
 ### Objectives
 
-In this cycle, I will aim to "tidy-up" the codebase, adding some features that will be primarily useful as development but also some minor logic that enables game rejoining. Throughout my refactoring of the codebase, I will attempt to make a system that is flexible enough to allow for me to add new features and routes in the future. I do however plan to build a global notification system that can be used easily, as I encountered some buggy behaviour in the previous cycle with showing and hiding alerts.
+In this cycle, I will aim to "tidy-up" the codebase, adding some features that will be primarily useful as development but also some minor logic that enables game rejoining. I will also make sure to move the majority of the logic currently contained in the main `index.ts` file in the server into the game and player classes. I'll also change some global styles on the client-side, so when I add a button or header, it is consistent throughout the app.
 
-* [ ] Create a notification system that stores messages in a global queue and allows adding, removing and clearing
 * [ ] Refactor server-side socket messaging into separate files and into classes where appropriate.
 * [ ] Change styling to fit the styles decided in [#design-language](../1-analysis/1.4a-features-of-the-proposed-solution.md#design-language "mention"), and ensure these are consistent throughout the app
 * [ ] Create rejoin logic that will automatically rejoin a game if a user loses and then regains a network connection
@@ -55,6 +54,10 @@ subroutine onload
         make new socket connection using game.code
     end if
 end subroutine
+
+subroutine on_player_disconnect (id)
+    player = find player in players list from id
+    
 ```
 
 ## Development
