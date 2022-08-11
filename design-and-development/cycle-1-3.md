@@ -333,11 +333,17 @@ export const GameContainer = () => {
 
 ### Tests
 
-| Test | Instructions                                                                | What I expect                         | What actually happens | Pass/Fail |
-| ---- | --------------------------------------------------------------------------- | ------------------------------------- | --------------------- | --------- |
-| 1    | Load the app, and create a new game                                         | A new font and more readable colours. | As expected           | Pass      |
-| 2    | Create a game, have two players join it, and have one refresh their browser |                                       |                       |           |
+| Test | Instructions                                                                | What I expect                                                                                                                     | What actually happens | Pass/Fail |
+| ---- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------- | --------- |
+| 1    | Load the app, and create a new game                                         | A new font and more readable colours.                                                                                             | As expected           | Pass      |
+| 2    | Create a game, have two players join it, and have one refresh their browser | A page appears with a "Reconnect" and a "Leave Game" button, and a disconnection notification appears on the other players screen | As expected           | Pass      |
+| 3    | (Following from 2) Click the Reconnect button                               | The user rejoins the game, and a reconnection notification appears on the other players screen                                    | As expected           | Pass      |
+| 4    | (Following from 2) Click the Leave Game button                              | The user is taken to the Join/Create page                                                                                         | As expected           | Pass      |
 
 ### Evidence
 
-![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (7).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (9).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (10).png>)
+![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (9).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (10).png>)
+
+The first screenshot shows the UI if a user disconnects from a game, where the user can decide to leave the game for good, or to rejoin.
+
+The second screenshot shows the current in-game UI with the new font, as well as the notification that will appear when a user leaves a game.
