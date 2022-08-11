@@ -327,16 +327,17 @@ export const GameContainer = () => {
 
 ### Challenges
 
-*
+* Whilst refactoring, I did encounter some issues with the other players location not being sent to the appropriate clients. This was fixed by doing some [Rubber Duck Debugging](https://en.wikipedia.org/wiki/Rubber\_duck\_debugging), and simply required some deeper thought about the program flow, before being resolved by reworking some if statements.
 
 ## Testing
 
 ### Tests
 
-| Test | Instructions                                             | What I expect                                                                                    | What actually happens | Pass/Fail |
-| ---- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------- | --------- |
-| 1    | A player creates and starts a game with no other players | A map is displayed with their location indicator in the centre, and no other indicators rendered | As expected           | Pass      |
+| Test | Instructions                                                                | What I expect                         | What actually happens | Pass/Fail |
+| ---- | --------------------------------------------------------------------------- | ------------------------------------- | --------------------- | --------- |
+| 1    | Load the app, and create a new game                                         | A new font and more readable colours. | As expected           | Pass      |
+| 2    | Create a game, have two players join it, and have one refresh their browser |                                       |                       |           |
 
 ### Evidence
 
-TODO: RECORD EVIDENCE
+![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (7).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (9).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (10).png>)
