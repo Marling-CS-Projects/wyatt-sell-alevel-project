@@ -65,7 +65,23 @@ subroutine generate_point(vertices, contraints)
         return point
 end subroutine
 
-
+subroutine generate_random_type()
+    // Examples
+    types = {
+        "a": 6
+        "b": 3
+        "c": 1
+    }
+    typesList = []
+    
+    for type in types 
+        for i in types.value
+            typesList.push(type.name)
+        end for
+    end for 
+    
+    return random item from typesList
+end subroutine
 ```
 
 ## Development
