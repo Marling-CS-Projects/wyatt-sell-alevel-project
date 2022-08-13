@@ -84,6 +84,10 @@ subroutine generate_random_type()
 end subroutine
 ```
 
+### UI Mockup
+
+![](<../.gitbook/assets/image (1).png>)
+
 ## Development
 
 ### Outcome
