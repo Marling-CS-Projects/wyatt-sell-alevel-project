@@ -30,12 +30,42 @@ The goal of this cycle will be to create an item system that will randomly gener
 
 ```
 subroutine generate_items(vertices)
+    items = []
+    area = get vertices area in m^2
+    itemCount = area / DENSITY_CONSTANT
+    
+    for x in range(itemCount)
+        id = uuid()
+        type = generate_random_type()
+        
+        constraints = get constraints for point
+        point = generate_point(vertices, contraints)
+        
+        details = details[type]
+        items.push({id, point, type, details})
+    end for
+    
+    return items
+end subroutine
+    
+subroutine generate_point(vertices, contraints)  
     maxLongitude = max(v.lng for v of vertices)
     minLongitude = min(v.lng for v of vertices)
     maxLatitude = max(v.lat for v of vertices)
     minLatitude = min(v.lat for v of vertices)
     
+    randLongitude = rand(minLongitude, maxLongitude)
+    randLatitude = rand(minLatitude, maxLatitude)
     
+    point = [randLongitude, randLatitude]
+    
+    if point not in vertices or distance from constraint.point < constraint.distance
+        return generate_point(vertices)
+    else
+        return point
+end subroutine
+
+
 ```
 
 ## Development
