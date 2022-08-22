@@ -65,7 +65,7 @@ end subroutine
 
 ### UI Mockup
 
-![](../.gitbook/assets/image.png)
+![](<../.gitbook/assets/image (6).png>)
 
 ## Development
 
