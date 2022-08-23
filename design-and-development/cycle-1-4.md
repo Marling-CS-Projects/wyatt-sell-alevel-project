@@ -302,11 +302,23 @@ Once the array of points is created, it is looped through, instantiating a new I
   }
 ```
 
-Sending the item data to the client was done using the `game-init` socket event, and was added to the client side "game" object. The changes on the client were almost exclusively aesthetic, although I did refactor the `<PlayerMarker/>` component of [cycle-1-1.md](cycle-1-1.md "mention")  into a reusable `<Marker/>` component, allowing it to be used for the item markers.
+Sending the item data to the client was done using the `game-init` socket event, and was added to the client side "game" object. The changes on the client were almost exclusively aesthetic, although I did refactor the `<PlayerMarker/>` component of [cycle-1-1.md](cycle-1-1.md "mention")  into a reusable `<Marker/>` component, allowing it to also be used for the item markers.
 
 ### Challenges
 
-*
+There were a lot this Cycle...
+
+#### **Implementing the Poisson-Disc Algorithm**
+
+This took several hours and led to lots of frustration, due to primarily my conversions of longitude and latitude to x,y co-ordinates. This made it easier for me to write and interpret my code, however it paved the way for lots of mis-matched objects, when I had gotten confused between latitude (y) and longitude (x).
+
+It was resolved by using logging tools (namely `console.log`), to identify exactly where the units were being mismatched.
+
+#### Sending item data to the client
+
+Although Socket.IO has a generous limit of 1MB for individual message size, it has issues when converting large array of objects (items\[]), into the binary data format required. This was resolved by consulting StackOverflow and finding that the issue could be resolved if I converted the JavaScript list into a string-based, JSON structure, using `JSON.stringify`
+
+
 
 ## Testing
 
