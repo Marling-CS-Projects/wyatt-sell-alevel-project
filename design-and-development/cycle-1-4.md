@@ -85,7 +85,7 @@ end subroutine
 
 ### UI Mockup
 
-![](<../.gitbook/assets/image (1) (4).png>)
+![](<../.gitbook/assets/image (1) (1).png>)
 
 ## Development
 
@@ -257,7 +257,8 @@ The `randomPointInsidePolygon` routine vital to the above subroutine is a recurs
 
 Once the array of points is created, it is looped through, instantiating a new Item class for each point. The item must have a weighted random rarity and type, and the routine for generating this is demonstrated below:
 
-```
+```typescript
+  // Takes the item type as a parameter
   private generateItemType(type: 'hunter' | 'hunted') {
     const types = {
       hunted: [
@@ -266,21 +267,7 @@ Once the array of points is created, it is looped through, instantiating a new I
           code: 'gpsj',
           baseRarity: 1,
         },
-        {
-          name: 'Foil blanket',
-          code: 'foil',
-          baseRarity: 1,
-        },
-        {
-          name: 'Disguise',
-          code: 'disg',
-          baseRarity: 2,
-        },
-        {
-          name: 'Stingray',
-          code: 'stry',
-          baseRarity: 3,
-        },
+        ...
       ],
       hunter: [
         {
@@ -288,20 +275,23 @@ Once the array of points is created, it is looped through, instantiating a new I
           code: 'ptgr',
           baseRarity: 1,
         },
-        {
-          name: 'Drone search',
-          code: 'drse',
-          baseRarity: 2,
-        },
+        ...
       ],
     };
+    // Creates an weighted array of all the items for the given class i.e. a rarer
+    // item is less common in the array
     const typesToSelect = types[type].flatMap(type =>
       Array(10 - type.baseRarity).fill(type)
     ) as typeof types['hunter' | 'hunted'];
 
+    // Picks an item randomly from the above weighted array
     const item = typesToSelect[Math.floor(Math.random() * typesToSelect.length)];
 
+    // Creates a weighted rarity array, ensuring that all rarities in the array
+    // are above the base rarity.
     const rarityArr = [1, 1, 1, 2, 2, 3].filter(v => v >= item.baseRarity) as (1 | 2 | 3)[];
+    
+    // Picks an item rarity from the above weighted array
     const rarity = rarityArr[Math.floor(Math.random() * rarityArr.length)];
 
     return {

@@ -1,4 +1,4 @@
-# 2.2.1 Cycle 1
+# 2.2.1 Cycle 1: Workspace Setup
 
 ## Design
 
@@ -176,4 +176,4 @@ The only other significant issue I encountered was forgetting to correctly confi
 
 ### Evidence
 
-![](<../.gitbook/assets/image (1) (1).png>)![](<../.gitbook/assets/image (5) (1) (1) (1).png>)
+![](<../.gitbook/assets/image (1) (1) (1).png>)![](<../.gitbook/assets/image (5) (1) (1) (1).png>)
