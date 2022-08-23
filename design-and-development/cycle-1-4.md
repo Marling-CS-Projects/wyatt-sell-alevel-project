@@ -4,13 +4,12 @@
 
 ### Objectives
 
-The goal of this cycle will be to create an item system that will randomly generate a range of items with different types and appearances to be rendered on the map. They will need to be randomly generated within the bounds of the defined polygon, and at a constant density for the area. Items will need to be generated in different quantities/probabilities depending on their rarity. Some special items, such as the Phone triangulation kit (see [#power-up-items](../1-analysis/1.4a-features-of-the-proposed-solution.md#power-up-items "mention")), will need some adjustment in their positioning - i.e. not placed right next to the cell towers. I will also add a popup that will appear on click and on proximity to each item, as well as some simple icon-based sprites. I will not implement a player inventory system (picking up and dropping items) in this cycle - I plan to complete this in [cycle-1-5.md](cycle-1-5.md "mention")
+The goal of this cycle will be to create an item system that will randomly generate a range of items with different types and appearances to be rendered on the map. They will need to be randomly generated within the bounds of the defined polygon, and at a constant density for the area. I will also add a popup that will appear on click and on proximity to each item, as well as some simple icon-based sprites. I will not implement a player inventory system (picking up and dropping items) in this cycle - I plan to complete this in [cycle-1-5.md](cycle-1-5.md "mention")
 
-* [ ] Randomly generate different items across the map and display them to the client
-  * [ ] Handle rarity of items - rarer items should be less likely to be generated
-  * [ ] Handle special cases with item generation, as discussed above
-* [ ] Show different icon sprites for each item rendered on the client
-* [ ] Display a popup above each item with more details on click and on proximity
+* [x] Randomly generate different items across the map and display them to the client
+  * [x] Handle rarity of items - rarer items should be less likely to be generated
+* [x] Show different icon sprites for each item rendered on the client
+* [x] Display a popup above each item with more details on click and on proximity
 
 ### Usability Features
 
@@ -86,11 +85,13 @@ end subroutine
 
 ### UI Mockup
 
-![](<../.gitbook/assets/image (1).png>)
+![](<../.gitbook/assets/image (1) (4).png>)
 
 ## Development
 
 ### Outcome
+
+#### Generating Points
 
 The items could have been generated on a map simply by creating a bounding box around the polygon, and generating random points recursively, generating a new point if the randomly generated point does not fall within the polygon (using the algorithm created in [cycle-1-2.md](cycle-1-2.md "mention")
 
@@ -118,9 +119,9 @@ To determine the relevant steps to replicate this algorithm in JavaScript, I use
 
 <figure><img src="../.gitbook/assets/image (7).png" alt=""><figcaption><p>This is an example box filled with points generated using the Poisson-Disc Sampling Algorithm</p></figcaption></figure>
 
-Using this sampling technique, I created a JavaScript implementation, see below:
+Using this sampling technique, I created a JavaScript implementation, as detailed below:
 
-{% code overflow="wrap" lineNumbers="true" %}
+{% code lineNumbers="true" %}
 ```typescript
 export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
   // These define the constants for the program:
@@ -131,16 +132,20 @@ export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
   const k = 10;
   const cellSize = radius / Math.sqrt(2);
 
-  // This defines the points of the surrounding box 
+  // This defines the bounding points of the surrounding "box" (lat, lng)
   const {ranges} = getBoxPoints(vertices);
   const [latMin, latMax] = ranges.lat;
   const [lngMin, lngMax] = ranges.lng;
-
+  
+  // Gets the width and height of bounding box in metres
   const {width, height} = dimensions(vertices);
-
+  
+  // Defines the amount of cells for the width and height of the bounding box
   const gridWidth = Math.ceil(width / cellSize);
   const gridHeight = Math.ceil(height / cellSize);
-
+  
+  // Helper functions that give the x,y (and combined) position of a cell, of         
+  // a given lng, lat point 
   const gridX = (p: {x: number; y: number}) =>
     Math.floor(distance([lngMin, p.y], [p.x, p.y]) / cellSize);
   const gridY = (p: {x: number; y: number}) =>
@@ -148,16 +153,19 @@ export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
   const gridIndex = (p: {x: number; y: number}) => {
     return gridX(p) + gridWidth * gridY(p);
   };
-
+  
+  // Generates a random point inside the polygon and gets its grid index
   const randomPointLngLat = randomPointInsidePolygon(ranges, vertices);
   const randomPoint = {x: randomPointLngLat.lng, y: randomPointLngLat.lat};
   const randomPointIndex = gridIndex(randomPoint);
 
+  // Initialises object containing point data, and list of active grid indices
   const points = {
     [randomPointIndex]: randomPoint,
   };
   const activePoints = [randomPointIndex];
 
+  // Gets the indices of the surrounding 25 cells for a given point (5x5 grid)
   const getNeighbors = (p: {x: number; y: number}) => {
     const x = gridX(p);
     const y = gridY(p);
@@ -169,21 +177,31 @@ export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
 
     return options;
   };
-
+  
+  // Radius of the earth in metres
   const r_earth = 6378 * 1000;
 
   while (activePoints.length > 0) {
+  
+    // Gets lng,lat of a random active point
     const point = points[activePoints[Math.floor(Math.random() * activePoints.length)]];
 
+    // Defines sample size as k + 1, so that when k samples are passed (the max)
+    // a seperate routine can run to remove "point" from the list of active points
     let sampleSize = k + 1;
     for (let i = 0; i < sampleSize; i++) {
       if (i === k) {
         activePoints.splice(activePoints.indexOf(gridIndex(point)), 1);
       }
-
+      
+      // Picks a random angle and distance (between r and 2r, m), to generate a
+      // sample point
       const angle = randomBetweenInterval(0, Math.PI * 2);
       const distanceFromPoint = randomBetweenInterval(radius, radius * 2);
 
+      // Creates a new point (lng, lat), combining the values above with the point
+      // to create a new point. 
+      // Credit: nibot - https://stackoverflow.com/a/7478827/9918744
       const newPoint = {
         x: point.x + ((Math.cos(angle) * distanceFromPoint) / r_earth) * (180 / Math.PI),
         y:
@@ -192,32 +210,107 @@ export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
             Math.cos((point.x * Math.PI) / 180),
       };
 
+      // Determines whether a point already exists in the cell of the sample
+      // If so, we reject the sample
       const index = gridIndex(newPoint);
-
       const occupied = points[index];
+      
       if (occupied) continue;
+      
+      // For my use-case, I need to ensure that all points generated fall within
+      // the polygon. I made sure that rejecting a point if it was not inside,
+      // did not affect the sample size, as this would have a disproportionate
+      // impact on sample generation at the edges of the polygon
       if (!isPointInsidePolygon({lng: newPoint.x, lat: newPoint.y}, vertices)) {
         sampleSize += 1;
         continue;
       }
+      
       const neighbors = getNeighbors(newPoint);
       if (
+      // Checks that every 2x neighbouring cell is either empty, or the point is
+      // more than one radius away
         neighbors.every(n => {
           if (!points[n]) return true;
           return distance([newPoint.x, newPoint.y], [points[n].x, points[n].y]) > radius;
         })
       ) {
+        // Adds a active new point, and breaks out of the loop to select a new
+        // active point
         points[index] = newPoint;
         activePoints.push(index);
         break;
       }
     }
   }
-
+  // Returns the points as a list of lng,lat co-ordinates
   return Object.values(points).map(p => ({lng: p.x, lat: p.y}));
 }
 ```
 {% endcode %}
+
+<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption><p>This is a diagram illustrating a bounding box </p></figcaption></figure>
+
+The `randomPointInsidePolygon` routine vital to the above subroutine is a recursive function that picks a random point within the bounding box. If, using the `isPointInsidePolygon` routine created in [cycle-1-2.md](cycle-1-2.md "mention"), the point is outside the polygon, we simply call the function again, until a valid point is generated.
+
+#### Creating a item
+
+Once the array of points is created, it is looped through, instantiating a new Item class for each point. The item must have a weighted random rarity and type, and the routine for generating this is demonstrated below:
+
+```
+  private generateItemType(type: 'hunter' | 'hunted') {
+    const types = {
+      hunted: [
+        {
+          name: 'GPS Jammer',
+          code: 'gpsj',
+          baseRarity: 1,
+        },
+        {
+          name: 'Foil blanket',
+          code: 'foil',
+          baseRarity: 1,
+        },
+        {
+          name: 'Disguise',
+          code: 'disg',
+          baseRarity: 2,
+        },
+        {
+          name: 'Stingray',
+          code: 'stry',
+          baseRarity: 3,
+        },
+      ],
+      hunter: [
+        {
+          name: 'Phone triangulator',
+          code: 'ptgr',
+          baseRarity: 1,
+        },
+        {
+          name: 'Drone search',
+          code: 'drse',
+          baseRarity: 2,
+        },
+      ],
+    };
+    const typesToSelect = types[type].flatMap(type =>
+      Array(10 - type.baseRarity).fill(type)
+    ) as typeof types['hunter' | 'hunted'];
+
+    const item = typesToSelect[Math.floor(Math.random() * typesToSelect.length)];
+
+    const rarityArr = [1, 1, 1, 2, 2, 3].filter(v => v >= item.baseRarity) as (1 | 2 | 3)[];
+    const rarity = rarityArr[Math.floor(Math.random() * rarityArr.length)];
+
+    return {
+      ...item,
+      type,
+      rarity,
+    };
+  }
+```
 
 #### Client
 
