@@ -98,13 +98,126 @@ The items could have been generated on a map simply by creating a bounding box a
 
 However, whilst developing, I realised there were several unanticipated caveats to this approach. As you can see in the above example, there are regions of overlap and empty space; in other words, it is random but not even. So I want to have randonimity , _but_ even distribution, which sounds impossible! Upon doing some research, I found that several such algorithms exist, with the one I decided to go with being **Poisson Disc Sampling** due to its speed and simplicity.
 
+<figure><img src="../.gitbook/assets/ezgif-5-cccaf9992b.gif" alt=""><figcaption><p>A visualisation of the Poisson-Disc Sampling algorithm</p></figcaption></figure>
 
+To determine the relevant steps to replicate this algorithm in JavaScript, I used this excellent blog post by Mike Bostock, [Visualizing Algorithms](https://bost.ocks.org/mike/algorithms/), as well as a concise paper authored by Robert Bridson, titled [Fast Poisson Disk Sampling in Arbitrary Dimensions](https://www.cs.ubc.ca/\~rbridson/docs/bridson-siggraph07-poissondisk.pdf). The simplified steps are detailed below:
 
+> Step 0
+>
+> Initialize an n-dimensional background grid for storing samples and accelerating spatial searches. We pick the cell size to be bounded by r/√ n, so that each grid cell will contain at most one sample, and thus the grid can be implemented as a simple n-dimensional array of integers: the default −1 indicates no sample, a non-negative integer gives the index of the sample located in a cell.&#x20;
+>
+> Step 1
+>
+> Select the initial sample, x0, randomly chosen uniformly from the domain. Insert it into the background grid, and initialize the “active list” (an array of sample indices) with this index (zero).&#x20;
+>
+> Step 2
+>
+> While the active list is not empty, choose a random index from it (say i). Generate up to k points chosen uniformly from the spherical annulus between radius r and 2r around xi. For each point in turn, check if it is within distance r of existing samples (using the background grid to only test nearby samples). If a point is adequately far from existing samples, emit it as the next sample and add it to the active list. If after k attempts no such point is found, instead remove i from the active list.
 
+([Bridson, 2007](../reference-list.md))
 
-#### Server
+<figure><img src="../.gitbook/assets/image (7).png" alt=""><figcaption><p>This is an example box filled with points generated using the Poisson-Disc Sampling Algorithm</p></figcaption></figure>
 
+Using this sampling technique, I created a JavaScript implementation, see below:
 
+{% code overflow="wrap" lineNumbers="true" %}
+```typescript
+export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
+  // These define the constants for the program:
+  // radius: The minimum distance between two points in metres
+  // k: The maximum number of samples to take from a given point
+  // cellSize: The size of each cell (can only contain one point)
+  const radius = 200;
+  const k = 10;
+  const cellSize = radius / Math.sqrt(2);
+
+  // This defines the points of the surrounding box 
+  const {ranges} = getBoxPoints(vertices);
+  const [latMin, latMax] = ranges.lat;
+  const [lngMin, lngMax] = ranges.lng;
+
+  const {width, height} = dimensions(vertices);
+
+  const gridWidth = Math.ceil(width / cellSize);
+  const gridHeight = Math.ceil(height / cellSize);
+
+  const gridX = (p: {x: number; y: number}) =>
+    Math.floor(distance([lngMin, p.y], [p.x, p.y]) / cellSize);
+  const gridY = (p: {x: number; y: number}) =>
+    Math.floor(distance([p.x, latMin], [p.x, p.y]) / cellSize);
+  const gridIndex = (p: {x: number; y: number}) => {
+    return gridX(p) + gridWidth * gridY(p);
+  };
+
+  const randomPointLngLat = randomPointInsidePolygon(ranges, vertices);
+  const randomPoint = {x: randomPointLngLat.lng, y: randomPointLngLat.lat};
+  const randomPointIndex = gridIndex(randomPoint);
+
+  const points = {
+    [randomPointIndex]: randomPoint,
+  };
+  const activePoints = [randomPointIndex];
+
+  const getNeighbors = (p: {x: number; y: number}) => {
+    const x = gridX(p);
+    const y = gridY(p);
+
+    const options = [-2, -1, 0, 1, 2]
+      .flatMap(dx => [-2, -1, 0, 1, 2].map(dy => [x + dx, y + dy]))
+      .filter(([x, y]) => x >= 0 && y >= 0 && x <= gridWidth && y <= gridHeight)
+      .map(([x, y]) => x + y * gridWidth);
+
+    return options;
+  };
+
+  const r_earth = 6378 * 1000;
+
+  while (activePoints.length > 0) {
+    const point = points[activePoints[Math.floor(Math.random() * activePoints.length)]];
+
+    let sampleSize = k + 1;
+    for (let i = 0; i < sampleSize; i++) {
+      if (i === k) {
+        activePoints.splice(activePoints.indexOf(gridIndex(point)), 1);
+      }
+
+      const angle = randomBetweenInterval(0, Math.PI * 2);
+      const distanceFromPoint = randomBetweenInterval(radius, radius * 2);
+
+      const newPoint = {
+        x: point.x + ((Math.cos(angle) * distanceFromPoint) / r_earth) * (180 / Math.PI),
+        y:
+          point.y +
+          (((Math.sin(angle) * distanceFromPoint) / r_earth) * (180 / Math.PI)) /
+            Math.cos((point.x * Math.PI) / 180),
+      };
+
+      const index = gridIndex(newPoint);
+
+      const occupied = points[index];
+      if (occupied) continue;
+      if (!isPointInsidePolygon({lng: newPoint.x, lat: newPoint.y}, vertices)) {
+        sampleSize += 1;
+        continue;
+      }
+      const neighbors = getNeighbors(newPoint);
+      if (
+        neighbors.every(n => {
+          if (!points[n]) return true;
+          return distance([newPoint.x, newPoint.y], [points[n].x, points[n].y]) > radius;
+        })
+      ) {
+        points[index] = newPoint;
+        activePoints.push(index);
+        break;
+      }
+    }
+  }
+
+  return Object.values(points).map(p => ({lng: p.x, lat: p.y}));
+}
+```
+{% endcode %}
 
 #### Client
 
