@@ -96,7 +96,11 @@ The items could have been generated on a map simply by creating a bounding box a
 
 <figure><img src="../.gitbook/assets/image.png" alt=""><figcaption><p>This is an example box filled with random points</p></figcaption></figure>
 
-However, whilst developing, I realised there were several unanticipated caveats to this approach. As you can see in the above example, there are regions of overlap and empty space; in other words, it is random but not even. So I want to have randonimity, _but_ even distribution, which sounds impossible!
+However, whilst developing, I realised there were several unanticipated caveats to this approach. As you can see in the above example, there are regions of overlap and empty space; in other words, it is random but not even. So I want to have randonimity , _but_ even distribution, which sounds impossible! Upon doing some research, I found that several such algorithms exist, with the one I decided to go with being **Poisson Disc Sampling** due to its speed and simplicity.
+
+
+
+
 
 #### Server
 
