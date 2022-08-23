@@ -302,14 +302,7 @@ Once the array of points is created, it is looped through, instantiating a new I
   }
 ```
 
-#### Client
-
-{% tabs %}
-{% tab title="file.tsx" %}
-```typescript
-```
-{% endtab %}
-{% endtabs %}
+Sending the item data to the client was done using the `game-init` socket event, and was added to the client side "game" object. The changes on the client were almost exclusively aesthetic, although I did refactor the `<PlayerMarker/>` component of [cycle-1-1.md](cycle-1-1.md "mention")  into a reusable `<Marker/>` component, allowing it to be used for the item markers.
 
 ### Challenges
 
