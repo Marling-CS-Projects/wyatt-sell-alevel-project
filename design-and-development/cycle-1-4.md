@@ -341,17 +341,44 @@ There doesn't appear to be a great way to rectify this issue - it lies with the 
 
 I think the simplest solution is to reject a game creation with an error if the bounding area is too large. In future, I could experiment with "just-in-time" generation, generating items within a certain area around players, and restricting the panning and zooming on the map (similarly to [#pokemon-go](../1-analysis/1.3-research-the-problem.md#pokemon-go "mention"))
 
+```typescript
+app.post('/create', (req, res) => {
+...
+    const {width, height} = dimensions(result.data.options.vertices);
+    // If the game is more than 30km^2, return an error
+    if (width * height > 30 * 1000 ** 2) {
+        return res.status(400).send(JSON.stringify({data: 'Map is too large'}));
+    }
+...
+});
+```
+
 #### Test 4
 
-I rectified this by multiplying the distribution variable by a constant in the `typesToSelect` list, to increase the disparity in probabilities and modified the `rarityArr` element ratio from 3:2:1, to 5:3:1
+I rectified this by multiplying the distribution variable by a constant in the `typesToSelect` list, to increase the disparity in probabilities and modified the `rarityArr` element ratio from 3:2:1, to 9:3:1
 
 <pre class="language-typescript" data-line-numbers><code class="lang-typescript">const typesToSelect = types[type].flatMap(type =>
-<strong>    Array(10 - type.baseRarity * 2).fill(type)
+<strong>    Array(10 - type.baseRarity * 3).fill(type)
 </strong>) as typeof types['hunter' | 'hunted'];
 
 const item = typesToSelect[Math.floor(Math.random() * typesToSelect.length)];
 
-const rarityArr = [1, 1, 1, 1, 1, 2, 2, 2, 3].filter(v => v >= item.baseRarity)</code></pre>
+const rarityArr = [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3].filter(v => v >= item.baseRarity)</code></pre>
 
 ### Evidence
 
+#### Test 1
+
+![](<../.gitbook/assets/localhost\_3000\_create(iPhone 12 Pro) (1).png>)
+
+#### Test 2 (Rectified)
+
+![](<../.gitbook/assets/localhost\_3000\_create(iPhone 12 Pro).png>)
+
+#### Test 3
+
+![](<../.gitbook/assets/localhost\_3000\_create(iPhone 12 Pro) (3).png>)
+
+#### Test 4 (Rectified)
+
+<figure><img src="../.gitbook/assets/localhost_3000_create.png" alt=""><figcaption></figcaption></figure>
