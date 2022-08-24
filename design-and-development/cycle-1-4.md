@@ -318,15 +318,40 @@ It was resolved by using logging tools (namely `console.log`), to identify exact
 
 Although Socket.IO has a generous limit of 1MB for individual message size, it has issues when converting large array of objects (items\[]), into the binary data format required. This was resolved by consulting StackOverflow and finding that the issue could be resolved if I converted the JavaScript list into a string-based, JSON structure, using `JSON.stringify`
 
-
-
 ## Testing
 
 ### Tests
 
-| Test | Instructions | What I expect | What actually happens | Pass/Fail |
-| ---- | ------------ | ------------- | --------------------- | --------- |
-| 1    |              |               |                       |           |
+| Test | Instructions                            | What I expect                                                     | What actually happens                             | Pass/Fail |
+| ---- | --------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------- | --------- |
+| 1    | Create & start a game with a small area | Items to be randomly and evenly distributed across the map        | As expected                                       | Pass      |
+| 2    | Create & start a game with a large area | Items to be randomly and evenly distributed across the map        | The game hangs before the create request timeouts | Fail      |
+| 3    | (Within Game) Click on an item          | A popup appears detailing item stats                              | As expected                                       | Pass      |
+| 4    | (Within Game) Observe item distribution | The rarities and types are appropriately distributed (noticeably) | The distribution is too subtle and seems random   | Fail      |
+
+{% hint style="danger" %}
+Although not an explicit test, the game rendered and ran incredibly slowly, with location changes taking several seconds to be reflected on-screen. I suspect this is due to unnecessary re-rendering of the entire items array, as well as the costly re-computation of item distances. I will fix this next Cycle as it is a non-trivial fix.
+{% endhint %}
+
+### Failing Tests
+
+#### Test 2
+
+There doesn't appear to be a great way to rectify this issue - it lies with the efficiency of the algorithm (a respectable O(n)), which can't handle generating millions of evenly distributed items. This could be rectified by using simple random generation, but would result in the caveats discussed earlier.
+
+I think the simplest solution is to reject a game creation with an error if the bounding area is too large. In future, I could experiment with "just-in-time" generation, generating items within a certain area around players, and restricting the panning and zooming on the map (similarly to [#pokemon-go](../1-analysis/1.3-research-the-problem.md#pokemon-go "mention"))
+
+#### Test 4
+
+I rectified this by multiplying the distribution variable by a constant in the `typesToSelect` list, to increase the disparity in probabilities and modified the `rarityArr` element ratio from 3:2:1, to 5:3:1
+
+<pre class="language-typescript" data-line-numbers><code class="lang-typescript">const typesToSelect = types[type].flatMap(type =>
+<strong>    Array(10 - type.baseRarity * 2).fill(type)
+</strong>) as typeof types['hunter' | 'hunted'];
+
+const item = typesToSelect[Math.floor(Math.random() * typesToSelect.length)];
+
+const rarityArr = [1, 1, 1, 1, 1, 2, 2, 2, 3].filter(v => v >= item.baseRarity)</code></pre>
 
 ### Evidence
 
