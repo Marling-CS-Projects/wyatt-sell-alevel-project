@@ -4,7 +4,7 @@
 
 ### Objectives
 
-The goal of this cycle will be to create an item system that will randomly generate a range of items with different types and appearances to be rendered on the map. They will need to be randomly generated within the bounds of the defined polygon, and at a constant density for the area. I will also add a popup that will appear on click and on proximity to each item, as well as some simple icon-based sprites. I will not implement a player inventory system (picking up and dropping items) in this cycle - I plan to complete this in [cycle-1-5.md](cycle-1-5.md "mention")
+The goal of this cycle will be to create an item system that will randomly generate a range of items with different types and appearances to be rendered on the map. They will need to be randomly generated within the bounds of the defined polygon, and at a constant density for the area. I will also add a popup that will appear on click and on proximity to each item, as well as some simple icon-based sprites. I will not implement a player inventory system (picking up and dropping items) in this cycle - I plan to complete this in a separate cycle
 
 * [x] Randomly generate different items across the map and display them to the client
   * [x] Handle rarity of items - rarer items should be less likely to be generated
