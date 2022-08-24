@@ -11,7 +11,8 @@ import {userType} from './types';
 import {
 	ServerToClientEvents,
 	ClientToServerEvents,
-	distanceFromBoundary,
+	getBoxPoints,
+	dimensions,
 } from '@monorepo/shared/src/index';
 import {Player} from './classes/player';
 import {Game} from './classes/game';
@@ -89,6 +90,10 @@ app.get('/user', (req, res) => {
 app.post('/create', (req, res) => {
 	const result = createSchema.safeParse(req.body);
 	if (!result.success) return res.status(400).send(result.error);
+	const {width, height} = dimensions(result.data.options.vertices);
+	if (width * height > 50 * 1000 ** 2)
+		return res.status(400).send(JSON.stringify({data: 'Map is too large'}));
+
 	const game = new Game(result.data.options);
 	games.push(game);
 	res.send(JSON.stringify({code: game.joinCode}));
@@ -111,15 +116,12 @@ app.post('/start', (req, res) => {
 	res.send(JSON.stringify({code: 200}));
 });
 
-export const io = new Server<ClientToServerEvents, ServerToClientEvents>(
-	server,
-	{
-		cors: {
-			origin: env.CLIENT_ORIGIN,
-			methods: ['GET', 'POST'],
-		},
-	}
-);
+export const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
+	cors: {
+		origin: env.CLIENT_ORIGIN,
+		methods: ['GET', 'POST'],
+	},
+});
 
 const start = async () => {
 	// await prisma.$connect();
@@ -145,9 +147,7 @@ io.use((socket, next) => {
 	socket.user = socket.decodedToken;
 	// Ensure no duplicate connections
 	const allSockets = io.sockets.sockets;
-	if (
-		[...allSockets.values()].filter(s => s.user.sub === socket.user.sub).length
-	) {
+	if ([...allSockets.values()].filter(s => s.user.sub === socket.user.sub).length) {
 		return next({
 			name: 'DuplicateConnection',
 			message: "You're already connected",
@@ -157,7 +157,6 @@ io.use((socket, next) => {
 });
 
 io.use((socket, next) => {
-	// TODO: Add validation here, and throw error if invalid code
 	const gameCode = socket.handshake.query['code'] as string;
 	const matchingGame = games.find(g => g.joinCode === gameCode);
 	if (!matchingGame)
@@ -165,11 +164,9 @@ io.use((socket, next) => {
 			name: 'InvalidGameCode',
 			message: 'No game with this game code exists',
 		});
-	// TODO: Implement rejoin logic here
+
 	if (matchingGame.hasStarted) {
-		const playerInGame = matchingGame.players.find(
-			p => p.id === socket.user.sub
-		);
+		const playerInGame = matchingGame.players.find(p => p.id === socket.user.sub);
 		if (!playerInGame) {
 			return next({
 				name: 'GameAlreadyStarted',

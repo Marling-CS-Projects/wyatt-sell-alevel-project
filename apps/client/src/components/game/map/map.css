@@ -28,3 +28,9 @@
 .leaflet-control-attribution {
     display: none !important;
 }
+
+.item-tooltip {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}

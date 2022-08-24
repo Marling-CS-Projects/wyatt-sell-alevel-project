@@ -6,10 +6,6 @@ export const generateJoinCode = () => {
 		.join('');
 };
 
-export const randomBetweenInterval = (min: number, max: number) => {
-	return Math.random() * (max - min) + min;
-};
-
 // Credit: https://stackoverflow.com/questions/16285134/calculating-polygon-area
 export const polygonArea = (
 	verticesRaw: {

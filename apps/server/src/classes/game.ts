@@ -2,7 +2,12 @@ import {v4 as uuid} from 'uuid';
 import {Player} from './player';
 import {generateJoinCode, polygonArea} from '../utils/helper';
 import {Item} from './item';
-import {GameOptions} from '@monorepo/shared/src/index';
+import {
+	GameOptions,
+	getBoxPoints,
+	poissonDiscSampling,
+	randomPointInsidePolygon,
+} from '@monorepo/shared/src/index';
 import {io} from '../index';
 
 export class Game {
@@ -12,24 +17,18 @@ export class Game {
 	players: Player[];
 	hunter: Player[];
 	hunted: Player[];
-	// items: Item[];
+	items: Item[];
 	host?: Player;
 	hasStarted: boolean;
 	joinCode: string;
 	options: GameOptions;
 
 	private generateItems = () => {
-		// For now, we'll use a box around Stroud, but this is useful for future geofencing https://www.baeldung.com/cs/geofencing-point-inside-polygon
-		// 51.756754, -2.258926
-		// to
-		// 51.735922, -2.197053
-		// const area = polygonArea(this.options.vertices);
-		//
-		// console.log(area);
-		// // 40 is our density constant
-		// const totalItems = area / 40;
-		//
-		// return [...new Array(Math.floor(totalItems))].fill(0).map(() => new Item());
+		const points = poissonDiscSampling(this.options.vertices);
+		return points.map((point, i) => {
+			const item = new Item(this, i % 2 === 0 ? 'hunted' : 'hunted', point);
+			return item;
+		});
 	};
 
 	constructor(options: GameOptions) {
@@ -43,8 +42,9 @@ export class Game {
 			...options,
 			max: {...options.max, total: options.max.hunted + options.max.hunter},
 		};
-		// this.items = this.generateItems();
+
 		this.joinCode = generateJoinCode();
+		this.items = this.generateItems();
 	}
 
 	addPlayer(player: Player) {
@@ -53,10 +53,7 @@ export class Game {
 		}
 		if (this.players.length === this.options.max.total) return false;
 		this.players.push(player);
-		this.updatePlayer(
-			player.id,
-			this.hunter.length <= this.hunted.length ? 'hunter' : 'hunted'
-		);
+		this.updatePlayer(player.id, this.hunter.length <= this.hunted.length ? 'hunter' : 'hunted');
 		return true;
 	}
 
@@ -65,9 +62,7 @@ export class Game {
 		if (!player) throw new Error('Player not in game');
 		const invertedPlayerPref = pref === 'hunter' ? 'hunted' : 'hunter';
 		if (this[pref].length < this.options.max[pref]) {
-			this[invertedPlayerPref] = this[invertedPlayerPref].filter(
-				p => p.id !== id
-			);
+			this[invertedPlayerPref] = this[invertedPlayerPref].filter(p => p.id !== id);
 			this[pref].push(player);
 			return pref;
 		}
@@ -83,15 +78,19 @@ export class Game {
 			code: socket.game.joinCode,
 			options: socket.game.options,
 			hasStarted: socket.game.hasStarted,
+			items: socket.game.items.map(item =>
+				JSON.stringify({
+					id: item.id,
+					location: item.location,
+					info: item.info,
+				})
+			),
 		});
 
 		// Sends data about the new player to all other players
 		socket
 			.to(socket.game.id)
-			.emit(
-				`player-${this.hasStarted ? 're' : ''}connected`,
-				primaryPlayer.getPublic()
-			);
+			.emit(`player-${this.hasStarted ? 're' : ''}connected`, primaryPlayer.getPublic());
 		primaryPlayer.emitLocation();
 
 		for (const player of this.players) {

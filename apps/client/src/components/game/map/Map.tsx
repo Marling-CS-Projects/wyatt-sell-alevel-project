@@ -1,10 +1,6 @@
 import {ReactNode, useEffect, useState} from 'react';
 import dynamic from 'next/dynamic';
-import {
-	distanceFromBoundary,
-	GameOptions,
-	isPointInsidePolygon,
-} from '@monorepo/shared/src/index';
+import {distanceFromBoundary, GameOptions, isPointInsidePolygon} from '@monorepo/shared/src/index';
 import {toast, useToasterStore} from 'react-hot-toast';
 import {useGame, useLocation} from '../../../utils/hooks';
 const MapWrapper = dynamic(() => import('./MapInner'), {ssr: false});
@@ -14,10 +10,7 @@ const messages = {
 	near: 'You are near the edge of the game area',
 };
 
-export const Map = (props: {
-	children?: ReactNode;
-	vertices?: GameOptions['vertices'];
-}) => {
+export const Map = (props: {children?: ReactNode; vertices?: GameOptions['vertices']}) => {
 	const [location] = useLocation();
 	const [game] = useGame();
 	const {toasts} = useToasterStore();

@@ -1,2 +1,2 @@
-export * from './utils';
+export * from './utils/utils';
 export * from './types';

@@ -7,34 +7,23 @@ import {
 	Polygon,
 	FeatureGroup,
 	AttributionControl,
+	Tooltip,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import {
-	ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {CircleMarker as LeafletCircleMarker, LatLng, Map} from 'leaflet';
-import {
-	useGame,
-	useLocation,
-	useMe,
-	usePlayers,
-	useSocket,
-} from '../../../utils/hooks';
+import {useGame, useLocation, useMe, usePlayers, useSocket} from '../../../utils/hooks';
 import {Socket} from 'socket.io-client';
-import {GameOptions, isPointInsidePolygon} from '@monorepo/shared/src/index';
+import {GameOptions, getBoxPoints, isPointInsidePolygon} from '@monorepo/shared/src/index';
 import {toast} from 'react-hot-toast';
 import {ClientPlayer} from '../../../utils/types';
 import {useAuth0} from '@auth0/auth0-react';
-import {Button, HStack, Tag, Text} from '@chakra-ui/react';
+import {Button, HStack, Tag, Text, theme, VStack} from '@chakra-ui/react';
 import {TypeTag} from '../../TypeTag';
 import {RiNavigationLine} from 'react-icons/ri';
 import {debounce} from 'lodash';
 import {emitLocation} from '../../../utils/utils';
+import {distance} from '@monorepo/shared/src/utils/haversine';
 
 export default (props: {children: ReactNode; markers?: boolean}) => {
 	const [location, setLocation] = useLocation();
@@ -47,17 +36,13 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 	const updateLocation = (data: GeolocationPosition) => {
 		if (
 			socket &&
-			(location?.longitude !== data.coords.longitude ||
-				location?.latitude !== data.coords.latitude)
+			(location?.longitude !== data.coords.longitude || location?.latitude !== data.coords.latitude)
 		) {
 			emitLocation(socket, data.coords);
 		}
 		setLocation(data.coords);
 		if (me) {
-			setPlayers(prev => [
-				...prev.filter(p => p.id !== me.id),
-				{...me, location: data.coords},
-			]);
+			setPlayers(prev => [...prev.filter(p => p.id !== me.id), {...me, location: data.coords}]);
 		}
 		mapRef.current?.setView([data.coords.latitude, data.coords.longitude]);
 	};
@@ -79,27 +64,32 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 			style={{height: '100%', width: '100%'}}
 			ref={mapRef}
 		>
+			{props.children}
 			<TileLayer
 				url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
 				subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+				updateWhenZooming={false}
 			/>
-			{props.markers !== false && <MapMarkers location={location} />}
+			{props.markers !== false && (
+				<>
+					<PlayerMarkers location={location} />
+					<ItemMarkers />
+				</>
+			)}
 			{game?.hasStarted && (
-				<Polygon
-					pathOptions={{stroke: true, color: 'red', fillOpacity: 0}}
-					positions={game.options.vertices}
-					interactive={false}
-				/>
+				<>
+					<Polygon
+						pathOptions={{stroke: true, color: 'red', fillOpacity: 0}}
+						positions={game.options.vertices}
+						interactive={false}
+					/>
+				</>
 			)}
 			<div className="leaflet-bottom leaflet-right">
 				{location && (
 					<Button
 						onClick={() =>
-							mapRef.current?.flyTo(
-								[location.latitude, location.longitude],
-								16,
-								{animate: true}
-							)
+							mapRef.current?.flyTo([location.latitude, location.longitude], 16, {animate: true})
 						}
 						m={4}
 						rounded={'full'}
@@ -114,12 +104,84 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 					</Button>
 				)}
 			</div>
-			{props.children}
 		</MapContainer>
 	);
 };
 
-const MapMarkers = (props: {location: GeolocationCoordinates}) => {
+const rarityArray = {
+	1: {color: 'green', text: 'common'},
+	2: {color: 'orange', text: 'rare'},
+	3: {color: 'pink', text: 'epic'},
+} as Record<number, {color: 'green' | 'orange' | 'pink'; text: string}>;
+
+export const ItemMarkers = () => {
+	const items = useGame()[0]?.items;
+	const me = useMe();
+
+	if (!items || !me || !me.location) return null;
+
+	return (
+		<>
+			{items
+				// .filter(
+				// 	item =>
+				// 		distance(item.location, {
+				// 			lat: me.location!.latitude,
+				// 			lng: me.location!.longitude,
+				// 		}) < 500
+				// )
+				.map(item => {
+					const baseColor = rarityArray[item.info.rarity].color;
+					console.log(theme.colors[baseColor]['300']);
+					return (
+						<Marker
+							location={{
+								latitude: item.location.lat,
+								longitude: item.location.lng,
+							}}
+							key={item.id}
+							size={15}
+							color={theme.colors[baseColor]['300']}
+							overlay={
+								<Tooltip
+									permanent={true}
+									direction={'center'}
+									position={[item.location.lat, item.location.lng]}
+									className={'item-tooltip'}
+								>
+									<Text color={`${baseColor}.700`} fontSize={20} fontWeight={700}>
+										{item.info.code[0].toUpperCase()}
+									</Text>
+								</Tooltip>
+							}
+						>
+							<VStack>
+								<Text fontSize={'20px'} m={0} fontWeight={'bold'}>
+									{item.info.name}
+								</Text>
+								<HStack>
+									<Text color={`${baseColor}.700`} fontSize={16} pr={4} fontWeight={'bold'}>
+										{rarityArray[item.info.rarity].text.toUpperCase()}
+									</Text>
+									<Text fontSize={16} fontWeight={'bold'} color={'gray.700'}>
+										{Math.floor(
+											distance(item.location, {
+												lat: me.location!.latitude,
+												lng: me.location!.longitude,
+											})
+										)}
+										m
+									</Text>
+								</HStack>
+							</VStack>
+						</Marker>
+					);
+				})}
+		</>
+	);
+};
+
+const PlayerMarkers = (props: {location: GeolocationCoordinates}) => {
 	const [players] = usePlayers();
 	const {user} = useAuth0();
 	const me = useMe();
@@ -127,33 +189,56 @@ const MapMarkers = (props: {location: GeolocationCoordinates}) => {
 	return (
 		<>
 			{user && (
-				<PlayerMarker
-					player={{
-						location: props.location,
-						username: user.given_name,
-						type: me?.type,
-					}}
-					isMe
-				/>
+				<Marker location={props.location} isMe>
+					<PlayerPopupContents
+						player={{
+							username: user.given_name,
+							type: me?.type,
+						}}
+					/>
+				</Marker>
 			)}
 			{me &&
 				players
 					.filter(p => p.location && p.id !== me.id)
-					.map(p => <PlayerMarker player={p} key={p.id} />)}
+					.map(p => (
+						<Marker location={p.location!} key={p.id}>
+							<PlayerPopupContents player={p} />
+						</Marker>
+					))}
 		</>
 	);
 };
 
-const PlayerMarker = (props: {
-	player: Partial<ClientPlayer>;
+const PlayerPopupContents = (props: {player: Partial<ClientPlayer>}) => {
+	const p = props.player;
+
+	if (!p.type) return null;
+	return (
+		<HStack>
+			<Text fontSize={'20px'} m={0}>
+				{p.username?.toUpperCase()}
+			</Text>
+			{p.type && <TypeTag type={p.type} />}
+		</HStack>
+	);
+};
+
+const Marker = (props: {
+	location: {latitude: number; longitude: number} & Partial<GeolocationCoordinates>;
 	isMe?: boolean;
+	size?: number;
+	color?: string;
+	overlay?: ReactNode;
+	children: ReactNode;
 }) => {
 	const circleRef = useRef<LeafletCircleMarker<any>>(null);
 	const map = useMap();
 
-	const location = props.player.location;
+	const location = props.location;
 
 	const mapZoomListener = () => {
+		if (map.getZoom() < 16) return;
 		const bounds = map.getBounds();
 		const pixelBounds = map.getSize();
 		const {lat} = bounds.getCenter();
@@ -162,13 +247,12 @@ const PlayerMarker = (props: {
 			lat,
 			lng: bounds.getEast(),
 		});
-		if (circleRef.current) {
+		if (circleRef.current && location.accuracy) {
 			circleRef.current.setStyle({
-				weight: (location!.accuracy / widthInMetres) * pixelBounds.x,
+				weight: (location.accuracy / widthInMetres) * pixelBounds.x,
 			});
 		}
 	};
-
 	useEffect(() => {
 		map.on('load', mapZoomListener);
 		map.on('zoom', mapZoomListener);
@@ -187,29 +271,24 @@ const PlayerMarker = (props: {
 	if (!location) return null;
 
 	return (
-		<CircleMarker
-			center={[location.latitude, location.longitude]}
-			color={props.isMe ? '#4286f5' : 'red'}
-			stroke
-			fillColor={props.isMe ? '#4286f5' : 'red'}
-			opacity={0.2}
-			fillOpacity={1}
-			radius={10}
-			ref={circleRef}
-		>
-			{props.player.type && (
-				<Popup
-					position={[location.longitude, location.longitude]}
-					closeButton={false}
-				>
-					<HStack>
-						<Text fontSize={'20px'} m={0}>
-							{props.player.username?.toUpperCase()}
-						</Text>
-						{props.player.type && <TypeTag type={props.player.type} />}
-					</HStack>
-				</Popup>
-			)}
-		</CircleMarker>
+		<>
+			<CircleMarker
+				center={[location.latitude, location.longitude]}
+				color={props.isMe ? '#4286f5' : props.color || 'red'}
+				stroke
+				fillColor={props.isMe ? '#4286f5' : props.color || 'red'}
+				opacity={0.2}
+				fillOpacity={1}
+				radius={props.size || 10}
+				ref={circleRef}
+			>
+				{props.overlay}
+				{props.children && (
+					<Popup position={[location.latitude, location.longitude]} closeButton={false}>
+						{props.children}
+					</Popup>
+				)}
+			</CircleMarker>
+		</>
 	);
 };

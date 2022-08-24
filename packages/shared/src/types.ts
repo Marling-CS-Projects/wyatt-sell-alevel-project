@@ -12,6 +12,7 @@ export type ServerMessages = {
 		code: string;
 		options: GameOptions;
 		hasStarted: boolean;
+		items: string[]; // JSON stringified items;
 	};
 	'player-location': {
 		id: string;
@@ -29,6 +30,21 @@ export type Player = {
 	type: 'hunter' | 'hunted';
 	isHost: boolean;
 	location?: GeolocationCoordinates | null;
+};
+
+export type Item = {
+	id: string;
+	location: {
+		lat: number;
+		lng: number;
+	};
+	info: {
+		name: string;
+		code: string;
+		type: 'hunter' | 'hunted';
+		rarity: number;
+		baseRarity: number;
+	};
 };
 
 export type ServerResponses = {

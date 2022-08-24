@@ -84,5 +84,6 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 			}
 		};
 	}, [socket, players, game, user]);
+
 	return props.children;
 };

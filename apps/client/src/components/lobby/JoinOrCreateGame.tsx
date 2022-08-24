@@ -10,13 +10,7 @@ import {
 	Box,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import {
-	ChangeEvent,
-	ReactChildren,
-	ReactElement,
-	ReactNode,
-	useState,
-} from 'react';
+import {ChangeEvent, ReactChildren, ReactElement, ReactNode, useState} from 'react';
 import {useGame, usePlayers, useSocket, useUser} from '../../utils/hooks';
 import {socketAtom} from '../../utils/atoms';
 import {useAtom} from 'jotai';
@@ -24,6 +18,7 @@ import {io, Socket} from 'socket.io-client';
 import {
 	ClientToServerEvents,
 	GameOptions,
+	Item,
 	ServerMessages,
 	ServerResponses,
 	ServerToClientEvents,
@@ -96,11 +91,7 @@ export const JoinPage = () => {
 			</FormControl>
 			<ConnectWithCode>
 				{createGame => (
-					<Button
-						size={'lg'}
-						colorScheme={'green'}
-						onClick={() => createGame(code)}
-					>
+					<Button size={'lg'} colorScheme={'green'} onClick={() => createGame(code)}>
 						Join
 					</Button>
 				)}
@@ -181,7 +172,7 @@ export const ConnectWithCode = (props: {
 		});
 
 		const tempConnectedListener = async (game: ServerMessages['game-init']) => {
-			setGame(game);
+			setGame({...game, items: game.items.map(item => JSON.parse(item)) as Item[]});
 			setSocket(newSocket);
 			navigator.geolocation.getCurrentPosition(data => {
 				emitLocation(newSocket, data.coords);
