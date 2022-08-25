@@ -1,5 +1,4 @@
 .next/
-apps/frontend/.env.local
 .vercel
 .idea/
 .DS_Store
