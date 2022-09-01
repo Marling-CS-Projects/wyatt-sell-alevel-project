@@ -20,5 +20,6 @@ export const createSchema = object({
 				lng: number().gt(-180).lt(180),
 			})
 		),
+		duration: number(),
 	}),
 });

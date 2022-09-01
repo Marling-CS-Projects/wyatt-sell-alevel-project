@@ -6,10 +6,14 @@ import {TypeTag} from '../TypeTag';
 import {ConnectWithCode} from '../lobby/JoinOrCreateGame';
 import {useAtom} from 'jotai';
 import {socketAtom} from '../../utils/atoms';
+import {CatchOverlay} from './CatchOverlay';
+import {toast} from 'react-hot-toast';
+import {WinLose} from './WinLose';
 
 export const GameContainer = () => {
 	const [game, setGame] = useGame();
 	const socket = useSocket();
+	const me = useMe();
 
 	if (!game) return null;
 	if (!socket)
@@ -18,9 +22,7 @@ export const GameContainer = () => {
 				<ConnectWithCode>
 					{connect => (
 						<VStack spacing={4}>
-							<Button onClick={async () => await connect(game.code)}>
-								Reconnect
-							</Button>
+							<Button onClick={async () => await connect(game.code)}>Reconnect</Button>
 							<Button
 								colorScheme={'red'}
 								onClick={() => {
@@ -38,6 +40,8 @@ export const GameContainer = () => {
 	return (
 		<Flex h={'100vh'} w={'full'} flexDir={'column'}>
 			<Flex h={'full'}>
+				{me?.catching && <CatchOverlay />}
+				{game.hasEnded && <WinLose />}
 				<Map />
 			</Flex>
 			<GameFooter />
@@ -89,13 +93,19 @@ const GameTime = () => {
 	const [time, setTime] = useState(0);
 
 	useEffect(() => {
-		const inverval = setInterval(() => {
+		const interval = setInterval(() => {
 			if (game?.startTime) {
-				setTime(Math.floor((Date.now() - game.startTime) / 1000));
+				const newTime =
+					game.options.duration * 60 - Math.floor((Date.now() - game.startTime) / 1000);
+				if (newTime === 10 * 60) toast('10 minutes left!', {duration: 5000, icon: 'ℹ️'});
+				if (newTime === 5 * 60) toast('5 minutes left!', {duration: 5000, icon: 'ℹ️'});
+				if (newTime === 60) toast('1 minute left!', {duration: 5000, icon: 'ℹ️'});
+
+				setTime(newTime);
 			}
-		});
-		return () => clearInterval(inverval);
-	}, [game]);
+		}, 1000);
+		return () => clearInterval(interval);
+	}, [game, time]);
 
 	if (!game) return null;
 

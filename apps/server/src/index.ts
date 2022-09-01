@@ -177,9 +177,14 @@ io.use((socket, next) => {
 			socket.player = playerInGame;
 			playerInGame.socket = socket;
 		}
-	} else {
+	} else if (matchingGame.options.max.total! > matchingGame.players.length) {
 		const player = new Player(socket, matchingGame);
 		socket.player = player;
+	} else {
+		return next({
+			name: 'GameFull',
+			message: 'This game is full',
+		});
 	}
 
 	socket.game = matchingGame;
@@ -196,6 +201,10 @@ io.on('connection', async socket => {
 
 	socket.on('player-location', async data => {
 		socket.player.updateLocation(data);
+	});
+
+	socket.on('player-catch', async data => {
+		socket.player.catchPlayer(data);
 	});
 
 	socket.on('disconnect', () => {

@@ -7,18 +7,21 @@ import {
 	ServerToClientEvents,
 } from '@monorepo/shared/src/index';
 import {io} from '../index';
+import {distance} from '@monorepo/shared/src/utils/haversine';
 
 export class Player {
 	socket: Socket<ClientToServerEvents, ServerToClientEvents>;
 	game: Game;
 	id: string;
-	status: 'disconnected' | 'spectating' | 'alive';
+	status: 'disconnected' | 'caught' | 'alive';
 	pref?: 'hunted' | 'hunter';
 	type: 'hunted' | 'hunter';
 	user: userType;
 	isHost: boolean;
 	location: GeolocationCoordinates | null;
 	isOutside: boolean;
+	catchers: Player[] = [];
+	catching: Player | null = null;
 
 	constructor(socket: Socket, game: Game) {
 		this.socket = socket;
@@ -28,11 +31,10 @@ export class Player {
 		this.pref = undefined;
 		this.user = socket.user;
 		this.isHost = !game.players.length;
-		this.type = game.hunted.length > game.hunter.length ? 'hunter' : 'hunted';
+		this.type = game.addPlayer(this);
 		this.location = null;
 		this.isOutside = false;
 
-		game.addPlayer(this);
 		socket.join(game.id);
 		socket.join(game.id + this.type);
 	}
@@ -69,8 +71,10 @@ export class Player {
 	}
 
 	disconnect() {
-		this.socket.to(this.game.id).emit('player-disconnected', {id: this.id});
-		this.status = 'disconnected';
+		if (this.status !== 'caught') {
+			this.socket.to(this.game.id).emit('player-disconnected', {id: this.id});
+			this.status = 'disconnected';
+		}
 	}
 
 	emitInfo() {
@@ -92,13 +96,39 @@ export class Player {
 	}
 
 	updateLocation(location: GeolocationCoordinates) {
+		if (this.status === 'caught') return;
+
 		this.location = location;
-		if (this.socket.player.type === 'hunter') {
+
+		if (this.type === 'hunter') {
 			this.socket.to(this.game.id + 'hunter').emit('player-location', {
 				id: this.id,
 				location: this.location,
 			});
+		} else {
+			if (this.catchers.length) {
+				this.catchers.forEach(c => {
+					if (c.location && distance(c.location, this.location!) > 400) {
+						c.unsetCatchable();
+					}
+				});
+			}
 		}
+
+		const playerInRange = this.game[this.type === 'hunter' ? 'hunted' : 'hunter'].filter(p => {
+			return p.location && distance(p.location, this.location!) <= 400;
+		})[0];
+
+		if (playerInRange) {
+			if (this.type === 'hunted') {
+				playerInRange.setCatchable(this);
+			} else {
+				this.setCatchable(playerInRange);
+			}
+		} else if (this.catching) {
+			this.unsetCatchable();
+		}
+
 		const isOutside = !isPointInsidePolygon(
 			{lat: this.location.latitude, lng: this.location.longitude},
 			this.game.options.vertices
@@ -117,6 +147,32 @@ export class Player {
 				id: this.id,
 				outside: true,
 			});
+		}
+	}
+
+	catchPlayer(data: {id: string}) {
+		if (this.catching?.id !== data.id) return;
+		this.catching.catch();
+	}
+
+	catch() {
+		if (this.type === 'hunter') return;
+		this.status = 'caught';
+		io.to(this.game.id).emit('player-caught', this.getPublic());
+		this.game.catch(this);
+	}
+
+	setCatchable(player: Player) {
+		this.catching = player;
+		player.catchers.push(this);
+		this.socket.emit('player-catch-on', player.getPublic());
+	}
+
+	unsetCatchable() {
+		if (this.catching) {
+			this.catching.catchers = [];
+			this.socket.emit('player-catch-off', {id: this.catching.id});
+			this.catching = null;
 		}
 	}
 }

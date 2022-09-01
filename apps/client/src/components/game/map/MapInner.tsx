@@ -14,9 +14,8 @@ import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'reac
 import {CircleMarker as LeafletCircleMarker, LatLng, Map} from 'leaflet';
 import {useGame, useLocation, useMe, usePlayers, useSocket} from '../../../utils/hooks';
 import {Socket} from 'socket.io-client';
-import {GameOptions, getBoxPoints, isPointInsidePolygon} from '@monorepo/shared/src/index';
+import {GameOptions, getBoxPoints, isPointInsidePolygon, Player} from '@monorepo/shared/src/index';
 import {toast} from 'react-hot-toast';
-import {ClientPlayer} from '../../../utils/types';
 import {useAuth0} from '@auth0/auth0-react';
 import {Button, HStack, Tag, Text, theme, VStack} from '@chakra-ui/react';
 import {TypeTag} from '../../TypeTag';
@@ -35,16 +34,18 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 
 	const updateLocation = (data: GeolocationPosition) => {
 		if (
-			socket &&
-			(location?.longitude !== data.coords.longitude || location?.latitude !== data.coords.latitude)
+			location?.longitude !== data.coords.longitude ||
+			location?.latitude !== data.coords.latitude
 		) {
-			emitLocation(socket, data.coords);
+			if (socket) {
+				emitLocation(socket, data.coords);
+			}
+			setLocation(data.coords);
+			if (me) {
+				setPlayers(prev => [...prev.filter(p => p.id !== me.id), {...me, location: data.coords}]);
+			}
+			mapRef.current?.setView([data.coords.latitude, data.coords.longitude]);
 		}
-		setLocation(data.coords);
-		if (me) {
-			setPlayers(prev => [...prev.filter(p => p.id !== me.id), {...me, location: data.coords}]);
-		}
-		mapRef.current?.setView([data.coords.latitude, data.coords.longitude]);
 	};
 
 	useEffect(() => {
@@ -52,7 +53,7 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 		return () => {
 			navigator.geolocation.clearWatch(watchId);
 		};
-	}, [socket]);
+	}, [socket, location, me]);
 
 	if (!location) return null;
 
@@ -73,7 +74,7 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 			{props.markers !== false && (
 				<>
 					<PlayerMarkers location={location} />
-					<ItemMarkers />
+					{/*<ItemMarkers />*/}
 				</>
 			)}
 			{game?.hasStarted && (
@@ -210,7 +211,7 @@ const PlayerMarkers = (props: {location: GeolocationCoordinates}) => {
 	);
 };
 
-const PlayerPopupContents = (props: {player: Partial<ClientPlayer>}) => {
+const PlayerPopupContents = (props: {player: Partial<Player>}) => {
 	const p = props.player;
 
 	if (!p.type) return null;

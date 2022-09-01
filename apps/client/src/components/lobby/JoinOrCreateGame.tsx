@@ -113,6 +113,7 @@ export const CreatePage = () => {
 			hunted: 10,
 		},
 		vertices: [],
+		duration: 0,
 	});
 
 	return (
@@ -123,11 +124,23 @@ export const CreatePage = () => {
 					<DynamicPolygonFeature options={options} setOptions={setOptions} />
 				</Map>
 			</Box>
+			<Input
+				placeholder={'Duration (mins)'}
+				size={'lg'}
+				fontSize={20}
+				w={56}
+				type={'number'}
+				mt={4}
+				boxSizing={'border-box'}
+				onChange={e => setOptions(prev => ({...prev, duration: parseInt(e.target.value)}))}
+			/>
 			<ConnectWithCode>
 				{createGame => (
 					<Button
 						size={'lg'}
 						colorScheme={'green'}
+						my={4}
+						disabled={options.vertices.length === 0 || options.duration === 0}
 						onClick={async () => {
 							const {code} = await fetcher<ServerResponses['code']>(
 								'POST',

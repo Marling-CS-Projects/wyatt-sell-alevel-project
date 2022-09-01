@@ -22,6 +22,7 @@ export class Game {
 	hasStarted: boolean;
 	joinCode: string;
 	options: GameOptions;
+	timeout?: NodeJS.Timeout;
 
 	private generateItems = () => {
 		const points = poissonDiscSampling(this.options.vertices);
@@ -51,10 +52,11 @@ export class Game {
 		if (this.players.length === 0) {
 			this.host = player;
 		}
-		if (this.players.length === this.options.max.total) return false;
 		this.players.push(player);
-		this.updatePlayer(player.id, this.hunter.length <= this.hunted.length ? 'hunter' : 'hunted');
-		return true;
+		return this.updatePlayer(
+			player.id,
+			this.hunter.length <= this.hunted.length ? 'hunter' : 'hunted'
+		);
 	}
 
 	updatePlayer(id: string, pref: 'hunter' | 'hunted') {
@@ -103,11 +105,28 @@ export class Game {
 		}
 	}
 
+	catch(player: Player) {
+		this.hunted = this.hunted.filter(p => p.id !== player.id);
+		this.players = this.players.filter(p => p.id !== player.id);
+		player.catchers.forEach(c => c.unsetCatchable());
+		if (!this.hunted.length) {
+			io.to(this.id).emit('game-end', {
+				team: 'hunter',
+			});
+			this.timeout && clearTimeout(this.timeout);
+		}
+	}
+
 	start() {
 		this.hasStarted = true;
 		this.startTime = Date.now();
 		io.to(this.id).emit('game-start', {
 			startTime: this.startTime,
 		});
+		this.timeout = setTimeout(() => {
+			io.to(this.id).emit('game-end', {
+				team: 'hunted',
+			});
+		}, this.options.duration * 60 * 1000);
 	}
 }

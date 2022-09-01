@@ -212,3 +212,5 @@ export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
 
 	return Object.values(points).map(p => ({lng: p.x, lat: p.y}));
 }
+
+export const title = (s: string) => s[0].toUpperCase() + s.slice(1);

@@ -7,6 +7,9 @@ export type ServerMessages = {
 		id: string;
 		outside: boolean;
 	};
+	'player-catch-on': Player;
+	'player-catch-off': {id: string};
+	'player-caught': Player;
 	'game-init': {
 		id: string;
 		code: string;
@@ -21,6 +24,9 @@ export type ServerMessages = {
 	'game-start': {
 		startTime: number;
 	};
+	'game-end': {
+		team: 'hunter' | 'hunted';
+	};
 };
 
 export type Player = {
@@ -30,6 +36,10 @@ export type Player = {
 	type: 'hunter' | 'hunted';
 	isHost: boolean;
 	location?: GeolocationCoordinates | null;
+	catching?: {
+		id: string;
+		username: string;
+	} | null;
 };
 
 export type Item = {
@@ -57,6 +67,7 @@ export type ClientMessages = {
 	'game-start': true;
 	'player-pref': 'hunter' | 'hunted';
 	'player-location': GeolocationCoordinates;
+	'player-catch': {id: string};
 };
 
 export type ServerToClientEvents = {
@@ -75,4 +86,5 @@ export interface GameOptions {
 		total?: number;
 	};
 	vertices: {lat: number; lng: number}[];
+	duration: number;
 }

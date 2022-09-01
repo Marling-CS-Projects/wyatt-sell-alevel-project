@@ -11,6 +11,7 @@ export const useGame = () => useAtom(gameAtom);
 export const useLocation = () => useAtom(locationAtom);
 export const useMe = () => {
 	const {user} = useAuth0();
-	if (!user) return null;
-	return useAtom(playersAtom)[0].find(p => user.sub === p.id) ?? null;
+	const [players] = usePlayers();
+	if (!user || !players.length) return null;
+	return players.find(p => user.sub === p.id) ?? null;
 };
