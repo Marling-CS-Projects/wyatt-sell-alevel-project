@@ -249,7 +249,7 @@ export function poissonDiscSampling(vertices: {lng: number; lat: number}[]) {
 ```
 {% endcode %}
 
-<figure><img src="../.gitbook/assets/image (1) (2).png" alt=""><figcaption><p>This is a diagram illustrating a bounding box </p></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (4).png" alt=""><figcaption><p>This is a diagram illustrating a bounding box </p></figcaption></figure>
 
 The `randomPointInsidePolygon` routine vital to the above subroutine is a recursive function that picks a random point within the bounding box. If, using the `isPointInsidePolygon` routine created in [cycle-1-2.md](cycle-1-2.md "mention"), the point is outside the polygon, we simply call the function again, until a valid point is generated.
 
