@@ -22,7 +22,7 @@
 * [2.2.5 Cycle 5: Housekeeping](design-and-development/cycle-1-3.md)
 * [2.2.6 Cycle 6: Item generation](design-and-development/cycle-1-4.md)
 * [2.2.7 Cycle 7: Catching players](design-and-development/2.2.7-cycle-7-catching-players.md)
-* [2.2.8 Cycle 8: Item collection](design-and-development/2.2.8-cycle-8-item-collection.md)
+* [2.2.8 Cycle 8: Item collection](design-and-development/2.2.8-cycle-8-item-optimisation.md)
 
 ## 3 Testing <a href="#testing" id="testing"></a>
 
