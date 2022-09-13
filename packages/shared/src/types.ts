@@ -27,6 +27,14 @@ export type ServerMessages = {
 	'game-end': {
 		team: 'hunter' | 'hunted';
 	};
+	'item-pickup': {
+		id: string;
+	};
+	'item-remove': {
+		id: string;
+	};
+	'item-add': Item;
+	'item-drop': Item;
 };
 
 export type Player = {
@@ -68,6 +76,8 @@ export type ClientMessages = {
 	'player-pref': 'hunter' | 'hunted';
 	'player-location': GeolocationCoordinates;
 	'player-catch': {id: string};
+	'item-pickup': {id: string};
+	'item-drop': {id: string; location: Item['location']};
 };
 
 export type ServerToClientEvents = {

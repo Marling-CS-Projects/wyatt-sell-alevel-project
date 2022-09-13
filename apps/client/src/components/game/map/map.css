@@ -1,36 +1,36 @@
 /* Source: https://gist.github.com/meule/777d9a8a42e2c99a3386 */
 .leaflet-marker-pane > * {
-    -webkit-transition: transform .3s linear;
-    -moz-transition: transform .3s linear;
-    -o-transition: transform .3s linear;
-    -ms-transition: transform .3s linear;
-    transition: transform .3s linear;
+	-webkit-transition: transform 0.3s linear;
+	-moz-transition: transform 0.3s linear;
+	-o-transition: transform 0.3s linear;
+	-ms-transition: transform 0.3s linear;
+	transition: transform 0.3s linear;
 }
 .leaflet-marker-draggable {
-    transition: none !important;
+	transition: none !important;
 }
 .leaflet-top.leaflet-right {
-    transform: scale(1.5);
-    margin-top: 18px;
+	transform: scale(1.5);
+	margin-top: 18px;
 }
 .sr-only {
-    display: none;
+	display: none;
 }
 .leaflet-popup-content {
-    margin: 4px 8px 4px 8px !important;
+	margin: 4px 8px 4px 8px !important;
 }
 .leaflet-popup-content-wrapper {
-    border-radius: 0 !important;
+	border-radius: 0 !important;
 }
 .leaflet-popup-content p {
-    margin: 0 !important;
+	margin: 0 !important;
 }
 .leaflet-control-attribution {
-    display: none !important;
+	display: none !important;
 }
 
 .item-tooltip {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
+	background: none !important;
+	border: none !important;
+	box-shadow: none !important;
 }

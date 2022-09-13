@@ -8,6 +8,7 @@ import {
 } from '@monorepo/shared/src/index';
 import {io} from '../index';
 import {distance} from '@monorepo/shared/src/utils/haversine';
+import {Item} from './item';
 
 export class Player {
 	socket: Socket<ClientToServerEvents, ServerToClientEvents>;
@@ -22,6 +23,7 @@ export class Player {
 	isOutside: boolean;
 	catchers: Player[] = [];
 	catching: Player | null = null;
+	items: Item[];
 
 	constructor(socket: Socket, game: Game) {
 		this.socket = socket;
@@ -34,6 +36,7 @@ export class Player {
 		this.type = game.addPlayer(this);
 		this.location = null;
 		this.isOutside = false;
+		this.items = [];
 
 		socket.join(game.id);
 		socket.join(game.id + this.type);
@@ -50,6 +53,36 @@ export class Player {
 		}
 
 		return this.type;
+	}
+
+	pickupItem(itemId: string) {
+		const item = this.game.pickupItem(itemId);
+		if (!item) return;
+		this.items.push(item);
+		this.socket.emit('item-pickup', {
+			id: item.id,
+		});
+		this.socket.to(this.id + item?.info.type).emit('item-remove', {
+			id: item.id,
+		});
+	}
+
+	dropItem(itemToDrop: {id: string; location: Item['location']}) {
+		const item = this.items.find(i => i.id === itemToDrop.id);
+		if (!item) return;
+		item.location = itemToDrop.location;
+		this.items = this.items.filter(i => i.id === itemToDrop.id);
+		this.game.dropItem(item);
+		this.socket.emit('item-drop', {
+			id: item.id,
+			location: item.location,
+			info: item.info,
+		});
+		this.socket.to(this.id + item?.info.type).emit('item-add', {
+			id: item.id,
+			location: item.location,
+			info: item.info,
+		});
 	}
 
 	getPublic() {

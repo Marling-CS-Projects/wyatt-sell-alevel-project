@@ -10,19 +10,26 @@ import {
 	Tooltip,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {CircleMarker as LeafletCircleMarker, LatLng, Map} from 'leaflet';
 import {useGame, useLocation, useMe, usePlayers, useSocket} from '../../../utils/hooks';
 import {Socket} from 'socket.io-client';
-import {GameOptions, getBoxPoints, isPointInsidePolygon, Player} from '@monorepo/shared/src/index';
+import {
+	GameOptions,
+	getBoxPoints,
+	isPointInsidePolygon,
+	Item,
+	Player,
+} from '@monorepo/shared/src/index';
 import {toast} from 'react-hot-toast';
 import {useAuth0} from '@auth0/auth0-react';
-import {Button, HStack, Tag, Text, theme, VStack} from '@chakra-ui/react';
+import {Button, HStack, Tag, Text, theme, VStack, Flex, propNames} from '@chakra-ui/react';
 import {TypeTag} from '../../TypeTag';
 import {RiNavigationLine} from 'react-icons/ri';
 import {debounce} from 'lodash';
 import {emitLocation} from '../../../utils/utils';
 import {distance} from '@monorepo/shared/src/utils/haversine';
+import {rarityArray} from 'src/components/inventory/Inventory';
 
 export default (props: {children: ReactNode; markers?: boolean}) => {
 	const [location, setLocation] = useLocation();
@@ -31,6 +38,7 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 	const me = useMe();
 	const [game] = useGame();
 	const mapRef = useRef<Map>(null);
+	const items = useGame()[0]?.items;
 
 	const updateLocation = (data: GeolocationPosition) => {
 		if (
@@ -57,6 +65,8 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 
 	if (!location) return null;
 
+	const pickableItem = items?.find(i => distance(i.location, location) < 100);
+
 	return (
 		<MapContainer
 			center={[location.latitude, location.longitude]}
@@ -74,7 +84,7 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 			{props.markers !== false && (
 				<>
 					<PlayerMarkers location={location} />
-					{/*<ItemMarkers />*/}
+					{items && <ItemMarkers items={items} location={location} />}
 				</>
 			)}
 			{game?.hasStarted && (
@@ -105,82 +115,104 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 					</Button>
 				)}
 			</div>
+			<Flex className="leaflet-bottom" justifyContent={'center'} w={'full'}>
+				{location && pickableItem && (
+					<Button
+						onClick={() => {
+							socket?.emit('item-pickup', {id: pickableItem.id});
+						}}
+						m={4}
+						rounded={'lg'}
+						colorScheme={'green'}
+						pointerEvents={'all'}
+						px={8}
+						py={2}
+						size={'lg'}
+						css={{
+							fontFamily: `'Share Tech Mono', monospace !important`,
+						}}
+					>
+						Pick up
+					</Button>
+				)}
+			</Flex>
 		</MapContainer>
 	);
 };
 
-const rarityArray = {
-	1: {color: 'green', text: 'common'},
-	2: {color: 'orange', text: 'rare'},
-	3: {color: 'pink', text: 'epic'},
-} as Record<number, {color: 'green' | 'orange' | 'pink'; text: string}>;
+export const ItemMarkers = memo(
+	(props: {items: Item[]; location: GeolocationCoordinates}) => {
+		const {items, location} = props;
 
-export const ItemMarkers = () => {
-	const items = useGame()[0]?.items;
-	const me = useMe();
+		if (!items || !location) return null;
 
-	if (!items || !me || !me.location) return null;
-
-	return (
-		<>
-			{items
-				// .filter(
-				// 	item =>
-				// 		distance(item.location, {
-				// 			lat: me.location!.latitude,
-				// 			lng: me.location!.longitude,
-				// 		}) < 500
-				// )
-				.map(item => {
-					const baseColor = rarityArray[item.info.rarity].color;
-					console.log(theme.colors[baseColor]['300']);
-					return (
-						<Marker
-							location={{
-								latitude: item.location.lat,
-								longitude: item.location.lng,
-							}}
-							key={item.id}
-							size={15}
-							color={theme.colors[baseColor]['300']}
-							overlay={
-								<Tooltip
-									permanent={true}
-									direction={'center'}
-									position={[item.location.lat, item.location.lng]}
-									className={'item-tooltip'}
-								>
-									<Text color={`${baseColor}.700`} fontSize={20} fontWeight={700}>
-										{item.info.code[0].toUpperCase()}
+		return (
+			<>
+				{items
+					// .filter(
+					// 	item =>
+					// 		distance(item.location, {
+					// 			lat: me.location!.latitude,
+					// 			lng: me.location!.longitude,
+					// 		}) < 500
+					// )
+					.map(item => {
+						const baseColor = rarityArray[item.info.rarity].color;
+						return (
+							<Marker
+								location={{
+									latitude: item.location.lat,
+									longitude: item.location.lng,
+								}}
+								key={item.id}
+								size={15}
+								color={theme.colors[baseColor]['300']}
+								overlay={
+									<Tooltip
+										permanent={true}
+										direction={'center'}
+										position={[item.location.lat, item.location.lng]}
+										className={'item-tooltip'}
+									>
+										<Text color={`${baseColor}.700`} fontSize={20} fontWeight={700}>
+											{item.info.code[0].toUpperCase()}
+										</Text>
+									</Tooltip>
+								}
+							>
+								<VStack>
+									<Text fontSize={'20px'} m={0} fontWeight={'bold'}>
+										{item.info.name}
 									</Text>
-								</Tooltip>
-							}
-						>
-							<VStack>
-								<Text fontSize={'20px'} m={0} fontWeight={'bold'}>
-									{item.info.name}
-								</Text>
-								<HStack>
-									<Text color={`${baseColor}.700`} fontSize={16} pr={4} fontWeight={'bold'}>
-										{rarityArray[item.info.rarity].text.toUpperCase()}
-									</Text>
-									<Text fontSize={16} fontWeight={'bold'} color={'gray.700'}>
-										{Math.floor(
-											distance(item.location, {
-												lat: me.location!.latitude,
-												lng: me.location!.longitude,
-											})
-										)}
-										m
-									</Text>
-								</HStack>
-							</VStack>
-						</Marker>
-					);
-				})}
-		</>
-	);
-};
+									<HStack>
+										<Text color={`${baseColor}.700`} fontSize={16} pr={4} fontWeight={'bold'}>
+											{rarityArray[item.info.rarity].text.toUpperCase()}
+										</Text>
+										<Text fontSize={16} fontWeight={'bold'} color={'gray.700'}>
+											{Math.floor(
+												distance(item.location, {
+													lat: location.latitude,
+													lng: location.longitude,
+												})
+											)}
+											m
+										</Text>
+									</HStack>
+								</VStack>
+							</Marker>
+						);
+					})}
+			</>
+		);
+	},
+	(prev, next) => {
+		return (
+			prev.items.length === next.items.length &&
+			prev.location.latitude === next.location.latitude &&
+			prev.location.longitude === next.location.longitude
+		);
+	}
+);
 
 const PlayerMarkers = (props: {location: GeolocationCoordinates}) => {
 	const [players] = usePlayers();

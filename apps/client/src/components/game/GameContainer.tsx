@@ -9,9 +9,11 @@ import {socketAtom} from '../../utils/atoms';
 import {CatchOverlay} from './CatchOverlay';
 import {toast} from 'react-hot-toast';
 import {WinLose} from './WinLose';
+import {Inventory} from '../inventory/Inventory';
 
 export const GameContainer = () => {
 	const [game, setGame] = useGame();
+	const [page, setPage] = useState<false | 'inventory' | 'settings'>(false);
 	const socket = useSocket();
 	const me = useMe();
 
@@ -39,16 +41,20 @@ export const GameContainer = () => {
 
 	return (
 		<Flex h={'100vh'} w={'full'} flexDir={'column'}>
-			<Flex h={'full'}>
+			<Flex h={'full'} position={'relative'}>
 				{me?.catching && <CatchOverlay />}
 				{game.hasEnded && <WinLose />}
+				{page === 'inventory' && <Inventory closeFn={() => setPage(false)} />}
 				<Map />
 			</Flex>
-			<GameFooter />
+			<GameFooter
+				inventoryOnClick={() => setPage(p => (p === 'inventory' ? false : 'inventory'))}
+				settingsOnClick={() => setPage(p => (p === 'settings' ? false : 'settings'))}
+			/>
 		</Flex>
 	);
 };
-const GameFooter = () => {
+const GameFooter = (props: {settingsOnClick: () => void; inventoryOnClick: () => void}) => {
 	const me = useMe();
 	const [game, setGame] = useGame();
 	const [socket, setSocket] = useAtom(socketAtom);
@@ -80,8 +86,8 @@ const GameFooter = () => {
 					</HStack>
 				</VStack>
 				<HStack h={'full'} justifyContent={'flex-end'}>
-					<FooterButton>🎒</FooterButton>
-					<FooterButton>⚙️</FooterButton>
+					<FooterButton onClick={props.inventoryOnClick}>🎒</FooterButton>
+					<FooterButton onClick={props.settingsOnClick}>⚙️</FooterButton>
 				</HStack>
 			</HStack>
 		</Flex>
@@ -119,15 +125,26 @@ const GameTime = () => {
 	);
 };
 
-const FooterButton = (props: {children: ReactNode}) => {
+const FooterButton = (props: {children: ReactNode; onClick: () => void}) => {
+	const [clicked, setClicked] = useState(false);
+
+	const onClick = () => {
+		setClicked(c => !c);
+		props.onClick();
+	};
+
 	return (
 		<Button
 			h={'full'}
 			fontSize={40}
 			borderColor={'red'}
 			borderWidth={2}
+			bg={clicked ? 'red.100' : 'transparent'}
 			borderRadius={'lg'}
 			py={'unset'}
+			onClick={onClick}
+			_active={{bg: clicked ? 'red.100 !important' : 'transparent'}}
+			_hover={{bg: clicked ? 'red.100 !important' : 'transparent'}}
 			style={{
 				aspectRatio: '1',
 			}}

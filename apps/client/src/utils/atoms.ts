@@ -11,7 +11,7 @@ import {atomWithStorage} from 'jotai/utils';
 
 export const socketAtom = atom<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
 
-export const playersAtom = atom<Player[]>([]);
+export const playersAtom = atom<(Player & {items?: Item[]})[]>([]);
 
 export const gameAtom = atomWithStorage<
 	| (Omit<ServerMessages['game-init'], 'items'> & {

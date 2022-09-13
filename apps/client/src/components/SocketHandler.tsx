@@ -80,6 +80,43 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 				winningTeam: data.team,
 			}));
 		},
+		'item-pickup': data => {
+			const item = game?.items.find(i => i.id === data.id)!;
+			if (me) {
+				setPlayers(prev => [
+					...prev.filter(p => p.id !== me.id),
+					{...me, items: [...(me.items || []), item]},
+				]);
+			}
+			setGame(prev => ({
+				...prev!,
+				items: prev!.items.filter(i => i.id !== data.id),
+			}));
+		},
+		'item-remove': data => {
+			setGame(prev => ({
+				...prev!,
+				items: prev!.items.filter(i => i.id !== data.id),
+			}));
+		},
+		'item-drop': data => {
+			if (me?.items) {
+				setPlayers(prev => [
+					...prev.filter(p => p.id !== me.id),
+					{...me, items: me.items?.filter(i => i.id !== data.id)},
+				]);
+				setGame(prev => ({
+					...prev!,
+					items: [...prev!.items, data],
+				}));
+			}
+		},
+		'item-add': data => {
+			setGame(prev => ({
+				...prev!,
+				items: [...prev!.items, data],
+			}));
+		},
 	};
 
 	useEffect(() => {

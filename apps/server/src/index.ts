@@ -207,6 +207,14 @@ io.on('connection', async socket => {
 		socket.player.catchPlayer(data);
 	});
 
+	socket.on('item-pickup', async data => {
+		socket.player.pickupItem(data.id);
+	});
+
+	socket.on('item-drop', async data => {
+		socket.player.dropItem(data);
+	});
+
 	socket.on('disconnect', () => {
 		socket.player.disconnect();
 		socket.disconnect(true);

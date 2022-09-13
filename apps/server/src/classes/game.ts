@@ -59,6 +59,17 @@ export class Game {
 		);
 	}
 
+	pickupItem(itemId: string) {
+		const item = this.items.find(i => i.id === itemId);
+		if (!item) return;
+		this.items = this.items.filter(i => i.id !== itemId);
+		return item;
+	}
+
+	dropItem(item: Item) {
+		this.items.push(item);
+	}
+
 	updatePlayer(id: string, pref: 'hunter' | 'hunted') {
 		const player = this.players.find(p => p.id === id);
 		if (!player) throw new Error('Player not in game');
