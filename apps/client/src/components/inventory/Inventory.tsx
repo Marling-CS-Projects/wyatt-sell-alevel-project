@@ -22,6 +22,13 @@ export const rarityArray = {
 	3: {color: 'pink', text: 'epic'},
 } as Record<number, {color: 'green' | 'orange' | 'pink'; text: string}>;
 
+export const itemDetails = {
+	gpsj: {
+		desc: 'A GPS Jammer that will disable GPS functionality for all other hunters. Lasts 5 minutes',
+		action: 'JAM GPS',
+	},
+} as Record<Item['info']['code'], {desc: string; action: string}>;
+
 export const Inventory = (props: {closeFn: () => void}) => {
 	const me = useMe();
 
@@ -98,10 +105,10 @@ export const GridItem = (props: {item: Item | undefined}) => {
 				<Image src={'https://placekitten.com/200/200'} w={'full'} />
 				<VStack p={4}>
 					<Text fontSize={'lg'} color="gray">
-						A GPS Jammer that will disable GPS functionality for all other hunters. Lasts 5 minutes
+						{(itemDetails[item.info.code] || {desc: `${item.info.name} description`}).desc}
 					</Text>
 					<Button bg="red.500" w="full" color="white" fontSize={'32'}>
-						JAM GPS
+						{(itemDetails[item.info.code] || {action: 'USE'}).action}
 					</Button>
 					<Button
 						bg="blue.500"

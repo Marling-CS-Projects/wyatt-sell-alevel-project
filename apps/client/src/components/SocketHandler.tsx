@@ -80,6 +80,13 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 				winningTeam: data.team,
 			}));
 		},
+		'game-update': data => {
+			setGame(prev => ({
+				...prev!,
+				...data,
+				...(data.items ? {items: data.items.map(i => JSON.parse(i))} : {}),
+			}));
+		},
 		'item-pickup': data => {
 			const item = game?.items.find(i => i.id === data.id)!;
 			if (me) {

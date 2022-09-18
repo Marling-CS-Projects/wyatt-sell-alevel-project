@@ -52,6 +52,12 @@ export class Player {
 			this.emitAll();
 		}
 
+		if (this.catchers && this.type === 'hunter') {
+			this.catchers.forEach(c => c.unsetCatchable());
+		} else if (this.catching && this.type === 'hunted') {
+			this.unsetCatchable();
+		}
+
 		return this.type;
 	}
 
@@ -62,7 +68,7 @@ export class Player {
 		this.socket.emit('item-pickup', {
 			id: item.id,
 		});
-		this.socket.to(this.id + item?.info.type).emit('item-remove', {
+		this.socket.to(this.game.id + this.type).emit('item-remove', {
 			id: item.id,
 		});
 	}
@@ -78,7 +84,7 @@ export class Player {
 			location: item.location,
 			info: item.info,
 		});
-		this.socket.to(this.id + item?.info.type).emit('item-add', {
+		this.socket.to(this.game.id + this.type).emit('item-add', {
 			id: item.id,
 			location: item.location,
 			info: item.info,
@@ -114,9 +120,9 @@ export class Player {
 		io.to(this.game.id).emit('player-updated', this.getPublic());
 	}
 
-	emitLocation() {
+	emitLocation(socket?: Player['socket']) {
 		if (this.type === 'hunter') {
-			io.to(this.game.id + 'hunter').emit('player-location', {
+			(socket || io.to(this.game.id + 'hunter')).emit('player-location', {
 				id: this.id,
 				location: this.location,
 			});

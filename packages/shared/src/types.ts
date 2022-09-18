@@ -27,6 +27,7 @@ export type ServerMessages = {
 	'game-end': {
 		team: 'hunter' | 'hunted';
 	};
+	'game-update': Partial<ServerMessages['game-init']>;
 	'item-pickup': {
 		id: string;
 	};

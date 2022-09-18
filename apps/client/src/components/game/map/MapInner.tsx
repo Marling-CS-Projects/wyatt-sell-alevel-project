@@ -119,11 +119,15 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 				{location && pickableItem && (
 					<Button
 						onClick={() => {
-							socket?.emit('item-pickup', {id: pickableItem.id});
+							if (me?.items?.length === 6) {
+								toast.error('Inventory full');
+							} else {
+								socket?.emit('item-pickup', {id: pickableItem.id});
+							}
 						}}
 						m={4}
 						rounded={'lg'}
-						colorScheme={'green'}
+						colorScheme={me?.items?.length === 6 ? 'red' : 'green'}
 						pointerEvents={'all'}
 						px={8}
 						py={2}
@@ -148,60 +152,52 @@ export const ItemMarkers = memo(
 
 		return (
 			<>
-				{items
-					// .filter(
-					// 	item =>
-					// 		distance(item.location, {
-					// 			lat: me.location!.latitude,
-					// 			lng: me.location!.longitude,
-					// 		}) < 500
-					// )
-					.map(item => {
-						const baseColor = rarityArray[item.info.rarity].color;
-						return (
-							<Marker
-								location={{
-									latitude: item.location.lat,
-									longitude: item.location.lng,
-								}}
-								key={item.id}
-								size={15}
-								color={theme.colors[baseColor]['300']}
-								overlay={
-									<Tooltip
-										permanent={true}
-										direction={'center'}
-										position={[item.location.lat, item.location.lng]}
-										className={'item-tooltip'}
-									>
-										<Text color={`${baseColor}.700`} fontSize={20} fontWeight={700}>
-											{item.info.code[0].toUpperCase()}
-										</Text>
-									</Tooltip>
-								}
-							>
-								<VStack>
-									<Text fontSize={'20px'} m={0} fontWeight={'bold'}>
-										{item.info.name}
+				{items.map(item => {
+					const baseColor = rarityArray[item.info.rarity].color;
+					return (
+						<Marker
+							location={{
+								latitude: item.location.lat,
+								longitude: item.location.lng,
+							}}
+							key={item.id}
+							size={15}
+							color={theme.colors[baseColor]['300']}
+							overlay={
+								<Tooltip
+									permanent={true}
+									direction={'center'}
+									position={[item.location.lat, item.location.lng]}
+									className={'item-tooltip'}
+								>
+									<Text color={`${baseColor}.700`} fontSize={20} fontWeight={700}>
+										{item.info.code[0].toUpperCase()}
 									</Text>
-									<HStack>
-										<Text color={`${baseColor}.700`} fontSize={16} pr={4} fontWeight={'bold'}>
-											{rarityArray[item.info.rarity].text.toUpperCase()}
-										</Text>
-										<Text fontSize={16} fontWeight={'bold'} color={'gray.700'}>
-											{Math.floor(
-												distance(item.location, {
-													lat: location.latitude,
-													lng: location.longitude,
-												})
-											)}
-											m
-										</Text>
-									</HStack>
-								</VStack>
-							</Marker>
-						);
-					})}
+								</Tooltip>
+							}
+						>
+							<VStack>
+								<Text fontSize={'20px'} m={0} fontWeight={'bold'}>
+									{item.info.name}
+								</Text>
+								<HStack>
+									<Text color={`${baseColor}.700`} fontSize={16} pr={4} fontWeight={'bold'}>
+										{rarityArray[item.info.rarity].text.toUpperCase()}
+									</Text>
+									<Text fontSize={16} fontWeight={'bold'} color={'gray.700'}>
+										{Math.floor(
+											distance(item.location, {
+												lat: location.latitude,
+												lng: location.longitude,
+											})
+										)}
+										m
+									</Text>
+								</HStack>
+							</VStack>
+						</Marker>
+					);
+				})}
 			</>
 		);
 	},

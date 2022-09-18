@@ -25,11 +25,16 @@ export class Game {
 	timeout?: NodeJS.Timeout;
 
 	private generateItems = () => {
-		const points = poissonDiscSampling(this.options.vertices);
-		return points.map((point, i) => {
-			const item = new Item(this, i % 2 === 0 ? 'hunted' : 'hunted', point);
-			return item;
-		});
+		const hunterPoints = poissonDiscSampling(this.options.vertices);
+		const huntedPoints = poissonDiscSampling(this.options.vertices);
+		return [
+			...hunterPoints.map(point => {
+				return new Item(this, 'hunter', point);
+			}),
+			...huntedPoints.map(point => {
+				return new Item(this, 'hunted', point);
+			}),
+		];
 	};
 
 	constructor(options: GameOptions) {
@@ -77,6 +82,22 @@ export class Game {
 		if (this[pref].length < this.options.max[pref]) {
 			this[invertedPlayerPref] = this[invertedPlayerPref].filter(p => p.id !== id);
 			this[pref].push(player);
+			if (pref === 'hunter') {
+				this.hunter.forEach(p => p.emitLocation(player.socket));
+			}
+			player.socket.emit('game-update', {
+				items: this.items
+					.filter(i => {
+						return i.info.type === pref;
+					})
+					.map(item =>
+						JSON.stringify({
+							id: item.id,
+							location: item.location,
+							info: item.info,
+						})
+					),
+			});
 			return pref;
 		}
 		return invertedPlayerPref;
@@ -87,22 +108,26 @@ export class Game {
 		const socket = primaryPlayer.socket;
 
 		socket.emit('game-init', {
-			id: socket.game.id,
-			code: socket.game.joinCode,
-			options: socket.game.options,
-			hasStarted: socket.game.hasStarted,
-			items: socket.game.items.map(item =>
-				JSON.stringify({
-					id: item.id,
-					location: item.location,
-					info: item.info,
+			id: this.id,
+			code: this.joinCode,
+			options: this.options,
+			hasStarted: this.hasStarted,
+			items: this.items
+				.filter(i => {
+					return i.info.type === primaryPlayer.type;
 				})
-			),
+				.map(item =>
+					JSON.stringify({
+						id: item.id,
+						location: item.location,
+						info: item.info,
+					})
+				),
 		});
 
 		// Sends data about the new player to all other players
 		socket
-			.to(socket.game.id)
+			.to(this.id)
 			.emit(`player-${this.hasStarted ? 're' : ''}connected`, primaryPlayer.getPublic());
 		primaryPlayer.emitLocation();
 
