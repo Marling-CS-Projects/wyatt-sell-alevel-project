@@ -28,6 +28,7 @@
 		"react-icons": "^4.4.0",
 		"react-leaflet": "^4.0.1",
 		"react-leaflet-draw": "^0.20.1",
+		"react-powerglitch": "^1.0.0",
 		"sharp": "^0.30.0",
 		"socket.io-client": "^4.4.1",
 		"spherical-geometry-js": "^3.0.0",

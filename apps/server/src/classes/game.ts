@@ -154,6 +154,7 @@ export class Game {
 	}
 
 	start() {
+		console.log('start called', this, this.id);
 		this.hasStarted = true;
 		this.startTime = Date.now();
 		io.to(this.id).emit('game-start', {

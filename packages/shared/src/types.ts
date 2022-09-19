@@ -36,6 +36,26 @@ export type ServerMessages = {
 	};
 	'item-add': Item;
 	'item-drop': Item;
+	'effect-active': {
+		id: string;
+		code: keyof EffectUseData;
+		data: EffectUseData[keyof EffectUseData];
+		duration: Item['info']['duration'];
+	};
+	'effect-inactive': {
+		id: string;
+	};
+	'item-active': {id: string; start: number};
+	'item-used': {id: string};
+};
+
+export type EffectUseData = {
+	gpsj: undefined;
+	drse: {
+		point: {lat: number; lng: number};
+		intensity: number;
+	}[];
+	drsehunted: undefined;
 };
 
 export type Player = {
@@ -63,7 +83,10 @@ export type Item = {
 		type: 'hunter' | 'hunted';
 		rarity: number;
 		baseRarity: number;
+		duration: number;
 	};
+	active: boolean;
+	activeStart?: number;
 };
 
 export type ServerResponses = {
@@ -79,6 +102,7 @@ export type ClientMessages = {
 	'player-catch': {id: string};
 	'item-pickup': {id: string};
 	'item-drop': {id: string; location: Item['location']};
+	'item-use': {id: string};
 };
 
 export type ServerToClientEvents = {

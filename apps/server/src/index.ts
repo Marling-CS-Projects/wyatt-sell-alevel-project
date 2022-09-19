@@ -215,6 +215,10 @@ io.on('connection', async socket => {
 		socket.player.dropItem(data);
 	});
 
+	socket.on('item-use', async data => {
+		socket.player.useItem(data);
+	});
+
 	socket.on('disconnect', () => {
 		socket.player.disconnect();
 		socket.disconnect(true);

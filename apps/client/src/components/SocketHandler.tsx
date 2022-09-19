@@ -1,7 +1,7 @@
 import {ReactElement, useEffect} from 'react';
 import {useAtom} from 'jotai';
 import {socketAtom} from '../utils/atoms';
-import {useGame, useMe, usePlayers} from '../utils/hooks';
+import {useEffects, useGame, useMe, usePlayers} from '../utils/hooks';
 import {toast} from 'react-hot-toast';
 import {ServerToClientEvents} from '@monorepo/shared/src/index';
 import {useAuth0} from '@auth0/auth0-react';
@@ -12,6 +12,7 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 	const [game, setGame] = useGame();
 	const {user} = useAuth0();
 	const me = useMe();
+	const [effects, setEffects] = useEffects();
 
 	const listeners: Partial<ServerToClientEvents> = {
 		'player-connected': data => {
@@ -124,6 +125,35 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 				items: [...prev!.items, data],
 			}));
 		},
+		'item-active': data => {
+			if (me?.items) {
+				const item = me.items.find(i => i.id === data.id)!;
+				setPlayers(prev => [
+					...prev.filter(p => p.id !== me.id),
+					{
+						...me,
+						items: [
+							...me.items!.filter(i => i.id !== data.id),
+							{...item, active: true, activeStart: data.start},
+						],
+					},
+				]);
+			}
+		},
+		'item-used': data => {
+			if (me?.items) {
+				setPlayers(prev => [
+					...prev.filter(p => p.id !== me.id),
+					{...me, items: me.items?.filter(i => i.id !== data.id)},
+				]);
+			}
+		},
+		'effect-active': data => {
+			setEffects(prev => [...prev, data]);
+		},
+		'effect-inactive': data => {
+			setEffects(prev => prev.filter(e => e.id !== data.id));
+		},
 	};
 
 	useEffect(() => {
@@ -131,11 +161,13 @@ export const SocketHandler = (props: {children: ReactElement | null}) => {
 			socket.on('connect_error', error => {
 				toast.error(error.name);
 				setPlayers([]);
+				setEffects([]);
 				socket.disconnect();
 				setSocket(null);
 			});
 			socket.on('disconnect', () => {
 				setPlayers([]);
+				setEffects([]);
 				setSocket(null);
 			});
 			Object.entries(listeners).forEach(([name, fn]) => {

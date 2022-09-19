@@ -53,6 +53,9 @@ export const randomBetweenInterval = (min: number, max: number) => {
 	return Math.random() * (max - min) + min;
 };
 
+export const randomBetweenIntervalInt = (min: number, max: number) =>
+	Math.floor(randomBetweenInterval(min, max));
+
 export function dimensions(polygonRaw: {lat: number; lng: number}[]) {
 	const {ranges} = getBoxPoints(polygonRaw);
 	const [latMin, latMax] = ranges.lat;

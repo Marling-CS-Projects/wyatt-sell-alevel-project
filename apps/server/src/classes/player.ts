@@ -38,6 +38,8 @@ export class Player {
 		this.isOutside = false;
 		this.items = [];
 
+		console.log(game.id);
+
 		socket.join(game.id);
 		socket.join(game.id + this.type);
 	}
@@ -83,12 +85,20 @@ export class Player {
 			id: item.id,
 			location: item.location,
 			info: item.info,
+			active: false,
 		});
 		this.socket.to(this.game.id + this.type).emit('item-add', {
 			id: item.id,
 			location: item.location,
 			info: item.info,
+			active: false,
 		});
+	}
+
+	useItem(data: {id: string}) {
+		const item = this.items.find(i => i.id === data.id);
+		if (!item) return;
+		item.use(this);
 	}
 
 	getPublic() {

@@ -10,7 +10,11 @@ const messages = {
 	near: 'You are near the edge of the game area',
 };
 
-export const Map = (props: {children?: ReactNode; vertices?: GameOptions['vertices']}) => {
+export const Map = (props: {
+	children?: ReactNode;
+	vertices?: GameOptions['vertices'];
+	markers?: boolean;
+}) => {
 	const [location] = useLocation();
 	const [game] = useGame();
 	const {toasts} = useToasterStore();
@@ -55,5 +59,5 @@ export const Map = (props: {children?: ReactNode; vertices?: GameOptions['vertic
 		}
 	}, [location, vertices, warningIds]);
 
-	return <MapWrapper>{props.children}</MapWrapper>;
+	return <MapWrapper markers={props.markers}>{props.children}</MapWrapper>;
 };

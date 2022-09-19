@@ -2496,6 +2496,7 @@ __metadata:
     react-icons: ^4.4.0
     react-leaflet: ^4.0.1
     react-leaflet-draw: ^0.20.1
+    react-powerglitch: ^1.0.0
     sharp: ^0.30.0
     socket.io-client: ^4.4.1
     spherical-geometry-js: ^3.0.0
@@ -7174,6 +7175,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"powerglitch@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "powerglitch@npm:2.2.0"
+  checksum: 236fa42f851d6ae60241ecd70f6201b7752f3bef8a1d8e0a97e23def175d88b4ce25cb5a9112f2ad25bd6bf3191d84583b39186b63c1a558e361c2fc1f4eb44b
+  languageName: node
+  linkType: hard
+
 "prebuild-install@npm:^7.0.1":
   version: 7.0.1
   resolution: "prebuild-install@npm:7.0.1"
@@ -7502,6 +7510,18 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
   checksum: f5e94c0e3b49f8d7d3c464185f8624ab0ad6958a950dd153974183ed93be1b61216c1cddd09967a85e65762f6696a39dfac086ab770980689405e80b3c43a6c1
+  languageName: node
+  linkType: hard
+
+"react-powerglitch@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "react-powerglitch@npm:1.0.0"
+  dependencies:
+    powerglitch: ^2.2.0
+  peerDependencies:
+    react: ">= 16.8.0"
+    react-dom: ">= 16.8.0"
+  checksum: e5e2d63500db63b7e353a891bcfcd61098939c91feabde60b29b617a888ec5e73c9692e9fc4f4ff1fa11dee6075000a6bf4025baf810eca55743a9d73d45d81e
   languageName: node
   linkType: hard
 

@@ -57,9 +57,12 @@ export default (props: {children: ReactNode; markers?: boolean}) => {
 	};
 
 	useEffect(() => {
-		const watchId = navigator.geolocation.watchPosition(updateLocation);
+		//const watchId = navigator.geolocation.watchPosition(updateLocation);
+		const interval = setInterval(() => {
+			navigator.geolocation.getCurrentPosition(updateLocation);
+		}, 1000);
 		return () => {
-			navigator.geolocation.clearWatch(watchId);
+			clearInterval(interval);
 		};
 	}, [socket, location, me]);
 
@@ -253,12 +256,13 @@ const PlayerPopupContents = (props: {player: Partial<Player>}) => {
 	);
 };
 
-const Marker = (props: {
+export const Marker = (props: {
 	location: {latitude: number; longitude: number} & Partial<GeolocationCoordinates>;
 	isMe?: boolean;
 	size?: number;
 	color?: string;
 	overlay?: ReactNode;
+	zoomAdjust?: boolean;
 	children: ReactNode;
 }) => {
 	const circleRef = useRef<LeafletCircleMarker<any>>(null);

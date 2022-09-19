@@ -19,6 +19,7 @@ export const theme = extendTheme({
 	fonts: {
 		body: `'Share Tech Mono', monospace`,
 		heading: `'Share Tech Mono', monospace`,
+		text: `'Share Tech Mono', monospace`,
 	},
 	config: {
 		initialColorMode: 'light',

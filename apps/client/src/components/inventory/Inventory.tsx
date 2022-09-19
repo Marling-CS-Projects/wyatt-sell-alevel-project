@@ -12,9 +12,9 @@ import {
 	Button,
 } from '@chakra-ui/react';
 import {Item, title} from '@monorepo/shared/src/index';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {RiArrowLeftLine, RiArrowLeftSLine, RiCloseLine, RiLayoutLeft2Line} from 'react-icons/ri';
-import {useLocation, useMe, useSocket} from 'src/utils/hooks';
+import {useEffects, useLocation, useMe, useSocket} from 'src/utils/hooks';
 
 export const rarityArray = {
 	1: {color: 'green', text: 'common'},
@@ -24,15 +24,21 @@ export const rarityArray = {
 
 export const itemDetails = {
 	gpsj: {
-		desc: 'A GPS Jammer that will disable GPS functionality for all other hunters. Lasts 5 minutes',
+		desc: 'A GPS Jammer that will disable GPS functionality for all other hunters',
 		action: 'JAM GPS',
+	},
+	drse: {
+		desc: 'A Drone that will scan the area for fugitives, and display a heatmap. Sometimes temperamental',
+		action: 'DEPLOY DRONE',
 	},
 } as Record<Item['info']['code'], {desc: string; action: string}>;
 
 export const Inventory = (props: {closeFn: () => void}) => {
 	const me = useMe();
 
-	if (!me?.items) return null;
+	console.log(me);
+
+	const items = me?.items || [];
 
 	return (
 		<VStack
@@ -59,23 +65,37 @@ export const Inventory = (props: {closeFn: () => void}) => {
 				pt={4}
 				gridAutoRows={'1fr'}
 			>
-				<GridItem item={me.items[0]} />
-				<GridItem item={me.items[1]} />
-				<GridItem item={me.items[2]} />
-				<GridItem item={me.items[3]} />
-				<GridItem item={me.items[4]} />
-				<GridItem item={me.items[5]} />
+				<GridItem item={items[0]} />
+				<GridItem item={items[1]} />
+				<GridItem item={items[2]} />
+				<GridItem item={items[3]} />
+				<GridItem item={items[4]} />
+				<GridItem item={items[5]} />
 			</SimpleGrid>
 		</VStack>
 	);
 };
 
 export const GridItem = (props: {item: Item | undefined}) => {
+	const item = props.item;
+
 	const [open, setOpen] = useState(false);
 	const socket = useSocket();
 	const [playerLocation] = useLocation();
+	const [time, setTime] = useState<number>(item ? item.info.duration * 60 : 0);
+	const [, setEffects] = useEffects();
 
-	const item = props.item;
+	useEffect(() => {
+		if (item?.activeStart) {
+			const interval = setInterval(() => {
+				const newTime =
+					item.info.duration * 60 - Math.floor((Date.now() - item.activeStart!) / 1000);
+				setTime(newTime);
+			}, 1000);
+
+			return () => clearInterval(interval);
+		}
+	});
 
 	if (!socket || !playerLocation) return null;
 
@@ -107,23 +127,38 @@ export const GridItem = (props: {item: Item | undefined}) => {
 					<Text fontSize={'lg'} color="gray">
 						{(itemDetails[item.info.code] || {desc: `${item.info.name} description`}).desc}
 					</Text>
-					<Button bg="red.500" w="full" color="white" fontSize={'32'}>
-						{(itemDetails[item.info.code] || {action: 'USE'}).action}
+					<Button
+						bg={item.active ? 'green.500' : 'red.500'}
+						disabled={item.active}
+						w="full"
+						color="white"
+						fontSize={'32'}
+						onClick={() => {
+							socket.emit('item-use', {
+								id: item.id,
+							});
+						}}
+					>
+						{item.active
+							? time + ' SECS'
+							: (itemDetails[item.info.code] || {action: 'USE'}).action +
+							  ` (${item.info.duration} MINS)`}
 					</Button>
 					<Button
 						bg="blue.500"
 						w="full"
 						color="white"
 						fontSize={'32'}
-						onClick={() =>
+						onClick={() => {
+							setEffects(prev => prev.filter(p => p.id !== item.id));
 							socket.emit('item-drop', {
 								id: item.id,
 								location: {
 									lat: playerLocation.latitude,
 									lng: playerLocation.longitude,
 								},
-							})
-						}
+							});
+						}}
 					>
 						DROP
 					</Button>
@@ -138,10 +173,11 @@ export const GridItem = (props: {item: Item | undefined}) => {
 			onClick={() => item && setOpen(true)}
 			justifyContent={'center'}
 			boxShadow={'0px 0px 0px 2px var(--chakra-colors-gray-200) inset'}
+			bg={item && item.active ? 'green.200' : 'white'}
 		>
 			{item ? (
 				<>
-					<Image src={'https://placekitten.com/200/200'} />
+					<Image src={'https://placekitten.com/200/200'} w={'100vw'} />
 					<VStack
 						justifyContent={'center'}
 						w={'full'}

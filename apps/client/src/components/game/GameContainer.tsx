@@ -1,4 +1,4 @@
-import {Button, Center, Flex, HStack, Text, VStack} from '@chakra-ui/react';
+import {Box, Button, Center, Flex, HStack, Text, VStack} from '@chakra-ui/react';
 import {Map} from './map/Map';
 import {useGame, useMe, useSocket} from '../../utils/hooks';
 import {ReactNode, useEffect, useState} from 'react';
@@ -10,12 +10,16 @@ import {CatchOverlay} from './CatchOverlay';
 import {toast} from 'react-hot-toast';
 import {WinLose} from './WinLose';
 import {Inventory} from '../inventory/Inventory';
+import {EffectsOverlay} from './EffectsOverlay';
+import {useGlitch} from 'react-powerglitch';
 
 export const GameContainer = () => {
 	const [game, setGame] = useGame();
 	const [page, setPage] = useState<false | 'inventory' | 'settings'>(false);
 	const socket = useSocket();
 	const me = useMe();
+
+	console.log(page);
 
 	if (!game) return null;
 	if (!socket)
@@ -42,10 +46,10 @@ export const GameContainer = () => {
 	return (
 		<Flex h={'100vh'} w={'full'} flexDir={'column'}>
 			<Flex h={'full'} position={'relative'}>
+				<EffectsOverlay />
 				{me?.catching && <CatchOverlay />}
 				{game.hasEnded && <WinLose />}
 				{page === 'inventory' && <Inventory closeFn={() => setPage(false)} />}
-				<Map />
 			</Flex>
 			<GameFooter
 				inventoryOnClick={() => setPage(p => (p === 'inventory' ? false : 'inventory'))}

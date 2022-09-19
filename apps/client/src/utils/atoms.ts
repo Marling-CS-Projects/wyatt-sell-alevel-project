@@ -24,3 +24,4 @@ export const gameAtom = atomWithStorage<
 >('game', null);
 
 export const locationAtom = atom<GeolocationCoordinates | null>(null);
+export const effectsAtom = atom<ServerMessages['effect-active'][]>([]);
