@@ -123,7 +123,7 @@ export const GridItem = (props: {item: Item | undefined}) => {
 					</Text>
 				</VStack>
 				<Image src={'https://placekitten.com/200/200'} w={'full'} />
-				<VStack p={4}>
+				<VStack p={4} w="full">
 					<Text fontSize={'lg'} color="gray">
 						{(itemDetails[item.info.code] || {desc: `${item.info.name} description`}).desc}
 					</Text>

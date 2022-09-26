@@ -89,7 +89,7 @@ export class Item {
 			| 3
 		)[];
 		const rarity = rarityArr[Math.floor(Math.random() * rarityArr.length)];
-		const duration = item.baseDuration ? item.baseDuration * (rarity - item.baseRarity + 1) : 1;
+		const duration = item.baseDuration * (rarity - item.baseRarity + 1);
 
 		return {
 			...item,
@@ -135,8 +135,6 @@ export class Item {
 						distance(p.location, player.location) < [1000, 2000][this.info.rarity - 2]
 					);
 				});
-
-				console.log(playersInRange.length, this.game.hunted.length);
 
 				player.socket.emit('effect-active', {
 					id: this.id,
