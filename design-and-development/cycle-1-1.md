@@ -397,7 +397,7 @@ io.on('connection', async socket => {
 
 ### Evidence
 
-![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (1) (2).png>)
+![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro).png>)![](<../.gitbook/assets/localhost\_3000\_(iPhone 12 Pro) (1) (1).png>)
 
 The first screenshot shows the location view all players will see of themselves - a blue dot with a translucent circle displaying their accuracy.
 
