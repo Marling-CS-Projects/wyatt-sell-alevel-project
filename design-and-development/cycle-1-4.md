@@ -117,7 +117,7 @@ To determine the relevant steps to replicate this algorithm in JavaScript, I use
 
 ([Bridson, 2007](../reference-list.md))
 
-<figure><img src="../.gitbook/assets/image (7) (3).png" alt=""><figcaption><p>This is an example box filled with points generated using the Poisson-Disc Sampling Algorithm</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (7).png" alt=""><figcaption><p>This is an example box filled with points generated using the Poisson-Disc Sampling Algorithm</p></figcaption></figure>
 
 Using this sampling technique, I created a JavaScript implementation, as detailed below:
 
