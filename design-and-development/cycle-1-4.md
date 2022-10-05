@@ -373,7 +373,7 @@ const rarityArr = [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3].filter(v => v >= item.
 
 #### Test 2 (Rectified)
 
-![](<../.gitbook/assets/localhost\_3000\_create(iPhone 12 Pro).png>)
+![](<../.gitbook/assets/localhost\_3000\_create(iPhone 12 Pro) (2).png>)
 
 #### Test 3
 
