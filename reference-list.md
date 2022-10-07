@@ -6,6 +6,10 @@ BARB (2018). _BARB | Broadcasters Audience Research Board_. \[online] Barb.co.uk
 
 Basak, C., Boot, W.R., Voss, M.W. and Kramer, A.F. (2008). Can training in a real-time strategy video game attenuate cognitive decline in older adults? _Psychology and Aging_, \[online] 23(4), pp.765–777. doi:10.1037/a0013494.
 
+Bridson, R. (2007). Fast Poisson disk sampling in arbitrary dimensions. In: _ACM SIGGRAPH 2007 sketches on - SIGGRAPH ’07_. doi:10.1145/1278780.1278807.
+
+Clarke, L. (2019). Dark mode isn’t as good for your eyes as you believe. _Wired_. \[online] 30 Jul. Available at: https://www.wired.co.uk/article/dark-mode-chrome-android-ios-science \[Accessed 26 May 2022].
+
 Fancourt, D. and Steptoe, A. (2019). Television viewing and cognitive decline in older age: findings from the English Longitudinal Study of Ageing. _Scientific Reports_, \[online] 9(1). doi:10.1038/s41598-019-39354-4.
 
 Fox, K.R. (1999). The influence of physical activity on mental well-being. _Public Health Nutrition_, \[online] 2(3a). doi:10.1017/s1368980099000567.
@@ -28,9 +32,13 @@ ISFE (2020). _PEGI – The European content rating system_. \[online] ISFE. Avai
 
 Iwaniuk, P. (2019). _American Fugitive review – homage to old-school Grand Theft Auto_. \[online] The Guardian. Available at: https://www.theguardian.com/games/2019/may/21/american-fugitive-review-old-school-grand-theft-auto-fallen-tree \[Accessed 12 May 2022].
 
+JetBrains (2022). _Install WebStorm - Help | WebStorm_. \[online] WebStorm Help. Available at: https://www.jetbrains.com/help/webstorm/installation-guide.html \[Accessed 5 Jun. 2022].
+
 Jones, C.M., Scholes, L., Johnson, D., Katsikitis, M. and Carras, M.C. (2014). Gaming well: links between videogames and flourishing mental health. _Frontiers in Psychology_, \[online] 5(260). doi:10.3389/fpsyg.2014.00260.
 
 Katkoff, M., Heikkinen, K., Kumar, A. and Macmillan, A. (2019). _2019 Predictions #9: Say Hello to the New Breed of Battle Royale Games_. \[online] Deconstructor of Fun. Available at: https://www.deconstructoroffun.com/blog/2019/2/19/4s8e1vlxju2ltvf0sjj535bkf7eby9 \[Accessed 1 Apr. 2022].
+
+Lopez, G. (2016). _Pokémon Go, explained_. \[online] Vox. Available at: https://www.vox.com/2016/7/11/12129162/pokemon-go-android-ios-game \[Accessed 18 May 2022].
 
 Maillot, P., Perrot, A. and Hartley, A. (2012). Effects of interactive physical-activity video-game training on physical and cognitive function in older adults. _Psychology and Aging_, 27(3), pp.589–600. doi:10.1037/a0026268.
 
@@ -38,9 +46,17 @@ Malaka, R. (2014). How Computer Games Can Improve Your Health and Fitness. _Game
 
 Matamales, M., Skrbis, Z., Hatch, Robert J., Balleine, Bernard W., Götz, J. and Bertran-Gonzalez, J. (2016). Aging-Related Dysfunction of Striatal Cholinergic Interneurons Produces Conflict in Action Selection. _Neuron_, \[online] 90(2), pp.362–373. doi:10.1016/j.neuron.2016.03.006.
 
+May, S. (2019). _How to Install Node JS on Windows | Set Up Node JS on Windows_. \[online] Zeolearn. Available at: https://www.zeolearn.com/magazine/install-node-js-on-windows \[Accessed 5 Jun. 2022].
+
+Mcgeeney, K. and Mendes, E. (2012). _In Old Age, Exercise More Closely Tied to Health Than Diet_. \[online] Gallup.com. Available at: https://news.gallup.com/poll/155075/old-age-exercise-closely-tied-health-diet.aspx \[Accessed 20 May 2022].
+
 Müller-Oehring, E.M., Schulte, T., Rohlfing, T., Pfefferbaum, A. and Sullivan, E.V. (2013). Visual search and the aging brain: Discerning the effects of age-related brain volume shrinkage on alertness, feature binding, and attentional control. _Neuropsychology_, 27(1), pp.48–59. doi:10.1037/a0030921.
 
+Muñoz, B. (2000). Causes of Blindness and Visual Impairment in a Population of Older AmericansThe Salisbury Eye Evaluation Study. _Archives of Ophthalmology_, 118(6), p.819. doi:10.1001/archopht.118.6.819.
+
 Murman, D. (2015). The Impact of Age on Cognition. _Seminars in Hearing_, \[online] 36(03), pp.111–121. doi:10.1055/s-0035-1555115.
+
+Niantic (2020). _Ingress 2.40.1 Release Notes_. \[online] Ingress. Available at: https://community.ingress.com/en/discussion/9266/ingress-2-40-1-release-notes \[Accessed 19 May 2022].
 
 NIH (2017). _How the Aging Brain Affects Thinking_. \[online] National Institute on Aging. Available at: https://www.nia.nih.gov/health/how-aging-brain-affects-thinking \[Accessed 31 Mar. 2022].
 
@@ -52,11 +68,21 @@ Perrin, A. (2018). _5 facts about Americans and video games_. \[online] Pew Rese
 
 Perse, E.M. and Rubin, A.M. (1990). Chronic loneliness and television use. _Journal of Broadcasting & Electronic Media_, \[online] 34(1), pp.37–53. doi:10.1080/08838159009386724.
 
+Piepenbrock, C., Mayr, S., Mund, I. and Buchner, A. (2013). Positive display polarity is advantageous for both younger and older adults. _Ergonomics_, 56(7), pp.1116–1124. doi:10.1080/00140139.2013.790485.
+
+Porter, J. (2019). _Pokémon Go is getting online multiplayer battles early next year_. \[online] The Verge. Available at: https://www.theverge.com/2019/10/22/20926484/pokemon-go-battle-league-pvp-trainer-ranked-online-multiplayer \[Accessed 18 May 2022].
+
 Postans, A. (2015). _Why Channel 4’s The Hunted is the biggest TV joke of the year - by Adam Postans_. \[online] The Mirror. Available at: https://www.mirror.co.uk/tv/tv-reviews/channel-4s-hunted-biggest-tv-6610271 \[Accessed 31 Mar. 2022].
 
 Rahtz, D.R., Sirgy, M.J. and Meadow, H.L. (1989). The Elderly Audience: Correlates of Television Orientation. _Journal of Advertising_, \[online] 18(3), pp.9–20. Available at: https://www.jstor.org/stable/4188729 \[Accessed 23 Mar. 2022].
 
 Salleh, A. (2016). _Brain circuit that helps us adapt to change fades with age_. \[online] www.abc.net.au. Available at: https://www.abc.net.au/news/science/2016-04-21/brain-circuit-that-helps-us-adapt-to-change-fades-with-age/7342736.
+
+Skipper, B. (2016). _Pokemon Go: New gameplay details revealed for anticipated iOS and Android game_. \[online] sg.news.yahoo.com. Available at: https://sg.news.yahoo.com/pokemon-gameplay-details-revealed-anticipated-151525122.html \[Accessed 18 May 2022].
+
+Smith, C.D., Umberger, G.H., Manning, E.L., Slevin, J.T., Wekstein, D.R., Schmitt, F.A., Markesbery, W.R., Zhang, Z., Gerhardt, G.A., Kryscio, R.J. and Gash, D.M. (1999). Critical decline in fine motor hand movements in human aging. _Neurology_, 53(7), pp.1458–1458. doi:10.1212/wnl.53.7.1458.
+
+Statcounter (2022). _Mobile Browser Market Share Worldwide_. \[online] StatCounter Global Stats. Available at: https://gs.statcounter.com/browser-market-share/mobile/worldwide.
 
 Statista (2010). _Daily TV viewing time by age UK 2010-2017 | Statista_. \[online] Statista. Available at: https://www.statista.com/statistics/269918/daily-tv-viewing-time-in-the-uk-by-age/.
 
@@ -68,4 +94,8 @@ Tucker, L.A. (1986). The relationship of television viewing to physical fitness 
 
 Van den Bulck, J. (2000). Is Television Bad for Your Health? Behavior and Body Image of the Adolescent ‘Couch Potato’. _Journal of Youth and Adolescence_, \[online] 29(3), pp.273–288. doi:10.1023/a:1005102523848.
 
+W3 (2019). _Understanding Success Criterion 1.4.3: Contrast (Minimum)_. \[online] www.w3.org. Available at: https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum \[Accessed 6 Aug. 2022].
+
 Wikipedia. (2021). _List of video games based on films_. \[online] Available at: https://en.wikipedia.org/wiki/List\_of\_video\_games\_based\_on\_films.
+
+Zarkov, G. (2020). _Google to raise the RAM requirements for Android, make Android GO mandatory if a phone doesn’t meet them_. \[online] Phone Arena. Available at: https://www.phonearena.com/news/google-changes-minimum-ram-requirement-android-devices\_id126083 \[Accessed 5 Jun. 2022].
