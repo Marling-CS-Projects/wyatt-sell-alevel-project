@@ -127,3 +127,18 @@ object Player
 
 end object
 ```
+
+### Pseudocode for item
+
+This is the object that contains information about each item. It includes
+
+```
+object Item
+    game: Game
+    id: UUID
+    location: co-ordinates
+    info: object storing data about item, inc. name
+    active: boolean
+    
+    
+```
