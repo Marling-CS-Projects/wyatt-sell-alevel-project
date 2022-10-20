@@ -77,6 +77,7 @@ import cors from 'cors';
 const app = express();
 const server = createServer(app);
 
+// Creates Socket.IO server with CORS configured
 const socket = new Server(server, {
 	cors: {
 		origin: env.CLIENT_ORIGIN,
@@ -84,6 +85,7 @@ const socket = new Server(server, {
 	},
 });
 
+// Configures Express HTTP server with CORS configured
 app.use(
 	cors({
 		origin: env.CLIENT_ORIGIN,
@@ -91,6 +93,7 @@ app.use(
 	})
 );
 
+// Initialises database, caching server and starts server
 const start = async () => {
 	await prisma.$connect();
 	await redis.connect();
@@ -124,16 +127,21 @@ export default function () {
 	const [messages, setMessages] = useState<string[]>([]);
 
 	useEffect(() => {
+		// Connects to socket and stores in socket variable if
+		// not connected.
 		if (!socket) {
 			const newSocket = io(`http://localhost:8888`);
 			setSocket(newSocket);
 			return;
 		}
+		// When a message is received, its appended to the messages
+		// array.
 		socket.on('message', (message: string) => {
 			setMessages(messages => [...messages, message]);
 		});
 	}, [socket, setSocket, setMessages]);
-
+	
+	// Displays all messages recieved from the server in a list.
 	return (
 		<>
 			<Heading>Hello world!</Heading>
