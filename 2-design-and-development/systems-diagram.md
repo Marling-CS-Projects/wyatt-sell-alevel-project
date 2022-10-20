@@ -80,25 +80,21 @@ object Game
     items: Item[]
     
     function addPlayer
-        if players.length == options.max.total
-            return false
         add player to players list
         add player to either hunter or hunted list
         return true
     end function
     
-    function updatePlayerPref(playerID: UUID, pref: 'hunter' | 'hunted')
-        if player not in game players
-            error('Player not in game')
-        if players.length == options.max.total
-            return false
-        if [pref].length <= options.max.length
-            add player to [pref] list
-            return pref
-        else
-            add player to [inversePref] list
-            return inversePref
-    end function    
+    function updatePlayerPref
+        if able to update
+            update player pref
+    end function
+    
+    function send_data (player)
+        send player info to player
+        send game info to player
+        send item info to player
+    end funciton    
         
 end object
 
@@ -118,19 +114,30 @@ object Player
     pref?: 'hunted' | 'hunter'
     type: 'hunted' | 'hunter'
     user: UserObject
+    items: Item[]
     
     function updatePref(pref: 'hunter' | 'hunted')
         pref = pref
         type = game.updatePlayer(id, pref)
         return type
     end function
-
+    
+    function dropItem
+        remove item from items array
+        send item update to other players
+    end function
+    
+    function pickupItem
+        add item to items array
+        send item update to other players
+    end function
+    
 end object
 ```
 
 ### Pseudocode for item
 
-This is the object that contains information about each item. It includes
+This is the object that contains information about and functions for each item. It includes
 
 ```
 object Item
@@ -153,6 +160,4 @@ object Item
         end switch
     end function
 end object
-        
-    
 ```
