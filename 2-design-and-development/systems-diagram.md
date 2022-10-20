@@ -140,5 +140,19 @@ object Item
     info: object storing data about item, inc. name
     active: boolean
     
+    function create
+        generate item info
+    end function
+    
+    function use
+        switch item.info.type
+            case "gps-jammer"
+                trigger gps jamming
+            end case
+            ...
+        end switch
+    end function
+end object
+        
     
 ```
